@@ -1,0 +1,23 @@
+\documentclass[a4paper]{article}
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{empheq}
+\usepackage{mathtools}
+\usepackage[german]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{tabularx}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage[margin=2cm]{geometry}
+
+
+%opening
+\title{}
+\author{}
+\title{Abiturvorbereitung Mathe}
+\author{Til Blechschmidt\\ Schüler, Otto-Hahn-Gymnasium Geesthacht, Germany}

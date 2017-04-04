@@ -1,0 +1,7 @@
+h1{
+  color: red;
+}
+
+[contenteditable]:focus {
+    outline: 0 solid transparent;
+}
