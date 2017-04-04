@@ -34,8 +34,7 @@
 
       function authorize() {
         // Attempt to authorize
-        realtimeUtils.authorize(function(response){
-            console.log(response);
+        realtimeUtils.authorize(function(response) {
           if(response.error){
             // Authorization failed because this is the first time the user has used your application,
             // show the authorize button to prompt them to authorize manually.

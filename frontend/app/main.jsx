@@ -1,8 +1,11 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import App from "./components/App/App";
+import {render} from "react-dom";
+import {target} from './const';
+import init from "./init";
 
-ReactDOM.render(
-    <App />,
-    document.getElementById('render-target')
-);
+// Load components
+import Loader from "./components/Loader/Loader";
+
+render(<Loader text="Initializing TexDocs"/>, target);
+
+init();

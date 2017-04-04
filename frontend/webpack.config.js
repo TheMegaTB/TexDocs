@@ -4,7 +4,10 @@ const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 module.exports = {
   devServer: {
-    historyApiFallback: true,
+    // historyApiFallback: true,
+    historyApiFallback: {
+      index: '/'
+    },
     hot: true,
     inline: true,
     progress: true,
