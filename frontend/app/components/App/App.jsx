@@ -1,12 +1,8 @@
 import React from "react";
 import Editor from "../Editor/Editor";
-import {
-    BrowserRouter as Router,
-    Route,
-    Link
-} from 'react-router-dom';
+import {BrowserRouter as Router, Route} from "react-router-dom";
 
-import './App.css';
+import "./App.css";
 import Home from "../Home/Home";
 import {MuiThemeProvider} from "material-ui";
 
@@ -27,7 +23,7 @@ export default class App extends React.Component {
 
                         {/*<hr/>*/}
 
-                        {/*<Route exact path="/" component={Home}/>*/}
+                        <Route exact path="/" component={Home}/>
                         <Route path="/document/:id" component={Editor}/>
                     </div>
                 </MuiThemeProvider>

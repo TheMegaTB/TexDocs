@@ -5,6 +5,12 @@
     display: flex;
 }
 
+.menubar-buttons {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .menubar-title {
     font-size: 20px;
     padding-left: 15px;
@@ -12,7 +18,7 @@
 }
 
 .menubar > .container {
-    width: 100%;
+    width: calc(100% - 52px - 15px - 10px);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -27,6 +33,10 @@
 
 .puush {
     flex: 1;
+}
+
+.last-edit {
+    padding-left: 15px;
 }
 
 .tex-docs-button {

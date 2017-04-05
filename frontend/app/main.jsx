@@ -1,8 +1,9 @@
 import React from "react";
 import {render} from "react-dom";
-import {target} from './const';
+import {target} from "./const";
 import init from "./init";
 
+import "./api/realtime-client-utils";
 // Load components
 import Loader from "./components/Loader/Loader";
 
