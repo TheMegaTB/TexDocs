@@ -11,6 +11,12 @@ const defaultState = Map({
         bytesUsed: 0,
         title: 'Untitled',
         lastEdit: 'Last edit is unknown.'
+    }),
+    user: Map({
+        id: "",
+        name: "",
+        image: "",
+        email: ""
     })
 });
 
@@ -33,10 +39,13 @@ function reducer(state = defaultState, action) {
     switch (action.type) {
         case 'DOC_METADATA_LOADED':
             const timeDelta = secondsToString((new Date() - new Date(action.time))/1000);
+            const lastEdit = action.user === state.get('user').get('name')
+                                ? "Last edit was " + timeDelta + " ago"
+                                : "Last edit was made " + timeDelta + " ago by " + action.user;
             return state.mergeDeep({
                 attributes: {
                     title: action.title,
-                    lastEdit: "Last edit was made " + timeDelta + " ago by " + action.user
+                    lastEdit: lastEdit
                 }
             });
         case 'DOC_LOADED':
@@ -47,12 +56,22 @@ function reducer(state = defaultState, action) {
             action.doc.addEventListener(EventType.COLLABORATOR_LEFT, onCollaboratorLeft);
             action.doc.addEventListener(EventType.DOCUMENT_SAVE_STATE_CHANGED, onSaveStateChange);
 
+            let sessionID;
+            let collaborators = Map({});
+            action.doc.getCollaborators().forEach((collaborator) => {
+                if (collaborator.isMe) sessionID = collaborator.sessionId;
+                collaborators = collaborators.set(collaborator.sessionId, collaborator);
+            });
+
+            console.log("Current session ID:", sessionID);
+
             // TODO Cleanup deprecated cursors if no collabs are connected
             // TODO Add my own cursor
 
             return state.mergeDeep({
                 loaded: true,
                 saved: true,
+                collaborators: collaborators,
                 attributes: {
                     readOnly: model.isReadOnly,
                     bytesUsed: model.bytesUsed
@@ -76,6 +95,8 @@ function reducer(state = defaultState, action) {
             return state.delete(action.collaborator.sessionId);
         case 'DOC_SAVE_STATE_CHANGED':
             return state.set('saved', !action.isSaving);
+        case 'AUTHORIZED':
+            return state.set('user', action.user);
         default:
             return state;
     }

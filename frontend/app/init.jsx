@@ -33,5 +33,5 @@ export default function init() {
     registerTapListener();
 
     // Run the google drive authentication and respond to it.
-    authorize(onAuthorized, onAuthFail);
+    authorize(store, onAuthorized, onAuthFail);
 }

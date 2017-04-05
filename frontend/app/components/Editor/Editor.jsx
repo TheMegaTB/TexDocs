@@ -1,12 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import EditorContent from "./EditorContent/EditorContent";
-import {loadDocument, loadDocumentMetadata} from "../../api/google";
+import {loadDocument} from "../../api/google";
 import { Map } from 'immutable';
 import {connect} from "react-redux";
 import Loader from "../Loader/Loader";
 import EditorToolbar from "./EditorToolbar/EditorToolbar";
 import {Paper} from "material-ui";
 import EditorMenubar from "./EditorMenubar/EditorMenubar";
+
+import './Editor.css';
 
 class Editor extends Component {
     componentWillMount() {
@@ -25,7 +27,7 @@ class Editor extends Component {
                 <EditorMenubar docID={documentID} />
                 <div style={{background: '#eee', height: '100%'}}>
                     <EditorToolbar/>
-                    <Paper style={{margin: '20 auto', padding: 20, maxWidth: '800px'}} zDepth={2}>
+                    <Paper className="paper" zDepth={2}>
                         {docState.get('loaded')
                             ? <EditorContent document={this.document} />
                             : <Loader text="Loading document" />}

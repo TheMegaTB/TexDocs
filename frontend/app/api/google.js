@@ -1,8 +1,8 @@
-import {CLIENT_ID, DOC_CONTENT_ID, DOC_CURSORS_ID, SCOPES} from "../const";
-import {browserHistory} from "react-router";
+import {CLIENT_ID, DOC_CONTENT_ID, DOC_CURSORS_ID, MIME_TYPE, SCOPES, TOKEN_REFRESH_INT} from "../const";
+import { browserHistory } from 'react-router';
 
-// const realtimeUtils = new utils.RealtimeUtils({ clientId: gapi.clientId });
-//
+import { Map } from 'immutable';
+
 function onFileInitialize(model) {
     const string = model.createString(require("raw-loader!../static/templates/Generic.tex"));
     const cursors = model.createMap();
@@ -27,39 +27,63 @@ export function loadDocument(store, documentID, onLoad) {
         onLoad(doc);
         store.dispatch({type: 'DOC_LOADED', doc: doc});
     };
-    const onLoadFail = (err) => {
-        // TODO Do something with the error!
-        console.error("Failed to load document", err);
-        throw err;
-    };
-    window.gapi.drive.realtime.load(documentID, onFileLoaded, onFileInitialize, onLoadFail);
+    window.gapi.drive.realtime.load(documentID, onFileLoaded, onFileInitialize, onError);
 }
-//
-// export function createDocument(name, cb) {
-//     realtimeUtils.createRealtimeFile(name, function(createResponse) {
-//         cb(createResponse.id);
-//     });
-// }
 
-function onAuth(loadCB) {
+export function createDocument(name, cb) {
+    window.gapi.client.load('drive', 'v2', function () {
+        const insertHash = {
+            'resource': {
+                mimeType: MIME_TYPE,
+                title: name
+            }
+        };
+        window.gapi.client.drive.files.insert(insertHash).execute(cb);
+    });
+}
+
+function refreshToken(cb) {
     window.gapi.auth.authorize({
         client_id: CLIENT_ID,
         scope: SCOPES,
-        immediate: false
+        immediate: true
     }, () => {
+        if (typeof cb === 'function') cb();
     });
-
-    const googleUser = auth2.currentUser.get();
-    const profile = googleUser.getBasicProfile();
-    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    console.log('Name: ' + profile.getName());
-    console.log('Image URL: ' + profile.getImageUrl());
-    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-    //TODO dispatch event
-    loadCB();
 }
 
-export function authorize(loadCB, authCB) {
+function onError(error) {
+    const ErrorType = window.gapi.drive.realtime.ErrorType;
+    if (error.type === ErrorType.TOKEN_REFRESH_REQUIRED) {
+        refreshToken();
+    } else if (error.type === ErrorType.CLIENT_ERROR) {
+        alert('An Error happened: ' + error.message);
+        window.location.href = '/';
+    } else if (error.type === ErrorType.NOT_FOUND) {
+        alert('The file was not found. It does not exist or you do not have ' +
+            'read access to the file.');
+        window.location.href = '/';
+    } else if (error.type === ErrorType.FORBIDDEN) {
+        alert('You do not have access to this file. Try having the owner share' +
+            'it with you from Google Drive.');
+        window.location.href = '/';
+    }
+}
+
+function onAuth(store, loadCB) {
+    setInterval(refreshToken, TOKEN_REFRESH_INT);
+    refreshToken(loadCB);
+
+    const profile = auth2.currentUser.get().getBasicProfile();
+    store.dispatch({type: 'AUTHORIZED', user: Map({
+        id: profile.getId(),
+        name: profile.getName(),
+        image: profile.getImageUrl(),
+        email: profile.getEmail()
+    })});
+}
+
+export function authorize(store, loadCB, authCB) {
     window.gapi.load('auth2,auth:client,drive-realtime,drive-share', function () {
         window.auth2 = window.gapi.auth2.init({
             client_id: CLIENT_ID,
@@ -73,7 +97,7 @@ export function authorize(loadCB, authCB) {
                     auth2.signIn().then(onAuth.bind(null, loadCB));
                 });
             } else {
-                onAuth(loadCB);
+                onAuth(store, loadCB);
             }
         });
     });

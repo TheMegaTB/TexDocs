@@ -8,8 +8,8 @@ export default class App extends React.Component {
 
     render() {
         const create = () => {
-            createDocument("SomeTexDoc", (id) => {
-                this.props.history.push('/document/' + id);
+            createDocument("SomeTexDoc", (doc) => {
+                this.props.history.push('/d/' + doc.id);
             });
         };
         return <div>

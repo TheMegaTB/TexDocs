@@ -18,13 +18,13 @@ export default class App extends React.Component {
                     <div>
                         {/*<ul>*/}
                             {/*<li><Link to="/">Home</Link></li>*/}
-                            {/*<li><Link to="/document/someThing">Document</Link></li>*/}
+                            {/*<li><Link to="/d/someThing">Document</Link></li>*/}
                         {/*</ul>*/}
 
                         {/*<hr/>*/}
 
                         <Route exact path="/" component={Home}/>
-                        <Route path="/document/:id" component={Editor}/>
+                        <Route path="/d/:id" component={Editor}/>
                     </div>
                 </MuiThemeProvider>
             </Router>
