@@ -12,9 +12,9 @@ import Authentication from "./components/Authentication/Authentication";
 import {authorize} from './api/google';
 import {render} from "react-dom";
 import {target} from './const';
-import { createStore } from 'redux';
-import state from './api/reducers';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import Loader from "./components/Loader/Loader";
+import {store} from "./api/reducers";
 
 function registerTapListener() {
     // Needed for onTouchTap
@@ -22,15 +22,12 @@ function registerTapListener() {
     injectTapEventPlugin();
 }
 
-const store = createStore(state);
+
 const onAuthorized = render.bind(null, <Provider store={store}><App /></Provider>, target);
-const onAuthFail = (auth) =>
-    render(
-        <MuiThemeProvider>
-            <Authentication callback={auth}/>
-        </MuiThemeProvider>,
-        target
-    );
+const onAuthFail = (auth) => {
+    render(<Loader text="Authorizing TexDocs"/>, target);
+    auth();
+};
 
 export default function init() {
     registerTapListener();

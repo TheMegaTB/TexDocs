@@ -7,4 +7,5 @@ export const gapi = {
 
 export const target = document.getElementById('render-target');
 
-export const saveTimeout = 2000;
+export const DOC_CONTENT_ID = 'doc_main';
+export const DOC_CURSORS_ID = 'doc_cursors';

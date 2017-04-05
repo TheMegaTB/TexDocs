@@ -1,5 +1,5 @@
 import React from "react";
-import LatexEditor from "../Editor/Editor";
+import Editor from "../Editor/Editor";
 import {
     BrowserRouter as Router,
     Route,
@@ -25,7 +25,7 @@ export default class App extends React.Component {
                 <hr/>
 
                 <Route exact path="/" component={Home}/>
-                <Route path="/document/:id" component={LatexEditor}/>
+                <Route path="/document/:id" component={Editor}/>
             </div>
         </Router>
     }

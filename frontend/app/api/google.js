@@ -1,21 +1,27 @@
-import {gapi} from '../const';
+import {DOC_CONTENT_ID, DOC_CURSORS_ID, gapi} from '../const';
 import { browserHistory } from 'react-router';
 
 const realtimeUtils = new utils.RealtimeUtils({ clientId: gapi.clientId });
-const stringID = 'Main.tex';
 
 function onFileInitialize(model) {
-    const string = model.createString();
-    string.setText(require("raw-loader!../static/templates/Generic.tex"));
-    model.getRoot().set(stringID, string);
+    const string = model.createString(require("raw-loader!../static/templates/Generic.tex"));
+    const cursors = model.createMap();
+
+    model.getRoot().set(DOC_CONTENT_ID, string);
+    model.getRoot().set(DOC_CURSORS_ID, cursors);
 }
 
-export function loadDocument(documentID, cb) {
+export function loadDocument(store, documentID, onLoad) {
     const onFileLoaded = (doc) => {
-        const collaborativeString = doc.getModel().getRoot().get(stringID);
-        cb(collaborativeString);
+        onLoad(doc);
+        store.dispatch({type: 'DOC_LOADED', doc: doc});
     };
-    realtimeUtils.load(documentID, onFileLoaded, onFileInitialize);
+    const onLoadFail = (err) => {
+        // TODO Do something with the error!
+        console.error("Failed to load document", err);
+        throw err;
+    };
+    window.gapi.drive.realtime.load(documentID, onFileLoaded, onFileInitialize, onLoadFail);
 }
 
 export function createDocument(name, cb) {
