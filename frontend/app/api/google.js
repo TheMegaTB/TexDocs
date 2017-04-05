@@ -11,8 +11,19 @@ function onFileInitialize(model) {
     model.getRoot().set(DOC_CURSORS_ID, cursors);
 }
 
+export function loadDocumentMetadata(store, documentID) {
+    const request = window.gapi.client.request({
+        'path': '/drive/v2/files/' + documentID,
+        'method': 'GET',
+    });
+    request.execute(function(resp) {
+        store.dispatch({type: 'DOC_METADATA_LOADED', title: resp.title, time: resp.modifiedDate, user: resp.lastModifyingUserName});
+    });
+}
+
 export function loadDocument(store, documentID, onLoad) {
     const onFileLoaded = (doc) => {
+
         onLoad(doc);
         store.dispatch({type: 'DOC_LOADED', doc: doc});
     };

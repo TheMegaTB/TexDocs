@@ -1,5 +1,6 @@
 import { createStore } from 'redux';
 import { Map } from 'immutable';
+import {secondsToString} from "./time";
 
 const defaultState = Map({
     loaded: false,
@@ -7,7 +8,9 @@ const defaultState = Map({
     collaborators: Map({}),
     attributes: Map({
         readOnly: true,
-        bytesUsed: 0
+        bytesUsed: 0,
+        title: 'Untitled',
+        lastEdit: 'Last edit is unknown.'
     })
 });
 
@@ -28,6 +31,14 @@ function onSaveStateChange(event) {
 
 function reducer(state = defaultState, action) {
     switch (action.type) {
+        case 'DOC_METADATA_LOADED':
+            const timeDelta = secondsToString((new Date() - new Date(action.time))/1000);
+            return state.mergeDeep({
+                attributes: {
+                    title: action.title,
+                    lastEdit: "Last edit was made " + timeDelta + " ago by " + action.user
+                }
+            });
         case 'DOC_LOADED':
             const EventType = gapi.drive.realtime.EventType;
 

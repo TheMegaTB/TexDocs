@@ -8,6 +8,7 @@ import {
 
 import './App.css';
 import Home from "../Home/Home";
+import {MuiThemeProvider} from "material-ui";
 
 export default class App extends React.Component {
     constructor(props) {
@@ -15,18 +16,22 @@ export default class App extends React.Component {
     }
 
     render() {
-        return <Router>
-            <div>
-                <ul>
-                    <li><Link to="/">Home</Link></li>
-                    <li><Link to="/document/someThing">Document</Link></li>
-                </ul>
+        return (
+            <Router>
+                <MuiThemeProvider>
+                    <div>
+                        {/*<ul>*/}
+                            {/*<li><Link to="/">Home</Link></li>*/}
+                            {/*<li><Link to="/document/someThing">Document</Link></li>*/}
+                        {/*</ul>*/}
 
-                <hr/>
+                        {/*<hr/>*/}
 
-                <Route exact path="/" component={Home}/>
-                <Route path="/document/:id" component={Editor}/>
-            </div>
-        </Router>
+                        {/*<Route exact path="/" component={Home}/>*/}
+                        <Route path="/document/:id" component={Editor}/>
+                    </div>
+                </MuiThemeProvider>
+            </Router>
+        );
     }
 }
