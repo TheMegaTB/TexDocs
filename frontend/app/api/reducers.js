@@ -6,6 +6,7 @@ const defaultState = Map({
     loaded: false,
     saved: false,
     collaborators: Map({}),
+    sessionID: '',
     attributes: Map({
         readOnly: true,
         bytesUsed: 0,
@@ -20,7 +21,6 @@ const defaultState = Map({
     })
 });
 
-// export let document = undefined;
 export const store = createStore(reducer);
 
 function onCollaboratorJoined(event) {
@@ -28,7 +28,7 @@ function onCollaboratorJoined(event) {
 }
 
 function onCollaboratorLeft(event) {
-    store.dispatch({type: 'DOC_COLLABORATOR_LEFT', collaborator: event.collaborator});
+    store.dispatch({type: 'DOC_COLLABORATOR_LEFT', collaborator: event.collaborator, doc: event.target});
 }
 
 function onSaveStateChange(event) {
@@ -63,15 +63,11 @@ function reducer(state = defaultState, action) {
                 collaborators = collaborators.set(collaborator.sessionId, collaborator);
             });
 
-            console.log("Current session ID:", sessionID);
-
-            // TODO Cleanup deprecated cursors if no collabs are connected
-            // TODO Add my own cursor
-
             return state.mergeDeep({
                 loaded: true,
                 saved: true,
                 collaborators: collaborators,
+                sessionID: sessionID,
                 attributes: {
                     readOnly: model.isReadOnly,
                     bytesUsed: model.bytesUsed

@@ -23,9 +23,8 @@ export function loadDocumentMetadata(store, documentID) {
 
 export function loadDocument(store, documentID, onLoad) {
     const onFileLoaded = (doc) => {
-
-        onLoad(doc);
         store.dispatch({type: 'DOC_LOADED', doc: doc});
+        onLoad(doc);
     };
     window.gapi.drive.realtime.load(documentID, onFileLoaded, onFileInitialize, onError);
 }

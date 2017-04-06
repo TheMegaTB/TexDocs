@@ -1,0 +1,31 @@
+.caret {
+    height: 15px;
+    width: 0;
+    border-left: 2px solid;
+    border-color: rgb(31, 161, 93);
+    font-size: 0;
+    position: absolute;
+}
+
+.caret:not(:hover):after {
+    background-color: rgb(31, 161, 93);
+    width: 6px;
+    height: 6px;
+    position: absolute;
+    left: -3px;
+    top: -3px;
+    content: ''
+}
+
+.caret:hover:after {
+    position: absolute;
+    top: -14px;
+    left: -2px;
+    width: auto;
+    white-space: nowrap;
+    font-size: 10px;
+    background-color: rgb(31, 161, 93);
+    color: white;
+    padding: 2px;
+    content: "Til Blechschmidt"
+}

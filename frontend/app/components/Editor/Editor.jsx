@@ -7,6 +7,7 @@ import Loader from "../Loader/Loader";
 import EditorToolbar from "./EditorToolbar/EditorToolbar";
 import {Paper} from "material-ui";
 import EditorMenubar from "./EditorMenubar/EditorMenubar";
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import './Editor.css';
 
@@ -15,7 +16,9 @@ class Editor extends Component {
         const editor = this;
         const store = this.context.store;
         const documentID = this.props.match.params.id;
-        loadDocument(store, documentID, (doc) => editor.document = doc);
+        loadDocument(store, documentID, (doc) => {
+            editor.document = doc;
+        });
     }
 
     render() {
@@ -25,13 +28,23 @@ class Editor extends Component {
         return (
             <div>
                 <EditorMenubar docID={documentID} />
-                <div style={{background: '#eee', height: '100%'}}>
+                <div style={{background: '#eee', height: 'calc(100% - 68px)'}}>
                     <EditorToolbar/>
-                    <Paper className="paper" zDepth={2}>
-                        {docState.get('loaded')
-                            ? <EditorContent document={this.document} />
-                            : <Loader text="Loading document" />}
-                    </Paper>
+                    <Scrollbars
+                        style={{height: 'calc(100% - 48px)'}}
+                        // This will activate auto hide
+                        autoHide
+                        // Hide delay in ms
+                        autoHideTimeout={1000}
+                        // Duration for hide animation in ms.
+                        autoHideDuration={200}
+                    >
+                        <Paper className="paper" zDepth={2}>
+                            {this.document && docState.get('loaded')
+                                ? <EditorContent document={this.document} sID={docState.get('sessionID')}/>
+                                : <Loader text="Loading document" />}
+                        </Paper>
+                    </Scrollbars>
                 </div>
             </div>
         );

@@ -1,15 +1,110 @@
 import React from "react";
-import {Editor, EditorState, ContentBlock, ContentState, getDefaultKeyBinding, RichUtils} from "draft-js";
+import {Editor, EditorState, ContentBlock, ContentState, CompositeDecorator, getDefaultKeyBinding, RichUtils} from "draft-js";
 import CodeUtils from 'draft-js-code';
+import SimpleDecorator from 'draft-js-simpledecorator';
+import MultiDecorator from 'draft-js-multidecorators';
 
 import "prismjs";
 import "prismjs/components/prism-latex.min.js";
 
 import "!style!css!prismjs/themes/prism-solarizedlight.css";
-import "../Editor.css";
+import './EditorContent.css';
 
 import PrismDecorator from "draft-js-prism";
 import {DOC_CONTENT_ID} from "../../../const";
+import {Cursor} from "../../../api/Cursor";
+
+const hexColorDecorator = new SimpleDecorator(
+
+    function strategy(contentBlock, callback, contentState) {
+        const text = contentBlock.getText();
+
+        // Match text like #ac00ff and #EEE
+        let HEX_COLOR = /#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/g;
+
+        // For all Hex color matches
+        let match;
+        while ((match = HEX_COLOR.exec(text)) !== null) {
+            // Decorate the color code
+            let colorText = match[0];
+            let start = match.index;
+            let end = start + colorText.length;
+            let props = {
+                color: colorText
+            };
+            callback(start, end, props)
+        }
+    },
+
+    /**
+     * @prop {String} color
+     */
+    function component(props) {
+        console.log(props);
+        // Colorize the text with the given color
+        return <span style={{ color: props.color }}>{ props.children }</span>
+    }
+);
+
+const cursorDecorator = new SimpleDecorator(
+
+    function strategy(contentBlock, callback, contentState) {
+        const text = contentBlock.getText();
+
+        // Match text like #ac00ff and #EEE
+        let HEX_COLOR = /newpage/g;
+
+        // For all Hex color matches
+        let match;
+        while ((match = HEX_COLOR.exec(text)) !== null) {
+            // Decorate the color code
+            let colorText = match[0];
+            let start = match.index;
+            let end = start + colorText.length;
+            let props = {
+                color: colorText
+            };
+            callback(start, end, props)
+        }
+    },
+
+    /**
+     * @prop {String} color
+     */
+    function component(props) {
+        console.log('PROPS', props);
+        // Colorize the text with the given color
+        return <span>{ props.children }</span>
+    }
+);
+// const cursorDecorator = new SimpleDecorator(
+//     function strategy(contentBlock, callback, contentState) {
+//         if (contentBlock.getKey() === contentState.getBlocksAsArray()[0].getKey()) {
+//             callback(0,0,{});
+//         }
+//         // const text = contentBlock.getText();
+//
+//         // // Match text like #ac00ff and #EEE
+//         // let HEX_COLOR = /cursor/g;
+//         //
+//         // // For all Hex color matches
+//         // let match;
+//         // while ((match = HEX_COLOR.exec(text)) !== null) {
+//         //     // Decorate the color code
+//         //     let colorText = match[0];
+//         //     let start = match.index;
+//         //     let end = start + colorText.length;
+//         //     let props = {
+//         //         color: colorText
+//         //     };
+//         //     callback(start, end, props)
+//         // }
+//     },
+//
+//     function component(props) {
+//         return <span><span className="caret"/>{ props.children }</span>
+//     }
+// );
 
 export default class EditorContent extends React.Component {
     constructor(props) {
@@ -24,6 +119,7 @@ export default class EditorContent extends React.Component {
             const editor = this;
 
             if (editor.state.loaded) {
+                editor.updateCursorPosition(editorState);
                 editor.setState({editorState});
 
                 editor.collaborativeString.setText(
@@ -31,6 +127,29 @@ export default class EditorContent extends React.Component {
                 );
             }
         }
+    }
+
+    updateCursorPosition(editorState) {
+        const content = editorState.getCurrentContent();
+        const selection = editorState.getSelection();
+        const getIndex = (key, offset) => {
+            let index = 0;
+            const blocks = content.getBlocksAsArray();
+            for (let block in blocks) {
+                if (!blocks.hasOwnProperty(block)) continue;
+                block = blocks[block];
+
+                if (block.getKey() === key) {
+                    return index + offset;
+                }
+
+                index += block.getText().length;
+            }
+        };
+
+        const start = getIndex(selection.getStartKey(), selection.getStartOffset());
+        const end = getIndex(selection.getEndKey(), selection.getEndOffset());
+        this.cursor.setCaret(start + ',' + end);
     }
 
     handleKeyCommand(command) {
@@ -73,7 +192,13 @@ export default class EditorContent extends React.Component {
     onDocumentLoad(collaborativeString) {
         this.collaborativeString = collaborativeString;
 
-        const decorator = new PrismDecorator({defaultSyntax: 'latex', filter: () => true});
+        const decorator = new MultiDecorator([
+            new PrismDecorator({defaultSyntax: 'latex', filter: () => true}),
+            cursorDecorator,
+            // This decorator will have more priority:
+            hexColorDecorator
+        ]);
+        // const decorator = new PrismDecorator({defaultSyntax: 'latex', filter: () => true});
         const contentState = ContentState.createFromText(this.collaborativeString.toString());
 
         this.setState({
@@ -119,6 +244,8 @@ export default class EditorContent extends React.Component {
         const document = this.props.document;
         const collabString = document.getModel().getRoot().get(DOC_CONTENT_ID);
         this.onDocumentLoad(collabString);
+
+        this.cursor = new Cursor(this.props.document, this.props.sID);
 
         collabString.addEventListener(window.gapi.drive.realtime.EventType.TEXT_INSERTED, this.onExternalChange);
         collabString.addEventListener(window.gapi.drive.realtime.EventType.TEXT_DELETED, this.onExternalChange);
