@@ -3,7 +3,7 @@ export function secondsToString(seconds) {
     const numdays = Math.floor((seconds % 31536000) / 86400);
     const numhours = Math.floor(((seconds % 31536000) % 86400) / 3600);
     const numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
-    const numseconds = (((seconds % 31536000) % 86400) % 3600) % 60;
+    const numseconds = Math.floor((((seconds % 31536000) % 86400) % 3600) % 60);
 
     if (numyears > 0) {
         return numyears + ' year' + (numyears > 1 ? 's' : '');
