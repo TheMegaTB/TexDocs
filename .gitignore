@@ -6,6 +6,8 @@
 *.toc
 *.lot
 *.pdf
+*.lint
+*.lint.bak
 out/
 
 node_modules

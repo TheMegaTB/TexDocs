@@ -1,15 +1,20 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from "react";
 import EditorContent from "./EditorContent/EditorContent";
 import {loadDocument} from "../../api/google";
-import { Map } from 'immutable';
+import {Map} from "immutable";
 import {connect} from "react-redux";
 import Loader from "../Loader/Loader";
 import EditorToolbar from "./EditorToolbar/EditorToolbar";
 import {Paper} from "material-ui";
 import EditorMenubar from "./EditorMenubar/EditorMenubar";
-import { Scrollbars } from 'react-custom-scrollbars';
+import {Scrollbars} from "react-custom-scrollbars";
+import SplitPane from "react-split-pane";
 
-import './Editor.css';
+import "./Editor.css";
+
+import "../../static/output/base.min.css";
+import "../../static/output/fancy.min.css";
+import "../../static/output/Math.css";
 
 class Editor extends Component {
     componentWillMount() {
@@ -30,21 +35,42 @@ class Editor extends Component {
                 <EditorMenubar docID={documentID} />
                 <div style={{background: '#eee', height: 'calc(100% - 68px)'}}>
                     <EditorToolbar/>
-                    <Scrollbars
-                        style={{height: 'calc(100% - 48px)'}}
-                        // This will activate auto hide
-                        autoHide
-                        // Hide delay in ms
-                        autoHideTimeout={1000}
-                        // Duration for hide animation in ms.
-                        autoHideDuration={200}
-                    >
-                        <Paper className="paper" zDepth={2}>
-                            {this.document && docState.get('loaded')
-                                ? <EditorContent document={this.document} sID={docState.get('sessionID')}/>
-                                : <Loader text="Loading document" />}
-                        </Paper>
-                    </Scrollbars>
+                    <div style={{height: 'calc(100% - 48px - 68px)'}}>
+                        <SplitPane defaultSize="50%">
+                            <div>
+                                <Scrollbars
+                                    style={{height: '100%'}}
+                                    // This will activate auto hide
+                                    autoHide
+                                    // Hide delay in ms
+                                    autoHideTimeout={1000}
+                                    // Duration for hide animation in ms.
+                                    autoHideDuration={200}
+                                >
+                                    <Paper className="paper" zDepth={2}>
+                                        {this.document && docState.get('loaded')
+                                            ? <EditorContent document={this.document} sID={docState.get('sessionID')}/>
+                                            : <Loader text="Loading document"/>}
+                                    </Paper>
+                                </Scrollbars>
+                            </div>
+                            <div>
+                                <Scrollbars
+                                    style={{height: '100%'}}
+                                    // This will activate auto hide
+                                    autoHide
+                                    // Hide delay in ms
+                                    autoHideTimeout={1000}
+                                    // Duration for hide animation in ms.
+                                    autoHideDuration={200}
+                                >
+                                    <div
+                                        dangerouslySetInnerHTML={{__html: require("raw-loader!../../static/output/Math.html")}}/>
+                                </Scrollbars>
+                            </div>
+
+                        </SplitPane>
+                    </div>
                 </div>
             </div>
         );
