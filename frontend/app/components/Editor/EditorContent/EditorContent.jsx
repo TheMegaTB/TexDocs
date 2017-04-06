@@ -1,14 +1,12 @@
 import React from "react";
-import {Editor, EditorState, ContentBlock, ContentState, getDefaultKeyBinding, RichUtils} from "draft-js";
-import CodeUtils from 'draft-js-code';
-import SimpleDecorator from 'draft-js-simpledecorator';
-import MultiDecorator from 'draft-js-multidecorators';
+import {ContentBlock, ContentState, Editor, EditorState, getDefaultKeyBinding, RichUtils} from "draft-js";
+import CodeUtils from "draft-js-code";
 
 import "prismjs";
 import "prismjs/components/prism-latex.min.js";
 
 import "!style!css!prismjs/themes/prism-solarizedlight.css";
-import './EditorContent.css';
+import "./EditorContent.css";
 
 import {DOC_CONTENT_ID} from "../../../const";
 import {Cursor} from "../../../api/Cursor";
@@ -105,7 +103,7 @@ export default class EditorContent extends React.Component {
         //     customDecorator
         // ]);
         const decorator = new PrismDecorator({defaultSyntax: 'latex', filter: () => true});
-        const contentState = ContentState.createFromText(this.collaborativeString.toString() + '<span id="test"></span>');
+        const contentState = ContentState.createFromText(this.collaborativeString.toString());
 
         this.setState({
             editorState: EditorState.createWithContent(contentState, decorator),

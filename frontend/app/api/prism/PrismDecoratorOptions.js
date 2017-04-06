@@ -2,12 +2,10 @@ var Immutable = require('immutable');
 var React = require('react');
 var extend = require('extend');
 
-import {store} from '../reducers';
-
 /**
  Filter block to only highlight code blocks
 
- @param {Draft.ContentBlock}
+ @param {Draft.ContentBlock} block
  @return {Boolean}
  */
 function defaultFilter(block) {
@@ -17,7 +15,7 @@ function defaultFilter(block) {
 /**
  Return syntax for highlighting a code block
 
- @param {Draft.ContentBlock}
+ @param {Draft.ContentBlock} block
  @return {String}
  */
 function defaultGetSyntax(block) {
@@ -39,14 +37,18 @@ function defaultRender(props) {
         className: 'prism-token token ' + props.type
     });
 
-
-    // console.log(props);
-    // console.log(store.getState());
+    const content = props.caret ? [<span key='caret' data-caret={props.caret}
+                                         className="caret"/>, ...props.children] : props.children;
+    delete props.caret;
+    delete props.contentState;
+    delete props.decoratedText;
+    delete props.entityKey;
+    delete props.offsetKey;
 
     return React.createElement(
         "span",
         props,
-        props.children
+        content
     );
 }
 
