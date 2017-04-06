@@ -98,9 +98,9 @@ function reducer(state = defaultState, action) {
     }
 }
 
-store.subscribe(() => {
-    const obj = store.getState().toObject();
-    obj.collaborators = obj.collaborators.toObject();
-    obj.attributes = obj.attributes.toObject();
-    console.log(obj);
-});
+// store.subscribe(() => {
+//     const obj = store.getState().toObject();
+//     obj.collaborators = obj.collaborators.toObject();
+//     obj.attributes = obj.attributes.toObject();
+//     console.log(obj);
+// });
