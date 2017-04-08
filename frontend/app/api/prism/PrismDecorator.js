@@ -70,7 +70,6 @@ PrismDecorator.prototype.getDecorations = function(block) {
             if (!tokenParts.hasOwnProperty(part)) continue;
             part = tokenParts[part];
 
-
             const splitLoc = part[1];
             const tokenId = 'tok' + start;
             const resultId = blockKey + KEY_SEPARATOR + tokenId;
@@ -82,6 +81,7 @@ PrismDecorator.prototype.getDecorations = function(block) {
                 return;
             } else if (start === part[0]) {
                 caret = true;
+                caretAttributes = part[2];
                 storeToken(tokenId);
                 occupySlice(decorations, start, splitLoc, resultId);
             }
@@ -106,6 +106,19 @@ PrismDecorator.prototype.getDecorations = function(block) {
 
         offset += token.content.length;
     }
+
+    tokenParts.forEach((caret) => {
+        if (caret[0] === offset) {
+            const tokens = Object.keys(this.highlighted[blockKey]);
+            const tokenId = tokens[tokens.length - 1];
+            const token = this.highlighted[blockKey][tokenId];
+
+            const newToken = Object.assign({}, token);
+            newToken.caret = caret[2];
+            newToken.caret.end = true;
+            this.highlighted[blockKey][tokenId] = newToken;
+        }
+    });
 
     return Immutable.List(decorations);
 };

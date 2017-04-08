@@ -26,12 +26,12 @@ export default class EditorContent extends React.Component {
             const editor = this;
 
             if (editor.state.loaded) {
-                editor.updateCursorPosition(editorState);
                 editor.setState({editorState});
 
                 editor.collaborativeString.setText(
                     editorState.getCurrentContent().getPlainText()
                 );
+                editor.updateCursorPosition(editorState);
             }
         }
     }
@@ -42,15 +42,16 @@ export default class EditorContent extends React.Component {
         const getIndex = (key, offset) => {
             let index = 0;
             const blocks = content.getBlocksAsArray();
-            for (let block in blocks) {
-                if (!blocks.hasOwnProperty(block)) continue;
-                block = blocks[block];
+            for (let blockIndex in blocks) {
+                if (!blocks.hasOwnProperty(blockIndex)) continue;
+                let block = blocks[blockIndex];
 
                 if (block.getKey() === key) {
                     return index + offset;
                 }
 
                 index += block.getText().length;
+                if (blockIndex > 0) index += 1; // Compensate for '\n'
             }
         };
 
@@ -97,31 +98,34 @@ export default class EditorContent extends React.Component {
     }
 
     onExternalCursorChange(data) {
-        console.log("CURSOR UPDATE", data);
         this.setState({
             editorState: EditorState.set(this.state.editorState, {decorator: this.getDecorator()})
         });
     }
 
     getDecorator() {
-        const rawCursors = this.cursor.getCursors();
         const cursors = {};
-        const rawText = this.state.editorState.getCurrentContent().getPlainText();
-        const blocks = this.state.editorState.getCurrentContent().getBlocksAsArray();
+        if (this.cursor) {
+            const rawCursors = this.cursor.getCursors();
+            const rawText = this.state.editorState.getCurrentContent().getPlainText();
+            const blocks = this.state.editorState.getCurrentContent().getBlocksAsArray();
 
-        // TODO Beginning and end of the line doesn't work yet
-        Object.keys(rawCursors).forEach((offset) => {
-            const textBefore = rawText.substr(0, offset);
+            // TODO Beginning and end of the line doesn't work yet
+            Object.keys(rawCursors).forEach((offset) => {
+                const textBefore = rawText.substr(0, offset);
 
-            const blockIndex = textBefore.split(/\r\n|\r|\n/).length - 1;
-            const blockKey = blocks[blockIndex].getKey();
+                const blockIndex = textBefore.split(/\r\n|\r|\n/).length - 1;
+                const blockKey = blocks[blockIndex].getKey();
 
-            const lastNewline = textBefore.lastIndexOf('\n');
-            const localOffset = lastNewline > -1 ? offset - lastNewline : offset;
+                const lastNewline = textBefore.lastIndexOf('\n');
+                const localOffset = lastNewline > -1 ? offset - lastNewline : offset;
 
-            if (!cursors[blockKey]) cursors[blockKey] = {};
-            cursors[blockKey][localOffset] = rawCursors[offset];
-        });
+                console.log(offset, blockIndex, localOffset);
+
+                if (!cursors[blockKey]) cursors[blockKey] = {};
+                cursors[blockKey][localOffset] = rawCursors[offset];
+            });
+        }
 
         return new PrismDecorator({defaultSyntax: 'latex', filter: () => true}, cursors);
     }

@@ -40,8 +40,7 @@ function defaultRender(props) {
     let content;
     if (props.caret) {
         content = [
-            <span key='caret' data-caret={props.caret.name} data-caret-color={props.offsetKey}
-                  className="caret"/>,
+            ...props.children,
             <style key={'caret-style-' + props.offsetKey} dangerouslySetInnerHTML={{__html: `
                 .caret[data-caret-color="` + props.offsetKey + `"] {
                     border-color: ` + props.caret.color + `;
@@ -54,9 +53,12 @@ function defaultRender(props) {
                     .caret[data-caret-color="` + props.offsetKey + `"]:after {
                     background-color: ` + props.caret.color + `;
                 }
-            `}} />,
-            ...props.children
-        ]
+            `}} />
+        ];
+        const caretComponent = <span key='caret' data-caret={props.caret.name} data-caret-color={props.offsetKey}
+                      className="caret"/>;
+        if (props.caret.end) content.push(caretComponent);
+        else content.unshift(caretComponent);
     } else {
         content = props.children;
     }
