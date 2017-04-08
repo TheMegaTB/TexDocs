@@ -20,6 +20,7 @@ export default class EditorContent extends React.Component {
             loaded: false
         };
 
+        this.onExternalCursorChange = this.onExternalCursorChange.bind(this);
         this.onExternalChange = this.onExternalChange.bind(this);
         this.onChange = (editorState) => {
             const editor = this;
@@ -55,7 +56,7 @@ export default class EditorContent extends React.Component {
 
         const start = getIndex(selection.getStartKey(), selection.getStartOffset());
         const end = getIndex(selection.getEndKey(), selection.getEndOffset());
-        this.cursor.setCaret(start + ',' + end);
+        this.cursor.setCaret(start, end, selection.getIsBackward());
     }
 
     handleKeyCommand(command) {
@@ -95,18 +96,55 @@ export default class EditorContent extends React.Component {
         return true;
     }
 
+    onExternalCursorChange(data) {
+        console.log("CURSOR UPDATE", data);
+        this.setState({
+            editorState: EditorState.set(this.state.editorState, {decorator: this.getDecorator()})
+        });
+    }
+
+    getDecorator() {
+        const rawCursors = this.cursor.getCursors();
+        const cursors = {};
+        const rawText = this.state.editorState.getCurrentContent().getPlainText();
+        const blocks = this.state.editorState.getCurrentContent().getBlocksAsArray();
+
+        // TODO Beginning and end of the line doesn't work yet
+        Object.keys(rawCursors).forEach((offset) => {
+            const textBefore = rawText.substr(0, offset);
+
+            const blockIndex = textBefore.split(/\r\n|\r|\n/).length - 1;
+            const blockKey = blocks[blockIndex].getKey();
+
+            const lastNewline = textBefore.lastIndexOf('\n');
+            const localOffset = lastNewline > -1 ? offset - lastNewline : offset;
+
+            if (!cursors[blockKey]) cursors[blockKey] = {};
+            cursors[blockKey][localOffset] = rawCursors[offset];
+        });
+
+        return new PrismDecorator({defaultSyntax: 'latex', filter: () => true}, cursors);
+    }
+
     onDocumentLoad(collaborativeString) {
         this.collaborativeString = collaborativeString;
 
-        // const decorator = new MultiDecorator([
-        //     new PrismDecorator({defaultSyntax: 'latex', filter: () => true}),
-        //     customDecorator
-        // ]);
-        const decorator = new PrismDecorator({defaultSyntax: 'latex', filter: () => true});
         const contentState = ContentState.createFromText(this.collaborativeString.toString());
 
+        // const cursors = {};
+        // cursors[contentState.getBlocksAsArray()[0].getKey()] = {
+        //     5: {
+        //         name: 'Til Blechschmidt',
+        //         color: 'orange'
+        //     },
+        //     10: {
+        //         name: 'Noah Peeters',
+        //         color: 'rgb(31, 161, 93)'
+        //     }
+        // };
+
         this.setState({
-            editorState: EditorState.createWithContent(contentState, decorator),
+            editorState: EditorState.createWithContent(contentState, this.getDecorator()),
             loaded: true
         });
     }
@@ -147,9 +185,9 @@ export default class EditorContent extends React.Component {
     componentWillMount() {
         const document = this.props.document;
         const collabString = document.getModel().getRoot().get(DOC_CONTENT_ID);
-        this.onDocumentLoad(collabString);
 
-        this.cursor = new Cursor(this.props.document, this.props.sID);
+        this.cursor = new Cursor(this.props.document, this.props.sID, this.onExternalCursorChange);
+        this.onDocumentLoad(collabString);
 
         collabString.addEventListener(window.gapi.drive.realtime.EventType.TEXT_INSERTED, this.onExternalChange);
         collabString.addEventListener(window.gapi.drive.realtime.EventType.TEXT_DELETED, this.onExternalChange);

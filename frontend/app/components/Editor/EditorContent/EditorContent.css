@@ -2,13 +2,13 @@
     height: 19px;
     width: 0;
     border-left: 2px solid;
-    border-color: rgb(31, 161, 93);
+    /*border-color: rgb(31, 161, 93);*/
     font-size: 0;
     position: absolute;
 }
 
 .caret:not(:hover):after {
-    background-color: rgb(31, 161, 93);
+    /*background-color: rgb(31, 161, 93);*/
     width: 6px;
     height: 6px;
     position: absolute;
@@ -24,7 +24,7 @@
     width: auto;
     white-space: nowrap;
     font-size: 10px;
-    background-color: rgb(31, 161, 93);
+    /*background-color: rgb(31, 161, 93);*/
     color: white;
     padding: 2px;
     content: attr(data-caret)

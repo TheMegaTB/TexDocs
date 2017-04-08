@@ -9,9 +9,9 @@
     display: none;
 }
 
-#page-container {
-    background: transparent none !important;
-}
+/*#page-container {*/
+    /*background: transparent none !important;*/
+/*}*/
 
 .SplitPane {
     height: calc(100% - 48px - 68px) !important;

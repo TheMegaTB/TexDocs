@@ -37,8 +37,30 @@ function defaultRender(props) {
         className: 'prism-token token ' + props.type
     });
 
-    const content = props.caret ? [<span key='caret' data-caret={props.caret}
-                                         className="caret"/>, ...props.children] : props.children;
+    let content;
+    if (props.caret) {
+        content = [
+            <span key='caret' data-caret={props.caret.name} data-caret-color={props.offsetKey}
+                  className="caret"/>,
+            <style key={'caret-style-' + props.offsetKey} dangerouslySetInnerHTML={{__html: `
+                .caret[data-caret-color="` + props.offsetKey + `"] {
+                    border-color: ` + props.caret.color + `;
+                }
+
+                    .caret[data-caret-color="` + props.offsetKey + `"]:not(:hover):after {
+                    background-color: ` + props.caret.color + `;
+                }
+
+                    .caret[data-caret-color="` + props.offsetKey + `"]:after {
+                    background-color: ` + props.caret.color + `;
+                }
+            `}} />,
+            ...props.children
+        ]
+    } else {
+        content = props.children;
+    }
+
     delete props.caret;
     delete props.contentState;
     delete props.decoratedText;

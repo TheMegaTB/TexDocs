@@ -6,7 +6,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 // Load components
 import App from "./components/App/App";
-import Authentication from "./components/Authentication/Authentication";
 
 // Load API functions
 import {authorize} from './api/google';

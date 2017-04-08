@@ -3,11 +3,12 @@ import * as Prism from "prismjs";
 
 import PrismOptions from "./PrismDecoratorOptions";
 
-var KEY_SEPARATOR = '-';
+const KEY_SEPARATOR = '-';
 
-function PrismDecorator(options) {
+function PrismDecorator(options, carets) {
     this.options = PrismOptions(options || {});
     this.highlighted = {};
+    this.carets = carets;
 }
 
 /**
@@ -37,10 +38,7 @@ PrismDecorator.prototype.getDecorations = function(block) {
         return Immutable.List(decorations);
     }
 
-    const carets = {
-        5: 'Me!',
-        30: 'You!'
-    };
+    const carets = this.carets.hasOwnProperty(blockKey) ? this.carets[blockKey] : {};
 
     // Parse text using Prism
     const grammar = Prism.languages[syntax];
@@ -58,11 +56,11 @@ PrismDecorator.prototype.getDecorations = function(block) {
 
     if (lastCaret === 0) tokenParts.push([0, blockText.length]);
 
-    const splitToken = (start, end, token, caret = false, name) => {
+    const splitToken = (start, end, token, caret = false, caretAttributes) => {
         const storeToken = (tokenId) => {
             if (caret) {
                 const newToken = Object.assign({}, token);
-                newToken.caret = name;
+                newToken.caret = caretAttributes;
                 this.highlighted[blockKey][tokenId] = newToken;
             } else
                 this.highlighted[blockKey][tokenId] = token;
@@ -75,7 +73,7 @@ PrismDecorator.prototype.getDecorations = function(block) {
 
             const splitLoc = part[1];
             const tokenId = 'tok' + start;
-            const resultId = blockKey + '-' + tokenId;
+            const resultId = blockKey + KEY_SEPARATOR + tokenId;
 
             if (part[0] > start && part[0] < end) {
                 storeToken(tokenId);
@@ -90,7 +88,7 @@ PrismDecorator.prototype.getDecorations = function(block) {
         }
 
         const tokenId = 'tok' + start;
-        const resultId = blockKey + '-' + tokenId;
+        const resultId = blockKey + KEY_SEPARATOR + tokenId;
         storeToken(tokenId);
         occupySlice(decorations, start, end, resultId);
     };

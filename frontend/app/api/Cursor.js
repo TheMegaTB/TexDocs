@@ -1,16 +1,35 @@
 import {DOC_CURSORS_ID, CURSOR_WATCHDOG_INTERVAL, CURSOR_TIMEOUT} from "../const";
 
-export let Cursor = function (document, sessionID) {
+export let Cursor = function (document, sessionID, onExternalChange) {
 
     this.doc = document;
     this.collaborativeMap = document.getModel().getRoot().get(DOC_CURSORS_ID);
     this.id = sessionID;
 
     this.init = () => {
+        const caret = document.getModel().createMap({
+            start: 0,
+            end: 0,
+            backward: false
+        });
         this.collaborativeMap.set(this.id, this.doc.getModel().createMap({
-            caret: '0,0',
+            caret: caret,
             lastUpdate: (new Date()).getTime(),
         }));
+
+        if (typeof onExternalChange === 'function') {
+            this.collaborativeMap.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, (data) => {
+                const cursors = data.target.items();
+                cursors.forEach((item) => {
+                    const sID = item[0];
+                    if (sID !== sessionID) {
+                        const caret = item[1].get('caret');
+                        caret.removeAllEventListeners();
+                        caret.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, onExternalChange);
+                    }
+                });
+            });
+        }
 
         const cursor = this;
         this.doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_LEFT, (event) => {
@@ -18,9 +37,13 @@ export let Cursor = function (document, sessionID) {
         });
     };
 
-    this.setCaret = (index) => {
+    this.setCaret = (start, end, backward) => {
         let state = this.collaborativeMap.get(this.id);
-        state.set('caret', index);
+        const caret = state.get('caret');
+        caret.set('start', start);
+        caret.set('end', end);
+        caret.set('backward', backward);
+        state.set('caret', caret);
         this.collaborativeMap.set(this.id, state);
     };
 
@@ -30,8 +53,6 @@ export let Cursor = function (document, sessionID) {
         this.collaborativeMap.set(this.id, state);
 
         this.cleanup();
-
-        console.log(this.getCursors());
     };
 
     this.cleanup = (id) => {
@@ -47,7 +68,22 @@ export let Cursor = function (document, sessionID) {
     };
 
     this.getCursors = () => {
-        return this.collaborativeMap.items().map((item) => item[1].get('caret'));
+        const cursors = {};
+        const collaborators = {};
+        const sessionID = this.id;
+
+        this.doc.getCollaborators().forEach((collab) => collaborators[collab.sessionId] = collab);
+        this.collaborativeMap.items().forEach((item) => {
+            const sID = item[0];
+            if (sID !== sessionID && collaborators[sID]) {
+                cursors[item[1].get('caret').get('start')] = {
+                    name: collaborators[sID].displayName,
+                    color: collaborators[sID].color
+                }
+            }
+        });
+
+        return cursors;
     };
 
 
