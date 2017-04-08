@@ -4,53 +4,20 @@ import {Map} from "immutable";
 import {connect} from "react-redux";
 import {FlatButton} from "material-ui";
 import Icon from "material-ui/svg-icons/action/list";
+import Share from 'material-ui/svg-icons/social/share';
+import ExpandMore from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import {fullWhite} from 'material-ui/styles/colors';
 
-import Popover, {PopoverAnimationVertical} from "material-ui/Popover";
-import Menu from "material-ui/Menu";
-import MenuItem from "material-ui/MenuItem";
 
-
-import "./menubar.css";
-
-const menuBarFontStyle = {
-    fontSize: 13,
-    color: '#757575'
-};
-
-const EditorButton = (props) =>
-    <FlatButton onTouchTap={props.onTouchTap} style={{height: '32px', lineHeight: '32px', minWidth: '45px'}}
-                label={props.label} labelStyle={Object.assign({textTransform: 'capitalize'}, menuBarFontStyle)}/>;
+import "./EditorMenubar.css";
+import EditorMenubarControls from "./EditorMenubarControls/EditorMenubarControls";
 
 const TexDocsButton = () =>
     <div className="tex-docs-button">
         <Icon color='white' style={{width: '60%', height: '100%'}}/>
     </div>;
 
-class Editor extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            open: false,
-        };
-    }
-
-    handleTouchTap = (event) => {
-        // This prevents ghost click.
-        event.preventDefault();
-
-        this.setState({
-            open: true,
-            anchorEl: event.currentTarget,
-        });
-    };
-
-    handleRequestClose = () => {
-        this.setState({
-            open: false,
-        });
-    };
-
+class EditorMenubar extends Component {
     componentWillMount() {
         loadDocumentMetadata(this.context.store, this.props.docID);
     }
@@ -58,6 +25,13 @@ class Editor extends Component {
     render() {
         const docState = this.props.docState;
         const attributes = docState.get('attributes');
+        const ids = [];
+        const collaborators = this.props.collaborators.filter((collaborator) => {
+            for (let id in ids)
+                if (ids.hasOwnProperty(id) && ids[id] === collaborator.userId) return false;
+            ids.push(collaborator.userId);
+            return true;
+        });
         return (
             <div className="menubar">
                 <TexDocsButton/>
@@ -70,33 +44,43 @@ class Editor extends Component {
                     </div>
                     <div>
                         <div className="puush"/>
-                        <div className="menubar-buttons">
-                            <EditorButton label="File" onTouchTap={this.handleTouchTap}/>
-                            <Popover
-                                open={this.state.open}
-                                anchorEl={this.state.anchorEl}
-                                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                                targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                                onRequestClose={this.handleRequestClose}
-                                animation={PopoverAnimationVertical}
-                                useLayerForClickAway={false}
-                            >
-                                <Menu desktop={true} width={256}>
-                                    <MenuItem primaryText="Open" secondaryText="&#8984;O"/>
-                                    <MenuItem primaryText="Paste in place" secondaryText="&#8679;&#8984;V"/>
-                                    <MenuItem primaryText="Research" secondaryText="&#8997;&#8679;&#8984;I"/>
-                                </Menu>
-                            </Popover>
-                            <EditorButton label="Edit"/>
-                            <EditorButton label="View"/>
-                            <EditorButton label="Insert"/>
-                            <EditorButton label="Format"/>
-                            <EditorButton label="Tools"/>
-                            <EditorButton label="Table"/>
-                            <EditorButton label="Add-ons"/>
-                            <EditorButton label="Help"/>
-                            <span className="last-edit" style={menuBarFontStyle}>{attributes.get('lastEdit')}</span>
+                        <div className="menubar-bottom">
+                            <EditorMenubarControls/>
                         </div>
+                    </div>
+                </div>
+                <div className="container" style={{marginLeft: 'auto'}}>
+                    <div>
+                        <FlatButton
+                            label={docState.get('user').get('email')}
+                            labelPosition="before"
+                            labelStyle={{textTransform: 'lowercase', fontSize: 10}}
+                            style={{height: '20px', lineHeight: '20px'}}
+                            icon={<ExpandMore />}
+                        />
+                        <div className="puush" />
+                    </div>
+                    <div style={{justifyContent: 'flex-end', flexDirection: 'row', marginBottom: 5, marginRight: 24}}>
+                        <div className="puush"/>
+                        <div className="menubar-collaborators">
+                            {collaborators.map((collaborator) => {
+                                if (!collaborator.isMe)
+                                    return <div className="collaborator" key={collaborator.sessionId} >
+                                        <div className="crop">
+                                            <img src={collaborator.photoUrl}/>
+                                        </div>
+                                        <div className="color-bar" style={{backgroundColor: collaborator.color}}/>
+                                    </div>;
+                            })}
+                        </div>
+                        <FlatButton
+                            backgroundColor="#4D90FE"
+                            hoverColor="#42A5F5"
+                            icon={<Share color={fullWhite} />}
+                            labelStyle={{fontSize: 13}}
+                            style={{height: '29px', lineHeight: '29px', minWidth: '78px', color: fullWhite, whiteSpace: 'nowrap', display: 'inline-block'}}
+                            label="Share"
+                        />
                     </div>
                 </div>
             </div>
@@ -104,11 +88,11 @@ class Editor extends Component {
     }
 }
 
-Editor.contextTypes = {
+EditorMenubar.contextTypes = {
     store: React.PropTypes.object
 };
 
-Editor.propTypes = {
+EditorMenubar.propTypes = {
     docState: PropTypes.instanceOf(Map).isRequired
 };
 
@@ -120,4 +104,4 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps
-)(Editor);
+)(EditorMenubar);

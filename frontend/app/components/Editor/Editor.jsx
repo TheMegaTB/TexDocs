@@ -30,9 +30,10 @@ class Editor extends Component {
         const documentID = this.props.match.params.id;
         const docState = this.props.docState;
         const attributes = docState.get('attributes');
+        const collaborators = this.document ? this.document.getCollaborators() : [];
         return (
             <div>
-                <EditorMenubar docID={documentID} />
+                <EditorMenubar docID={documentID} collaborators={collaborators}/>
                 <div style={{background: '#eee', height: 'calc(100% - 68px)'}}>
                     <EditorToolbar/>
                     <div style={{height: 'calc(100% - 48px - 68px)'}}>

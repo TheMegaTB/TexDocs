@@ -1,0 +1,90 @@
+.menubar {
+    width: 100%;
+    height: 68px;
+    flex-direction: row;
+    display: flex;
+}
+
+.menubar-title {
+    font-size: 20px;
+    padding-left: 15px;
+    line-height: 42px;
+}
+
+.menubar > .container {
+    /*width: calc(100% - 52px - 15px - 10px);*/
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+}
+
+.menubar > .container > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.puush {
+    flex: 1;
+}
+
+.last-edit {
+    padding-left: 15px;
+}
+
+.tex-docs-button {
+    background-color: #FF5722;
+    height: 100%;
+    width: 52px;
+    text-align: center;
+}
+
+.menubar-bottom {
+    display:-webkit-flex;
+    display:flex;
+    list-style-type:none;
+    padding:0;
+    justify-content:flex-end;
+}
+
+.menubar-buttons {
+    margin-right:auto;
+}
+
+.menubar-collaborators {
+    padding-right: 19px;
+}
+
+.collaborator {
+    height: 32px;
+    display: inline-block;
+    padding-right: 3px;
+}
+
+.collaborator > .crop {
+    height: 26px;
+    width: 26px;
+    position: relative;
+    overflow: hidden;
+}
+
+.collaborator > .crop > img {
+    height: 26px;
+    width: 26px;
+    position: absolute;
+    animation-name: collaborator-image-popup;
+    animation-duration: 0.5s;
+    /*bottom: -26px;*/
+    /*transition: bottom 0.5s ease-out;*/
+}
+
+.collaborator > .color-bar {
+    height: 4px;
+    margin: 1px 0;
+}
+
+@keyframes collaborator-image-popup {
+    from {bottom: -26px;}
+    to {bottom: 0;}
+}
