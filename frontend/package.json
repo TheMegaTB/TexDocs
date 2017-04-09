@@ -23,6 +23,7 @@
     "draft-js-code": "^0.2.0",
     "immutable": "^3.8.1",
     "material-ui": "^0.17.1",
+    "pdfjs-dist": "^1.8.175",
     "prismjs": "latest",
     "react": "15.x",
     "react-custom-scrollbars": "^4.0.2",
@@ -32,7 +33,8 @@
     "react-router-dom": "^4.0.0",
     "react-split-pane": "^0.1.61",
     "react-tap-event-plugin": "^2.0.1",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "saiku-react-pdfjs": "^1.0.1"
   },
   "devDependencies": {
     "babel-core": "6.x",

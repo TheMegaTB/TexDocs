@@ -15,6 +15,7 @@ import "./Editor.css";
 import "../../static/output/base.min.css";
 import "../../static/output/fancy.min.css";
 import "../../static/output/Math.css";
+import PDFView from "./PDFView/PDFView";
 
 class Editor extends Component {
     componentWillMount() {
@@ -65,8 +66,8 @@ class Editor extends Component {
                                     // Duration for hide animation in ms.
                                     autoHideDuration={200}
                                 >
-                                    <div
-                                        dangerouslySetInnerHTML={{__html: require("raw-loader!../../static/output/Math.html")}}/>
+
+                                    <PDFView scale={1.5} />
                                 </Scrollbars>
                             </div>
 
