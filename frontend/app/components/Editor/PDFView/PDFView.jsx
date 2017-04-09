@@ -18,6 +18,10 @@ class Page extends Component {
     constructor(args) {
         super(args);
 
+        this.state = {
+            height: 0
+        };
+
         this.renderPage = this.renderPage.bind(this);
         this.updatePage = this.updatePage.bind(this);
     }
@@ -26,13 +30,18 @@ class Page extends Component {
         const container = this;
 
         this.props.pdf.getPage(this.props.page).then((page) => {
-            const viewport = page.getViewport(this.props.width / page.getViewport(1.0).width);
+            const scalingFactor = this.props.width / page.getViewport(1.0).width;
+            const viewport = page.getViewport(scalingFactor * 2);
 
             // Prepare canvas using PDF page dimensions
             const canvas = container.canvas;
             const context = canvas.getContext('2d');
             canvas.height = viewport.height;
             canvas.width = viewport.width;
+
+            container.setState({
+                height: page.getViewport(scalingFactor).height
+            });
 
             // Render PDF page into canvas context
             const renderContext = {
@@ -53,8 +62,9 @@ class Page extends Component {
         this.renderTimeout = setTimeout(this.renderPage, RENDER_DELAY);
     }
 
-    componentDidUpdate() {
-        this.updatePage();
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.width !== prevProps.width)
+            this.updatePage();
     }
 
     componentDidMount() {
@@ -63,7 +73,7 @@ class Page extends Component {
 
     render() {
         return (
-            <Paper className="pdf-paper" zDepth={2} style={{width: this.props.width}}>
+            <Paper className="pdf-paper" zDepth={2} style={{width: this.props.width, height: this.state.height}}>
                 <canvas ref={(canvas) => {
                     this.canvas = canvas;
                 }}/>

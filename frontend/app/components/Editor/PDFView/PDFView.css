@@ -10,6 +10,8 @@
     margin-right: auto;
     display: block;
     transition: opacity 0.25s ease-in-out;
+    transform: scale(0.5, 0.5);
+    transform-origin: 0 0;
 }
 
 .pdf-paper > canvas.invalid {
