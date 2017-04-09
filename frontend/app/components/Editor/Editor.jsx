@@ -11,10 +11,6 @@ import {Scrollbars} from "react-custom-scrollbars";
 import SplitPane from "react-split-pane";
 
 import "./Editor.css";
-
-import "../../static/output/base.min.css";
-import "../../static/output/fancy.min.css";
-import "../../static/output/Math.css";
 import PDFView from "./PDFView/PDFView";
 
 class Editor extends Component {
@@ -49,28 +45,15 @@ class Editor extends Component {
                                     // Duration for hide animation in ms.
                                     autoHideDuration={200}
                                 >
-                                    <Paper className="paper" zDepth={2}>
-                                        {this.document && docState.get('loaded')
-                                            ? <EditorContent document={this.document} sID={docState.get('sessionID')}/>
-                                            : <Loader text="Loading document"/>}
-                                    </Paper>
+                                    {this.document && docState.get('loaded')
+                                        ? <Paper className="paper" zDepth={2}><EditorContent document={this.document}
+                                                                                             sID={docState.get('sessionID')}/></Paper>
+                                        : <Loader text="Loading document"/>}
                                 </Scrollbars>
                             </div>
                             <div>
-                                <Scrollbars
-                                    style={{height: '100%'}}
-                                    // This will activate auto hide
-                                    autoHide
-                                    // Hide delay in ms
-                                    autoHideTimeout={1000}
-                                    // Duration for hide animation in ms.
-                                    autoHideDuration={200}
-                                >
-
-                                    <PDFView scale={1.5} />
-                                </Scrollbars>
+                                <PDFView pdf="/static/output/Math.pdf"/>
                             </div>
-
                         </SplitPane>
                     </div>
                 </div>

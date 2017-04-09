@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
-const OpenBrowserPlugin = require('open-browser-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   devServer: {
@@ -35,6 +35,9 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+      new CopyWebpackPlugin([
+          {from: 'node_modules/pdfjs-dist/build/pdf.worker.js', to: 'pdf.worker.js'}
+      ])
     // new OpenBrowserPlugin({ url: 'http://localhost:8080' })
   ]
 };

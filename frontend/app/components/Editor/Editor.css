@@ -1,7 +1,7 @@
 .paper {
-    margin: 20px auto;
+    margin: 20px 40px;
     padding: 20px;
-    max-width: 800px;
+    /*max-width: 800px;*/
     min-height: 80%;
 }
 
@@ -61,10 +61,10 @@
     border-right: 5px solid rgba(0, 0, 0, 0.5);
 }
 
-Resizer.disabled {
+.Resizer.disabled {
     cursor: not-allowed;
 }
 
-Resizer.disabled:hover {
+.Resizer.disabled:hover {
     border-color: transparent;
 }
