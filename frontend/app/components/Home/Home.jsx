@@ -1,5 +1,5 @@
 import React from "react";
-import {createDocument} from "../../api/google";
+import NoDocumentPopup from "../NoDocumentPopup/NoDocumentPopup";
 
 export default class App extends React.Component {
     constructor(props) {
@@ -7,14 +7,8 @@ export default class App extends React.Component {
     }
 
     render() {
-        const create = () => {
-            createDocument("SomeTexDoc", (doc) => {
-                this.props.history.push('/d/' + doc.id);
-            });
-        };
         return <div>
-            This is the home!
-            <button onClick={create}>Create file</button>
+            <NoDocumentPopup history={this.props.history} title="No document opened." text="Choose one of the following options to get started."/>
         </div>;
     }
 }

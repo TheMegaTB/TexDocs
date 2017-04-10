@@ -13,15 +13,25 @@ import SplitPane from "react-split-pane";
 import "./Editor.css";
 import TexRenderer from "./TexRenderer/TexRenderer";
 import {DOC_CONTENT_ID} from "../../const";
-// import PDFView from "./TexRenderer/PDFView/PDFView";
 
 class Editor extends Component {
-    componentWillMount() {
+    constructor(args) {
+        super(args);
+
+        this.state = {
+            loaded: false
+        }
+    }
+
+    componentDidMount() {
         const editor = this;
         const store = this.context.store;
         const documentID = this.props.match.params.id;
         loadDocument(store, documentID, (doc) => {
             editor.document = doc;
+            editor.setState({
+                loaded: true
+            });
         });
     }
 
@@ -30,7 +40,6 @@ class Editor extends Component {
         const docState = this.props.docState;
         const attributes = docState.get('attributes');
         const collaborators = this.document ? this.document.getCollaborators() : [];
-        const docContent = this.document ? this.document.getModel().getRoot().get(DOC_CONTENT_ID) : '';
         return (
             <div>
                 <EditorMenubar docID={documentID} collaborators={collaborators}/>

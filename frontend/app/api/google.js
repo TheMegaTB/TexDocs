@@ -46,7 +46,8 @@ function refreshToken(cb) {
         client_id: CLIENT_ID,
         scope: SCOPES,
         immediate: true
-    }, () => {
+    }, (res) => {
+        window.access_token = res.access_token;
         if (typeof cb === 'function') cb();
     });
 }
@@ -83,7 +84,7 @@ function onAuth(store, loadCB) {
 }
 
 export function authorize(store, loadCB, authCB) {
-    window.gapi.load('auth2,auth:client,drive-realtime,drive-share', function () {
+    window.gapi.load('auth2,auth:client,drive-realtime,drive-share,picker', function () {
         window.auth2 = window.gapi.auth2.init({
             client_id: CLIENT_ID,
             scope: 'profile email openid ' + SCOPES.join(' ')

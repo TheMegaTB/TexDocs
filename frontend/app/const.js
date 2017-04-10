@@ -18,7 +18,8 @@ export const TOKEN_REFRESH_INT = 1800000; // 30 minutes
 export const CLIENT_ID = '367816881553-mnu299ct2iokf5vhbg9t07dvchg342g4.apps.googleusercontent.com';
 export const SCOPES = [
     'https://www.googleapis.com/auth/drive.install',
-    'https://www.googleapis.com/auth/drive.file'
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/drive.readonly'
 ];
 
 export const RENDER_DELAY = 250;
