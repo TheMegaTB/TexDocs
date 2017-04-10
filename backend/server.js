@@ -34,20 +34,32 @@ wsServer.on('request', function(request) {
     // all messages from users here.
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
-            userDir.then((dir) => {
-                fs.writeFile(path.join(dir, 'tmp.tex'), message.utf8Data).then(
-                    generatePDF(dir).then((log) => {
-                        // TODO Send log and linting data to client
-                        fs.readFile(path.join(dir, 'tmp.pdf')).then((data) => {
-                            connection.send(data, {binary: true});
-                        });
-                    })
-                );
-            });
+            const data = JSON.parse(message.utf8Data);
+
+            switch (data.type) {
+                case 'texSource':
+                    userDir.then((dir) => {
+                        fs.writeFile(path.join(dir, 'tmp.tex'), data.tex).then(
+                            generatePDF(dir).then((log) => {
+                                // TODO Send log and linting data to client
+                                fs.readFile(path.join(dir, 'tmp.pdf')).then((data) => {
+                                    connection.send(data, {binary: true});
+                                    console.log('processed request for', dir);
+                                });
+                            })
+                        );
+                    });
+                    break;
+                case 'getTime':
+                    break;
+                default:
+                    console.log('unknown request', data);
+                    break;
+            }
         }
     });
 
     connection.on('close', function(connection) {
-        // close user connection
+        // TODO Clean up tmp directory
     });
 });
