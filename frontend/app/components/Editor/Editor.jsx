@@ -13,6 +13,7 @@ import SplitPane from "react-split-pane";
 import "./Editor.css";
 import TexRenderer from "./TexRenderer/TexRenderer";
 import {DOC_CONTENT_ID} from "../../const";
+import EditorContentNew from "./EditorContentNew/EditorContentNew";
 
 class Editor extends Component {
     constructor(args) {
@@ -40,6 +41,8 @@ class Editor extends Component {
         const docState = this.props.docState;
         const attributes = docState.get('attributes');
         const collaborators = this.document ? this.document.getCollaborators() : [];
+        // const editor = <EditorContent document={this.document} sID={docState.get('sessionID')}/>;
+        const editor = <EditorContentNew document={this.document} />;
         return (
             <div>
                 <EditorMenubar docID={documentID} collaborators={collaborators}/>
@@ -58,8 +61,7 @@ class Editor extends Component {
                                     autoHideDuration={200}
                                 >
                                     {this.document && docState.get('loaded')
-                                        ? <Paper className="paper" zDepth={2}><EditorContent document={this.document}
-                                                                                             sID={docState.get('sessionID')}/></Paper>
+                                        ? <Paper className="paper" zDepth={2}>{editor}</Paper>
                                         : <Loader text="Loading document"/>}
                                 </Scrollbars>
                             </div>
