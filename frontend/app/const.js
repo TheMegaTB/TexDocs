@@ -23,4 +23,4 @@ export const SCOPES = [
 
 export const RENDER_DELAY = 250;
 
-export const WS_URL = "ws://127.0.0.1:1337/";
+export const WS_URL = "ws://" + window.location.hostname + ":1337/";
