@@ -108,7 +108,7 @@ PrismDecorator.prototype.getDecorations = function(block) {
     }
 
     tokenParts.forEach((caret) => {
-        if (caret[0] === offset) {
+        if (caret[0] === offset && caret[2]) {
             const tokens = Object.keys(this.highlighted[blockKey]);
             const tokenId = tokens[tokens.length - 1];
             const token = this.highlighted[blockKey][tokenId];
