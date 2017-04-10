@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "mz": "^2.6.0",
+    "rimraf": "^2.6.1",
     "websocket": "^1.0.24"
   }
 }

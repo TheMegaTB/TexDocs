@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('mz/fs');
 const exec = require('mz/child_process').exec;
 const execFile = require('mz/child_process').execFile;
+const rimraf = require('rimraf');
 
 
 function createTempDir() {
@@ -61,5 +62,12 @@ wsServer.on('request', function(request) {
 
     connection.on('close', function(connection) {
         // TODO Clean up tmp directory
+        userDir.then((dir) => {
+            if (dir.startsWith('/tmp')) {
+                rimraf(dir, function () {
+                    console.log('cleaned up directory', dir);
+                });
+            }
+        })
     });
 });
