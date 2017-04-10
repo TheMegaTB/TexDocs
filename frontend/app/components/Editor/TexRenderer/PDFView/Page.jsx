@@ -38,9 +38,9 @@ export default class Page extends Component {
             };
 
             const renderTask = page.render(renderContext);
-            renderTask.then(function () {
-                console.log('Page rendered');
-            });
+            // renderTask.then(function () {
+            //     console.log('Page rendered');
+            // });
         }, (err) => {
             console.log(err);
             throw err;

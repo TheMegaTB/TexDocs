@@ -37,7 +37,6 @@ wsServer.on('request', function(request) {
             userDir.then((dir) => {
                 fs.writeFile(path.join(dir, 'tmp.tex'), message.utf8Data).then(
                     generatePDF(dir).then((log) => {
-                        console.log(dir, log);
                         // TODO Send log and linting data to client
                         fs.readFile(path.join(dir, 'tmp.pdf')).then((data) => {
                             connection.send(data, {binary: true});

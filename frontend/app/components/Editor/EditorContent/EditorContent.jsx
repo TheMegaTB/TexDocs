@@ -120,8 +120,6 @@ export default class EditorContent extends React.Component {
                 const lastNewline = textBefore.lastIndexOf('\n');
                 const localOffset = lastNewline > -1 ? offset - lastNewline : offset;
 
-                console.log(offset, blockIndex, localOffset);
-
                 if (!cursors[blockKey]) cursors[blockKey] = {};
                 cursors[blockKey][localOffset] = rawCursors[offset];
             });

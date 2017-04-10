@@ -86,18 +86,20 @@ export function authorize(store, loadCB, authCB) {
     window.gapi.load('auth2,auth:client,drive-realtime,drive-share', function () {
         window.auth2 = window.gapi.auth2.init({
             client_id: CLIENT_ID,
-            scope: 'profile email openid ' + SCOPES.join(' '),
+            scope: 'profile email openid ' + SCOPES.join(' ')
         });
 
         // Sign the user in, and then retrieve their ID.
         auth2.then(function () {
             if (!auth2.isSignedIn.get()) {
                 authCB(() => {
-                    auth2.signIn().then(onAuth.bind(null, loadCB));
+                    auth2.signIn().then(onAuth.bind(null, store, loadCB));
                 });
             } else {
                 onAuth(store, loadCB);
             }
+        }, (err) => {
+            console.error("Could not authorize", err);
         });
     });
 }
