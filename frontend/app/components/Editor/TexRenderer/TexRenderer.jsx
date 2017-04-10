@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {DOC_CONTENT_ID, RENDER_DELAY, WS_URL} from "../../../const";
+import {DOC_CONTENT_ID, RENDER_DELAY, WS} from "../../../const";
 import PDFView from "./PDFView/PDFView";
 import Loader from "../../Loader/Loader";
 
@@ -7,24 +7,23 @@ export default class TexRenderer extends Component {
     constructor(args) {
         super(args);
 
-        this.state = {
-            wsOpen: false,
-            blob: undefined
-        };
-
         const renderer = this;
 
-        this.ws = new WebSocket(WS_URL);
-        this.ws.onopen = () => {
+        WS.onopen = () => {
             renderer.setState({
                 wsOpen: true
             });
         };
-        this.ws.onmessage = (e) => {
+        WS.onmessage = (e) => {
             const pdfBlob = new Blob([e.data], { type: "application/pdf" });
             renderer.setState({
                 blob: pdfBlob
             });
+        };
+
+        this.state = {
+            wsOpen: WS.readyState === 1,
+            blob: undefined
         };
 
         this.requestBlob = this.requestBlob.bind(this);
@@ -34,7 +33,7 @@ export default class TexRenderer extends Component {
 
     requestBlob(data) {
         if (data !== '')
-            this.ws.send(data);
+            WS.send(JSON.stringify({ type: 'texSource', tex: data.toString() }));
     }
 
     requestBlobFromDocument() {
@@ -64,7 +63,7 @@ export default class TexRenderer extends Component {
     render() {
         const pdfView = <PDFView pdf={this.state.blob} />;
         const connecting = <Loader text="Connecting to server"/>;
-        const receiving = <Loader text="Receiving document"/>;
+        const processing = <Loader text="Processing document"/>;
         const waitingForDoc = <Loader text="Waiting for document"/>;
 
         if (!this.state.wsOpen) {
@@ -72,7 +71,7 @@ export default class TexRenderer extends Component {
         } else if (!this.props.document) {
             return waitingForDoc;
         } else if (!this.state.blob) {
-            return receiving;
+            return processing;
         } else if (this.state.wsOpen && this.state.blob) {
             return pdfView;
         }

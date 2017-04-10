@@ -1,3 +1,9 @@
+import ServerDate from './ServerDate';
+
+export function getTime() {
+    return ServerDate.now();
+}
+
 export function secondsToString(seconds) {
     const numyears = Math.floor(seconds / 31536000);
     const numdays = Math.floor((seconds % 31536000) / 86400);

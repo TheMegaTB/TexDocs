@@ -1,4 +1,5 @@
 import {DOC_CURSORS_ID, CURSOR_WATCHDOG_INTERVAL, CURSOR_TIMEOUT} from "../const";
+import {getTime} from "./time";
 
 export let Cursor = function (document, sessionID, onExternalChange) {
 
@@ -14,7 +15,7 @@ export let Cursor = function (document, sessionID, onExternalChange) {
         });
         this.collaborativeMap.set(this.id, this.doc.getModel().createMap({
             caret: caret,
-            lastUpdate: (new Date()).getTime(),
+            lastUpdate: getTime(),
         }));
 
         if (typeof onExternalChange === 'function') {
@@ -49,7 +50,7 @@ export let Cursor = function (document, sessionID, onExternalChange) {
 
     this.tick = () => {
         let state = this.collaborativeMap.get(this.id);
-        state.set('lastUpdate', (new Date()).getTime());
+        state.set('lastUpdate', getTime());
         this.collaborativeMap.set(this.id, state);
 
         this.cleanup();
@@ -62,7 +63,7 @@ export let Cursor = function (document, sessionID, onExternalChange) {
             this.collaborativeMap.items().forEach((item) => {
                 const sID = item[0];
                 const state = item[1];
-                const delta = new Date() - state.get('lastUpdate');
+                const delta = getTime() - state.get('lastUpdate');
                 if (delta > CURSOR_TIMEOUT) this.collaborativeMap.delete(sID);
             });
     };
