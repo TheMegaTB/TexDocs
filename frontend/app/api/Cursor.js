@@ -49,6 +49,8 @@ export let Cursor = function (document, sessionID, onExternalChange) {
     };
 
     this.tick = () => {
+        if (!this.collaborativeMap.has(this.id))
+            this.init();
         let state = this.collaborativeMap.get(this.id);
         state.set('lastUpdate', getTime());
         this.collaborativeMap.set(this.id, state);
