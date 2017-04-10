@@ -11,7 +11,9 @@ import {Scrollbars} from "react-custom-scrollbars";
 import SplitPane from "react-split-pane";
 
 import "./Editor.css";
-import PDFView from "./PDFView/PDFView";
+import TexRenderer from "./TexRenderer/TexRenderer";
+import {DOC_CONTENT_ID} from "../../const";
+// import PDFView from "./TexRenderer/PDFView/PDFView";
 
 class Editor extends Component {
     componentWillMount() {
@@ -28,6 +30,7 @@ class Editor extends Component {
         const docState = this.props.docState;
         const attributes = docState.get('attributes');
         const collaborators = this.document ? this.document.getCollaborators() : [];
+        const docContent = this.document ? this.document.getModel().getRoot().get(DOC_CONTENT_ID) : '';
         return (
             <div>
                 <EditorMenubar docID={documentID} collaborators={collaborators}/>
@@ -52,7 +55,7 @@ class Editor extends Component {
                                 </Scrollbars>
                             </div>
                             <div>
-                                <PDFView pdf="/static/output/Math.pdf"/>
+                                <TexRenderer document={this.document}/>
                             </div>
                         </SplitPane>
                     </div>

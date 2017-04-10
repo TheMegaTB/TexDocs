@@ -1,0 +1,8 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "dependencies": {
+    "mz": "^2.6.0",
+    "websocket": "^1.0.24"
+  }
+}
