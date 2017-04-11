@@ -236,9 +236,17 @@ export default class EditorContentNew extends Component {
     }
 
     render() {
-        const highlightedContent = Prism.highlight(this.state.content, Prism.languages.latex);
         const tokenizedContent = Prism.tokenize(this.state.content, Prism.languages.latex);
-        console.log(tokenizedContent);
+        const tokenToElement = (token, id) => {
+            if (typeof token === 'string') return token;
+            if (token.content instanceof Array) return token.content.map(tokenToElement);
+            return React.createElement(
+                "span",
+                {key: id, className: 'prism-token token ' + token.type},
+                token.content
+            );
+        };
+        const children = tokenizedContent.map(tokenToElement);
         const editorWrapper = <div
                 className="editor-content"
                 contentEditable={true}
@@ -251,8 +259,7 @@ export default class EditorContentNew extends Component {
                 ref={(editorWrapper) => {
                     this.editorWrapper = editorWrapper
                 }}
-                dangerouslySetInnerHTML={{__html: highlightedContent}}
-            />;
+        >{children}</div>;
         return (
             editorWrapper
         );
