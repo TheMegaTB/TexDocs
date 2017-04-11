@@ -1,7 +1,6 @@
 .paper {
     margin: 20px 40px;
     padding: 20px;
-    /*max-width: 800px;*/
     min-height: 80%;
 }
 
@@ -9,12 +8,9 @@
     display: none;
 }
 
-/*#page-container {*/
-    /*background: transparent none !important;*/
-/*}*/
-
 .SplitPane {
     height: calc(100% - 48px - 68px) !important;
+    background-color: #eee;
 }
 
 .Pane.vertical {
