@@ -46,7 +46,6 @@ export default class AceEditorContent extends React.Component {
         if (!caret) return;
         const cursor = this.state.cursors[caret.sessionID];
         if (cursor) {
-            console.log('removing caret');
             this.aceEditor.editor.getSession().removeMarker(cursor.caret);
             this.aceEditor.editor.getSession().removeMarker(cursor.selection);
         }
