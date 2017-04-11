@@ -4,7 +4,7 @@ import AceEditor from 'react-ace';
 import brace from 'brace';
 
 import 'brace/mode/latex';
-import 'brace/theme/sqlserver';
+import 'brace/theme/tomorrow';
 import {DOC_CONTENT_ID} from "../../../const"; // So we could use it as the "theme" prop
 
 import './AceEditorContent.css';
@@ -17,7 +17,12 @@ const AceProps = {
     height: '100%',
     width: '100%',
     mode: 'latex',
-    theme: 'sqlserver'
+    theme: 'tomorrow',
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+    enableSnippets: true,
+    wrapEnabled: true,
+    highlightActiveLine: true
 };
 
 export default class AceEditorContent extends React.Component {

@@ -41,11 +41,6 @@ export let Cursor = function (document, sessionID, onExternalChange) {
         });
         this.doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_LEFT, (event) => {
             cursor.cleanup(event.collaborator.sessionId);
-            onExternalChange({
-                anchor: {},
-                lead: {},
-                sessonID: event.collaborator.sessionId
-            });
         });
     };
 
@@ -69,15 +64,28 @@ export let Cursor = function (document, sessionID, onExternalChange) {
     };
 
     this.cleanup = (id) => {
-        if (id)
+        if (id) {
             this.collaborativeMap.delete(id);
-        else
+            onExternalChange({
+                anchor: {},
+                lead: {},
+                sessionID: id
+            });
+        } else {
             this.collaborativeMap.items().forEach((item) => {
                 const sID = item[0];
                 const state = item[1];
                 const delta = getTime() - state.get('lastUpdate');
-                if (delta > CURSOR_TIMEOUT) this.collaborativeMap.delete(sID);
+                if (delta > CURSOR_TIMEOUT) {
+                    this.collaborativeMap.delete(sID);
+                    onExternalChange({
+                        anchor: {},
+                        lead: {},
+                        sessionID: sID
+                    });
+                }
             });
+        }
     };
 
     this.getCursor = (sessionID) => {
