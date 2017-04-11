@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "babel-runtime": "6.x",
+    "brace": "^0.10.0",
     "copy-webpack-plugin": "^4.0.1",
     "draft-js": "^0.10.0",
     "draft-js-code": "^0.2.0",
@@ -27,6 +28,7 @@
     "pdfjs-dist": "^1.8.175",
     "prismjs": "latest",
     "react": "15.x",
+    "react-ace": "^4.2.0",
     "react-custom-scrollbars": "^4.0.2",
     "react-dom": "15.x",
     "react-measure": "^1.4.6",

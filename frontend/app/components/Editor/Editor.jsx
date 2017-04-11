@@ -14,6 +14,7 @@ import "./Editor.css";
 import TexRenderer from "./TexRenderer/TexRenderer";
 import {DOC_CONTENT_ID} from "../../const";
 import EditorContentNew from "./EditorContentNew/EditorContentNew";
+import AceEditorContent from "./AceEditorContent/AceEditorContent";
 
 class Editor extends Component {
     constructor(args) {
@@ -41,8 +42,8 @@ class Editor extends Component {
         const docState = this.props.docState;
         const attributes = docState.get('attributes');
         const collaborators = this.document ? this.document.getCollaborators() : [];
-        // const editor = <EditorContent document={this.document} sID={docState.get('sessionID')}/>;
-        const editor = <EditorContentNew document={this.document} />;
+        // const editor = <Paper className="paper" zDepth={2}><EditorContent document={this.document} sID={docState.get('sessionID')}/></Paper>;
+        // const editor = <Paper className="paper" zDepth={2}><EditorContentNew document={this.document} /></Paper>;
         return (
             <div>
                 <EditorMenubar docID={documentID} collaborators={collaborators}/>
@@ -52,7 +53,7 @@ class Editor extends Component {
                         <SplitPane defaultSize="50%">
                             <div>
                                 {this.document && docState.get('loaded')
-                                    ? <Paper className="paper" zDepth={2}>{editor}</Paper>
+                                    ? <AceEditorContent document={this.document} sID={docState.get('sessionID')}/>
                                     : <Loader text="Loading document"/>}
                             </div>
                             <div>

@@ -9,9 +9,8 @@ export let Cursor = function (document, sessionID, onExternalChange) {
 
     this.init = () => {
         const caret = document.getModel().createMap({
-            start: 0,
-            end: 0,
-            backward: false
+            anchor: { row: 0, column: 0 },
+            lead: { row: 0, column: 0 }
         });
         this.collaborativeMap.set(this.id, this.doc.getModel().createMap({
             caret: caret,
@@ -24,26 +23,37 @@ export let Cursor = function (document, sessionID, onExternalChange) {
                 cursors.forEach((item) => {
                     const sID = item[0];
                     if (sID !== sessionID) {
+                        onExternalChange(this.getCursor(sID));
+
                         const caret = item[1].get('caret');
                         caret.removeAllEventListeners();
-                        caret.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, onExternalChange);
+                        caret.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, (e) => {
+                            onExternalChange(this.getCursor(e.sessionId));
+                        });
                     }
                 });
             });
         }
 
         const cursor = this;
+        this.doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_JOINED, (e) => {
+            onExternalChange(cursor.getCursor(e.collaborator.sessionId));
+        });
         this.doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_LEFT, (event) => {
             cursor.cleanup(event.collaborator.sessionId);
+            onExternalChange({
+                anchor: {},
+                lead: {},
+                sessonID: event.collaborator.sessionId
+            });
         });
     };
 
-    this.setCaret = (start, end, backward) => {
+    this.setCaret = (type, value) => {
+        if (type !== 'anchor' && type !== 'lead') return;
         let state = this.collaborativeMap.get(this.id);
         const caret = state.get('caret');
-        caret.set('start', start);
-        caret.set('end', end);
-        caret.set('backward', backward);
+        caret.set(type, value);
         state.set('caret', caret);
         this.collaborativeMap.set(this.id, state);
     };
@@ -70,19 +80,41 @@ export let Cursor = function (document, sessionID, onExternalChange) {
             });
     };
 
+    this.getCursor = (sessionID) => {
+        const collaborator = this.doc.getCollaborators().find((collab) => collab.sessionId === sessionID);
+        if (collaborator === undefined || !this.collaborativeMap.has(sessionID)) return;
+        const caret = this.collaborativeMap.get(sessionID).get('caret');
+
+        return {
+            anchor: caret.get('anchor'),
+            lead: caret.get('lead'),
+            name: collaborator.displayName,
+            color: collaborator.color,
+            sessionID: sessionID
+        }
+    };
+
     this.getCursors = () => {
         const cursors = {};
         const collaborators = {};
         const sessionID = this.id;
 
-        this.doc.getCollaborators().forEach((collab) => collaborators[collab.sessionId] = collab);
+        this.doc.getCollaborators().forEach((collab) => {
+            if (collab.sessionId !== sessionID)
+                collaborators[collab.sessionId] = collab
+        });
+
         this.collaborativeMap.items().forEach((item) => {
             const sID = item[0];
-            if (sID !== sessionID && collaborators[sID]) {
-                cursors[item[1].get('caret').get('start')] = {
+            const caret = item[1].get('caret');
+            if (collaborators[sID]) {
+                cursors[sID] = {
+                    anchor: caret.get('anchor'),
+                    lead: caret.get('lead'),
                     name: collaborators[sID].displayName,
-                    color: collaborators[sID].color
-                }
+                    color: collaborators[sID].color,
+                    sessionID: sID
+                };
             }
         });
 

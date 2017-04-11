@@ -4,6 +4,10 @@
     min-height: 80%;
 }
 
+.paper.ace-paper {
+    padding: 0;
+}
+
 #sidebar {
     display: none;
 }

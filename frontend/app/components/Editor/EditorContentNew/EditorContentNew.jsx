@@ -247,6 +247,7 @@ export default class EditorContentNew extends Component {
 
     render() {
         const children = Prism.tokenize(this.state.content, Prism.languages.latex).map(tokenToElement);
+        console.log(children);
         const editorWrapper = <div
                 className="editor-content"
                 contentEditable={true}
