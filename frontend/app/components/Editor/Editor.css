@@ -17,6 +17,10 @@
     height: calc(100% - 48px - 68px) !important;
 }
 
+.Pane.vertical {
+    overflow-y: scroll;
+}
+
 .Resizer {
     background: #000;
     opacity: .2;

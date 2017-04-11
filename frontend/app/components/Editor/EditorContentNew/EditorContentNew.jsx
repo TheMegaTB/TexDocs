@@ -5,6 +5,16 @@ import './EditorContent.css';
 import * as Prism from "prismjs";
 import "prismjs/components/prism-latex.min.js";
 
+function tokenToElement(token, id) {
+    if (typeof token === 'string') return token;
+    if (token.content instanceof Array) return token.content.map(tokenToElement);
+    return React.createElement(
+        "span",
+        {key: id, className: 'prism-token token ' + token.type},
+        token.content
+    );
+}
+
 function getCaretCharacterWithin(element) {
     let caret = {
         start: 0,
@@ -236,20 +246,11 @@ export default class EditorContentNew extends Component {
     }
 
     render() {
-        const tokenizedContent = Prism.tokenize(this.state.content, Prism.languages.latex);
-        const tokenToElement = (token, id) => {
-            if (typeof token === 'string') return token;
-            if (token.content instanceof Array) return token.content.map(tokenToElement);
-            return React.createElement(
-                "span",
-                {key: id, className: 'prism-token token ' + token.type},
-                token.content
-            );
-        };
-        const children = tokenizedContent.map(tokenToElement);
+        const children = Prism.tokenize(this.state.content, Prism.languages.latex).map(tokenToElement);
         const editorWrapper = <div
                 className="editor-content"
                 contentEditable={true}
+                suppressContentEditableWarning={true}
                 role="textbox"
                 spellCheck={false}
                 onKeyDown={this.onKeyDown}
@@ -260,6 +261,7 @@ export default class EditorContentNew extends Component {
                     this.editorWrapper = editorWrapper
                 }}
         >{children}</div>;
+
         return (
             editorWrapper
         );

@@ -51,19 +51,19 @@ class Editor extends Component {
                     <div style={{height: 'calc(100% - 48px - 68px)'}}>
                         <SplitPane defaultSize="50%">
                             <div>
-                                <Scrollbars
-                                    style={{height: '100%'}}
-                                    // This will activate auto hide
-                                    autoHide
-                                    // Hide delay in ms
-                                    autoHideTimeout={1000}
-                                    // Duration for hide animation in ms.
-                                    autoHideDuration={200}
-                                >
+                                {/*<Scrollbars*/}
+                                    {/*style={{height: '100%'}}*/}
+                                    {/*// This will activate auto hide*/}
+                                    {/*autoHide*/}
+                                    {/*// Hide delay in ms*/}
+                                    {/*autoHideTimeout={1000}*/}
+                                    {/*// Duration for hide animation in ms.*/}
+                                    {/*autoHideDuration={200}*/}
+                                {/*>*/}
                                     {this.document && docState.get('loaded')
                                         ? <Paper className="paper" zDepth={2}>{editor}</Paper>
                                         : <Loader text="Loading document"/>}
-                                </Scrollbars>
+                                {/*</Scrollbars>*/}
                             </div>
                             <div>
                                 <TexRenderer document={this.document}/>
