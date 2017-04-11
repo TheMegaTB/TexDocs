@@ -35,8 +35,10 @@ export default class PDFView extends Component {
                 ready: true
             });
         }, (err) => {
-            console.log(err);
-            throw err;
+            // Silently ignore errors
+            // TODO Make some kind of error pane that shows errors (including ones from the server)
+            // console.log(err);
+            // throw err;
         });
     }
 
