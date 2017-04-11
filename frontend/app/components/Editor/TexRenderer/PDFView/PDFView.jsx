@@ -25,7 +25,6 @@ export default class PDFView extends Component {
 
         this.updateDocument = this.updateDocument.bind(this);
         this.updateWidth = this.updateWidth.bind(this);
-        // this.scrollToPage = this.scrollToPage.bind(this);
     }
 
     renderDocument(doc) {
@@ -60,12 +59,6 @@ export default class PDFView extends Component {
         this.setState({width: e.width - 40, height: e.height});
     }
 
-    // scrollToPage(page) {
-    //     const scrollbars = this.scroll;
-    //     const distanceFromTop = page * (this.state.height / this.pdf.numPages + 20) + scrollbars.getClientHeight(); // 20 = margin between pages
-    //     scrollbars.scrollTop(distanceFromTop - 10);
-    // }
-
     componentDidUpdate(prevProps, nextState) {
         if (prevProps.pdf !== this.props.pdf)
             this.updateDocument();
@@ -82,19 +75,5 @@ export default class PDFView extends Component {
                     <Loader text="Loading PDF"/>}
             </div>
         </Measure>;
-        // return (
-        //     <Scrollbars style={{height: '100%'}} autoHide autoHideTimeout={1000} autoHideDuration={200}
-        //                 ref={(scroll) => {
-        //                     this.scroll = scroll;
-        //                 }}>
-        //         <Measure onMeasure={this.updateWidth}>
-        //             <div className="paper-wrapper">
-        //                 { pdfLoaded ? pages.map((page) => <Page key={page} pdf={this.pdf} page={page}
-        //                                                         width={this.state.width}/>) :
-        //                     <Loader text="Loading PDF"/>}
-        //             </div>
-        //         </Measure>
-        //     </Scrollbars>
-        // )
     }
 }
