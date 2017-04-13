@@ -8,36 +8,36 @@ export let Cursor = function (document, sessionID, onExternalChange) {
     this.id = sessionID;
 
     this.init = () => {
+        const cursor = this;
         const caret = document.getModel().createMap({
             anchor: { row: 0, column: 0 },
             lead: { row: 0, column: 0 }
         });
-        this.collaborativeMap.set(this.id, this.doc.getModel().createMap({
+        this.collaborativeMap.set(cursor.id, cursor.doc.getModel().createMap({
             caret: caret,
             lastUpdate: getTime(),
         }));
 
-        if (typeof onExternalChange === 'function') {
-            this.collaborativeMap.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, (data) => {
-                const cursors = data.target.items();
-                cursors.forEach((item) => {
-                    const sID = item[0];
-                    if (sID !== sessionID) {
-                        onExternalChange(this.getCursor(sID));
+        const registerEventListeners = (cursors) => {
+            cursors.forEach((item) => {
+                const sID = item[0];
+                if (sID !== sessionID) {
+                    onExternalChange(cursor.getCursor(sID));
 
-                        const caret = item[1].get('caret');
-                        caret.removeAllEventListeners();
-                        caret.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, (e) => {
-                            onExternalChange(this.getCursor(e.sessionId));
-                        });
-                    }
-                });
+                    const caret = item[1].get('caret');
+                    caret.removeAllEventListeners();
+                    caret.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, (e) => {
+                        onExternalChange(cursor.getCursor(e.sessionId));
+                    });
+                }
             });
-        }
+        };
 
-        const cursor = this;
+        this.collaborativeMap.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, (data) => {
+            registerEventListeners(data.target.items());
+        });
         this.doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_JOINED, (e) => {
-            onExternalChange(cursor.getCursor(e.collaborator.sessionId));
+            registerEventListeners(cursor.collaborativeMap.items());
         });
         this.doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_LEFT, (event) => {
             cursor.cleanup(event.collaborator.sessionId);
