@@ -1,5 +1,5 @@
 #!/bin/sh
-PREFIX="tmp"
+PREFIX="$2"
 
 TARGET_DIR="$1"
 LINTOUT="${PREFIX}.lint"

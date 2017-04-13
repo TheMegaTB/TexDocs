@@ -2,8 +2,11 @@
   "name": "backend",
   "version": "0.0.1",
   "dependencies": {
+    "express": "^4.15.2",
+    "express-error-handler": "^1.1.0",
     "mz": "^2.6.0",
     "rimraf": "^2.6.1",
+    "uuid": "^3.0.1",
     "websocket": "^1.0.24"
   }
 }
