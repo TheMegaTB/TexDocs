@@ -3,6 +3,42 @@ import { browserHistory } from 'react-router';
 
 import { Map } from 'immutable';
 
+function openDocumentCallback(history, cb, data) {
+    if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+        const doc = data[google.picker.Response.DOCUMENTS][0];
+        if (typeof cb === 'function') cb();
+        history.push('/d/' + doc.id);
+    }
+}
+
+export function openDocument(history, callback) {
+    // Create and render a Picker object for picking user Photos.
+    const view = new google.picker.View(google.picker.ViewId.DOCS);
+    view.setMimeTypes(MIME_TYPE);
+
+    const picker = new google.picker.PickerBuilder()
+        .addView(view)
+        .setOAuthToken(window.access_token)
+        .setCallback(openDocumentCallback.bind(null, history, callback))
+        .setSelectableMimeTypes(MIME_TYPE)
+        .build(); //setDeveloperKey(developerKey).
+    picker.setVisible(true);
+}
+
+export function createDocument(name, history) {
+    window.gapi.client.load('drive', 'v2', function () {
+        const insertHash = {
+            'resource': {
+                mimeType: MIME_TYPE,
+                title: name
+            }
+        };
+        window.gapi.client.drive.files.insert(insertHash).execute((doc) => {
+            history.push('/d/' + doc.id);
+        });
+    });
+}
+
 function onFileInitialize(model) {
     const string = model.createString(require("raw-loader!../static/templates/Generic.tex"));
     const cursors = model.createMap();
@@ -17,6 +53,10 @@ export function loadDocumentMetadata(store, documentID) {
         'method': 'GET',
     });
     request.execute(function(resp) {
+        if (resp.explicitlyTrashed) {
+            // TODO Improve this
+            alert("Document is in the trash!");
+        }
         store.dispatch({type: 'DOC_METADATA_LOADED', title: resp.title, time: resp.modifiedDate, user: resp.lastModifyingUserName});
     });
 }
@@ -27,18 +67,6 @@ export function loadDocument(store, documentID, onLoad) {
         onLoad(doc);
     };
     window.gapi.drive.realtime.load(documentID, onFileLoaded, onFileInitialize, onError);
-}
-
-export function createDocument(name, cb) {
-    window.gapi.client.load('drive', 'v2', function () {
-        const insertHash = {
-            'resource': {
-                mimeType: MIME_TYPE,
-                title: name
-            }
-        };
-        window.gapi.client.drive.files.insert(insertHash).execute(cb);
-    });
 }
 
 function refreshToken(cb) {

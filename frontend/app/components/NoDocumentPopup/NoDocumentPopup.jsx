@@ -1,12 +1,12 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {createDocument} from "../../api/google";
-import {MIME_TYPE} from "../../const";
+import {createDocument, openDocument} from "../../api/google";
+import {MIME_TYPE, NEW_DOC_NAME} from "../../const";
 
 import './NoDocumentPopup.css';
 
-export default class DialogExampleModal extends React.Component {
+class NoDocumentPopup extends React.Component {
     constructor(args) {
         super(args);
 
@@ -15,7 +15,6 @@ export default class DialogExampleModal extends React.Component {
         };
 
         this.createDocument = this.createDocument.bind(this);
-        this.openDocument = this.openDocument.bind(this);
         this.pickerCallback = this.pickerCallback.bind(this);
     }
 
@@ -28,9 +27,7 @@ export default class DialogExampleModal extends React.Component {
     };
 
     createDocument() {
-        createDocument("Untitled tex document", (doc) => {
-            this.props.history.push('/d/' + doc.id);
-        });
+        createDocument(NEW_DOC_NAME, this.props.history);
     }
 
     openDocument() {
@@ -47,14 +44,8 @@ export default class DialogExampleModal extends React.Component {
         picker.setVisible(true);
     }
 
-    // A simple callback implementation.
-    pickerCallback(data) {
-        if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
-            const doc = data[google.picker.Response.DOCUMENTS][0];
-            console.log(doc);
-            this.handleClose();
-            this.props.history.push('/d/' + doc.id);
-        }
+    pickerCallback() {
+        this.handleClose();
     }
 
     render() {
@@ -62,10 +53,10 @@ export default class DialogExampleModal extends React.Component {
             <FlatButton
                 label="Open"
                 primary={true}
-                onTouchTap={this.openDocument}
+                onTouchTap={openDocument.bind(null, this.context.router.history, this.pickerCallback)}
             />,
             <FlatButton
-                label="Create"
+                label="New"
                 primary={true}
                 onTouchTap={this.createDocument}
             />,
@@ -85,3 +76,9 @@ export default class DialogExampleModal extends React.Component {
         );
     }
 }
+
+NoDocumentPopup.contextTypes = {
+    router: React.PropTypes.object
+};
+
+export default NoDocumentPopup;

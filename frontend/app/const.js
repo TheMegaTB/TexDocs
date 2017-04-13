@@ -28,3 +28,5 @@ export const WS_URL = "ws://" + window.location.hostname + ":1337/";
 export const WS = new WebSocket(WS_URL);
 
 export const TIME_DEBUG = false;
+
+export const NEW_DOC_NAME = "Untitled tex document";

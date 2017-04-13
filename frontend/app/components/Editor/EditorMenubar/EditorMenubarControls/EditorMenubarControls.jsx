@@ -1,10 +1,12 @@
 import React, {Component, PropTypes} from "react";
 import {connect} from "react-redux";
+import {createDocument, openDocument} from '../../../../api/google';
 
 import {FlatButton} from "material-ui";
 import Popover, {PopoverAnimationVertical} from "material-ui/Popover";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
+import {NEW_DOC_NAME} from "../../../../const";
 
 const menuBarFontStyle = {
     fontSize: 13,
@@ -40,6 +42,16 @@ class EditorMenubarControls extends Component {
         });
     };
 
+    onFileOpen = () => {
+        this.handleRequestClose();
+        openDocument(this.context.router.history);
+    };
+
+    onFileCreate = () => {
+        this.handleRequestClose();
+        createDocument(NEW_DOC_NAME, this.context.router.history);
+    };
+
     render() {
         const docState = this.props.docState;
         const attributes = docState.get('attributes');
@@ -56,9 +68,10 @@ class EditorMenubarControls extends Component {
                     useLayerForClickAway={false}
                 >
                     <Menu desktop={true} width={256}>
-                        <MenuItem primaryText="Open" secondaryText="&#8984;O"/>
-                        <MenuItem primaryText="Paste in place" secondaryText="&#8679;&#8984;V"/>
-                        <MenuItem primaryText="Research" secondaryText="&#8997;&#8679;&#8984;I"/>
+                        <MenuItem primaryText="New" onTouchTap={this.onFileCreate}/>
+                        <MenuItem primaryText="Open" secondaryText="&#8984;O" onTouchTap={this.onFileOpen}/>
+                        {/*<MenuItem primaryText="Paste in place" secondaryText="&#8679;&#8984;V"/>*/}
+                        {/*<MenuItem primaryText="Research" secondaryText="&#8997;&#8679;&#8984;I"/>*/}
                     </Menu>
                 </Popover>
                 <EditorButton label="Edit"/>
@@ -76,7 +89,8 @@ class EditorMenubarControls extends Component {
 }
 
 EditorMenubarControls.contextTypes = {
-    store: React.PropTypes.object
+    store: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
 EditorMenubarControls.propTypes = {

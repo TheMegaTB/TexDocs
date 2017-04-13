@@ -50,7 +50,7 @@ export default class TexRenderer extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.document !== this.props.document) {
+        if (prevProps.document !== this.props.document && this.props.document) {
             this.getContent().addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, this.requestBlobFromDocument);
             this.getContent().addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, this.requestBlobFromDocument);
             this.requestBlobFromDocument();

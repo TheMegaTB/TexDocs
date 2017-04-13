@@ -18,8 +18,19 @@ const TexDocsButton = () =>
     </div>;
 
 class EditorMenubar extends Component {
-    componentWillMount() {
+    loadMetadata = () => {
+        // TODO Check
         loadDocumentMetadata(this.context.store, this.props.docID);
+    };
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.docID !== this.props.docID && this.props.docID) {
+            this.loadMetadata();
+        }
+    }
+
+    componentWillMount() {
+        this.loadMetadata();
     }
 
     render() {

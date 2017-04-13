@@ -1,5 +1,5 @@
 .picker {
-    z-index: 1500 !important;
+    z-index: 15000 !important;
     animation-name: picker-fadein;
     animation-duration: 0.5s;
 }
