@@ -22,8 +22,28 @@ const AceProps = {
     enableLiveAutocompletion: true,
     enableSnippets: true,
     wrapEnabled: true,
-    highlightActiveLine: true
+    highlightActiveLine: true,
+    fontSize: '15'
 };
+
+class SelectionStyle extends React.Component {
+    render() {
+        return (
+            <style key={'caret-style-' + this.props.id} dangerouslySetInnerHTML={{__html: `
+                .collab-caret.caret-color-${this.props.id} {
+                    background-color: ${this.props.color};
+                }
+                .collab-caret.caret-color-${this.props.id}:after {
+                    background-color: ${this.props.color};
+                    content: '${this.props.name}';
+                }
+                .collab-selection.caret-color-${this.props.id} {
+                    background-color: ${this.props.color};
+                }
+            `}} />
+        );
+    }
+}
 
 export default class AceEditorContent extends React.Component {
     constructor(args) {
@@ -71,16 +91,18 @@ export default class AceEditorContent extends React.Component {
                     selectionRange = new Range(caret.anchor.row, caret.anchor.column, caret.lead.row, caret.lead.column);
 
 
-                selectionID = this.aceEditor.editor.getSession().addMarker(selectionRange, "collab-selection", "text", true);
+                selectionID = this.aceEditor.editor.getSession().addMarker(selectionRange, `collab-selection caret-color-${caret.sessionID}`, "text", true);
             }
 
             const caretRange = new Range(caret.lead.row, caret.lead.column, caret.lead.row, caret.lead.column + 1);
-            caretID = this.aceEditor.editor.getSession().addMarker(caretRange, "collab-caret", "text", true);
+            caretID = this.aceEditor.editor.getSession().addMarker(caretRange, `collab-caret caret-color-${caret.sessionID}`, "text", true);
 
             const cursors = this.state.cursors;
             cursors[caret.sessionID] = {
                 caret: caretID,
-                selection: selectionID
+                selection: selectionID,
+                name: caret.name,
+                color: caret.color
             };
             this.setState({
                 cursors: cursors
@@ -134,15 +156,24 @@ export default class AceEditorContent extends React.Component {
     }
 
     render() {
+        const styles = [];
+        for (let sID in this.state.cursors) {
+            if (!this.state.cursors.hasOwnProperty(sID)) continue;
+            const cursor = this.state.cursors[sID];
+            styles.push(<SelectionStyle key={sID} id={sID} name={cursor.name} color={cursor.color} />)
+        }
         return (
-            <AceEditor
-                {...AceProps}
-                value={this.state.content}
-                onChange={this.onChange}
-                onLoad={this.onEditorLoad}
-                markers={[{row: 10, column: 2}]}
-                ref={(aceEditor) => this.aceEditor = aceEditor}
-            />
+            <div>
+                <AceEditor
+                    {...AceProps}
+                    value={this.state.content}
+                    onChange={this.onChange}
+                    onLoad={this.onEditorLoad}
+                    markers={[{row: 10, column: 2}]}
+                    ref={(aceEditor) => this.aceEditor = aceEditor}
+                />
+                {styles}
+            </div>
         );
     }
 }
