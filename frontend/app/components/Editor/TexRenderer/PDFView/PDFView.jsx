@@ -10,7 +10,7 @@ import Page from "./Page";
 if (process.env.NODE_ENV !== 'production') {
     pdfjsLib.PDFJS.workerSrc = `/pdf.worker.js`;
 } else {
-    pdfjsLib.PDFJS.workerSrc = `${process.env.APP_ROOT}/build/pdf.worker.js`;
+    pdfjsLib.PDFJS.workerSrc = `/pdf.worker.js`;
 }
 
 export default class PDFView extends Component {
