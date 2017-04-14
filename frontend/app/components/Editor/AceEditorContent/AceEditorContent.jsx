@@ -5,6 +5,9 @@ import brace from 'brace';
 
 import 'brace/mode/latex';
 import 'brace/theme/tomorrow';
+import 'brace/ext/language_tools';
+import 'brace/snippets/latex';
+import 'brace/snippets/snippets';
 import {DOC_CONTENT_ID} from "../../../const"; // So we could use it as the "theme" prop
 
 import './AceEditorContent.css';
@@ -12,6 +15,8 @@ import {Cursor} from "../../../api/Cursor";
 
 const ace = require('brace');
 const Range = ace.acequire('ace/range').Range;
+const langTools = ace.acequire('ace/ext/language_tools');
+const snippetManager = ace.acequire('ace/snippets').snippetManager;
 
 const AceProps = {
     height: '100%',
@@ -116,6 +121,21 @@ export default class AceEditorContent extends React.Component {
 
         const selection = editor.session.getSelection();
         const aceEditor = this;
+
+        // const rhymeCompleter = {
+        //     getCompletions: function(editor, session, pos, prefix, callback) {
+        //         if (prefix.length === 0) { callback(null, []); return }
+        //         $.getJSON(
+        //             "http://rhymebrain.com/talk?function=getRhymes&word=" + prefix,
+        //             function(wordList) {
+        //                 // wordList like [{"word":"flow","freq":24,"score":300,"flags":"bc","syllables":"1"}]
+        //                 callback(null, wordList.map(function(ea) {
+        //                     return {name: ea.word, value: ea.word, score: ea.score, meta: "rhyme"}
+        //                 }));
+        //             })
+        //     }
+        // };
+        // langTools.addCompleter(rhymeCompleter);
 
         selection.selectionAnchor.addEventListener('change', (e) => {
             aceEditor.onSelectionChange('anchor', e.value);

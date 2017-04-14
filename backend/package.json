@@ -1,6 +1,9 @@
 {
   "name": "backend",
   "version": "0.0.1",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "express": "^4.15.2",
     "express-error-handler": "^1.1.0",
