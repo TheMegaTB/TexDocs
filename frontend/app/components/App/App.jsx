@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Route} from "react-router-dom";
 import "./App.css";
 import Home from "../Home/Home";
 import {MuiThemeProvider} from "material-ui";
+import {history} from '../../init';
 
 export default class App extends React.Component {
     constructor(props) {
@@ -13,7 +14,7 @@ export default class App extends React.Component {
 
     render() {
         return (
-            <Router>
+            <Router history={history}>
                 <MuiThemeProvider>
                     <div>
                         {/*<ul>*/}

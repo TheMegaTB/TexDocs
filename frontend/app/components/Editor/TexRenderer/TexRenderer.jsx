@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 import {DOC_CONTENT_ID, RENDER_DELAY, WS} from "../../../const";
 import PDFView from "./PDFView/PDFView";
 import Loader from "../../Loader/Loader";
+import {render} from "react-dom";
 
-export default class TexRenderer extends Component {
+class TexRenderer extends Component {
     constructor(args) {
         super(args);
 
@@ -16,9 +17,12 @@ export default class TexRenderer extends Component {
         };
         WS.onmessage = (e) => {
             const pdfBlob = new Blob([e.data], { type: "application/pdf" });
+
             renderer.setState({
                 blob: pdfBlob
             });
+
+            this.context.store.dispatch({type: 'PDF_LOADED', url: window.URL.createObjectURL(pdfBlob)});
         };
 
         this.state = {
@@ -77,3 +81,9 @@ export default class TexRenderer extends Component {
         }
     }
 }
+
+TexRenderer.contextTypes = {
+    store: React.PropTypes.object
+};
+
+export default TexRenderer;

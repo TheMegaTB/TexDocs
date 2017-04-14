@@ -18,7 +18,8 @@ export default class Page extends Component {
         const container = this;
 
         this.props.pdf.getPage(this.props.page).then((page) => {
-            const scalingFactor = this.props.width / page.getViewport(1.0).width;
+            let scalingFactor = container.props.print ? 1 : this.props.width / page.getViewport(1.0).width;
+            if (this.props.scale) scalingFactor *= this.props.scale;
             const viewport = page.getViewport(scalingFactor * 2);
 
             // Prepare canvas using PDF page dimensions

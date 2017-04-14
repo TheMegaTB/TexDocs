@@ -112,6 +112,7 @@ export default class AceEditorContent extends React.Component {
 
     onEditorLoad(editor) {
         editor.$blockScrolling = Infinity;
+        editor.renderer.setScrollMargin(20, 20);
 
         const selection = editor.session.getSelection();
         const aceEditor = this;

@@ -2,11 +2,16 @@ import React, {Component, PropTypes} from "react";
 import {connect} from "react-redux";
 import {createDocument, openDocument} from '../../../../api/google';
 
-import {FlatButton} from "material-ui";
+import {Divider, FlatButton} from "material-ui";
 import Popover, {PopoverAnimationVertical} from "material-ui/Popover";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
-import {NEW_DOC_NAME} from "../../../../const";
+import {DOC_CONTENT_ID, NEW_DOC_NAME} from "../../../../const";
+import {downloadPdf, downloadTex, printPdf} from "../../../../api/pdf";
+import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
+import Printer from 'material-ui/svg-icons/maps/local-printshop';
+import Download from 'material-ui/svg-icons/editor/publish';
+import NewFile from 'material-ui/svg-icons/editor/insert-drive-file';
 
 const menuBarFontStyle = {
     fontSize: 13,
@@ -52,6 +57,22 @@ class EditorMenubarControls extends Component {
         createDocument(NEW_DOC_NAME, this.context.router.history);
     };
 
+    onFilePrint = () => {
+        this.handleRequestClose();
+        printPdf(this.props.docState);
+    };
+
+    onFileDownload = () => {
+        this.handleRequestClose();
+        downloadPdf(this.props.docState);
+    };
+
+    onTexFileDownload = () => {
+        this.handleRequestClose();
+        if (this.context.document)
+            downloadTex(this.context.document.getModel().getRoot().get(DOC_CONTENT_ID).toString(), this.props.docState);
+    };
+
     render() {
         const docState = this.props.docState;
         const attributes = docState.get('attributes');
@@ -68,10 +89,31 @@ class EditorMenubarControls extends Component {
                     useLayerForClickAway={false}
                 >
                     <Menu desktop={true} width={256}>
-                        <MenuItem primaryText="New" onTouchTap={this.onFileCreate}/>
-                        <MenuItem primaryText="Open" secondaryText="&#8984;O" onTouchTap={this.onFileOpen}/>
-                        {/*<MenuItem primaryText="Paste in place" secondaryText="&#8679;&#8984;V"/>*/}
-                        {/*<MenuItem primaryText="Research" secondaryText="&#8997;&#8679;&#8984;I"/>*/}
+                        <MenuItem primaryText="New"
+                                  onTouchTap={this.onFileCreate}
+                                  leftIcon={<NewFile/>}
+                        />
+                        <MenuItem primaryText="Open" secondaryText="&#8984;O" onTouchTap={this.onFileOpen} insetChildren={true}/>
+                        <Divider />
+                        <MenuItem primaryText="Download"
+                                  secondaryText="&#8997;&#8984;D"
+                                  onTouchTap={this.onFileDownload}
+                                  leftIcon={<Download style={{transform: 'rotate(180deg)'}}/>}
+                        />
+                        <MenuItem primaryText="Download as"
+                                  insetChildren={true}
+                                  rightIcon={<ArrowDropRight/>}
+                                  menuItems={[
+                                      <MenuItem primaryText="Latex text (.tex)" onTouchTap={this.onTexFileDownload}/>,
+                                      <MenuItem primaryText="PDF Document (.pdf)" onTouchTap={this.onFileDownload}/>
+                                  ]}
+                        />
+                        <Divider />
+                        <MenuItem primaryText="Print"
+                                  secondaryText="&#8984;P"
+                                  leftIcon={<Printer/>}
+                                  onTouchTap={this.onFilePrint}
+                        />
                     </Menu>
                 </Popover>
                 <EditorButton label="Edit"/>
@@ -90,7 +132,8 @@ class EditorMenubarControls extends Component {
 
 EditorMenubarControls.contextTypes = {
     store: React.PropTypes.object,
-    router: React.PropTypes.object
+    router: React.PropTypes.object,
+    document: React.PropTypes.any
 };
 
 EditorMenubarControls.propTypes = {

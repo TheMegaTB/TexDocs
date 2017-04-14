@@ -1,4 +1,5 @@
 import React from 'react';
+import createHistory from 'history/createBrowserHistory';
 
 // Load theme and store providers
 import { Provider } from 'react-redux';
@@ -14,6 +15,7 @@ import {target} from './const';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import Loader from "./components/Loader/Loader";
 import {store} from "./api/reducers";
+import {registerKeybindings} from "./api/keybindings";
 
 function registerTapListener() {
     // Needed for onTouchTap
@@ -27,6 +29,8 @@ const onAuthFail = (auth) => {
     render(<Loader text="Authorizing TexDocs"/>, target);
     auth();
 };
+
+export const history = createHistory();
 
 export default function init() {
     registerTapListener();

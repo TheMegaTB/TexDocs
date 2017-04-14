@@ -10,6 +10,7 @@ import SplitPane from "react-split-pane";
 import "./Editor.css";
 import TexRenderer from "./TexRenderer/TexRenderer";
 import AceEditorContent from "./AceEditorContent/AceEditorContent";
+import {registerKeybindings} from "../../api/keybindings";
 
 class Editor extends Component {
     constructor(args) {
@@ -21,8 +22,11 @@ class Editor extends Component {
         }
     }
 
+    getChildContext() {
+        return {document: this.state.document};
+    }
+
     updateDocument = () => {
-        console.log("loading doc");
         this.setState({ loaded: false, document: undefined });
         const editor = this;
         const store = this.context.store;
@@ -40,6 +44,7 @@ class Editor extends Component {
 
     componentDidMount() {
         this.updateDocument();
+        registerKeybindings(document, this.context.router.history);
     }
 
     render() {
@@ -70,8 +75,13 @@ class Editor extends Component {
     }
 }
 
+Editor.childContextTypes = {
+    document: React.PropTypes.any
+};
+
 Editor.contextTypes = {
-    store: React.PropTypes.object
+    store: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
 Editor.propTypes = {

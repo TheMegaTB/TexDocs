@@ -7,6 +7,7 @@ const defaultState = Map({
     saved: false,
     collaborators: Map({}),
     sessionID: '',
+    pdfURL: new Blob(),
     attributes: Map({
         readOnly: true,
         bytesUsed: 0,
@@ -93,6 +94,10 @@ function reducer(state = defaultState, action) {
             return state.set('saved', !action.isSaving);
         case 'AUTHORIZED':
             return state.set('user', action.user);
+
+        case 'PDF_LOADED':
+            if (state.get('pdfURL')) window.URL.revokeObjectURL(state.get('pdfURL'));
+            return state.set('pdfURL', action.url);
         default:
             return state;
     }
