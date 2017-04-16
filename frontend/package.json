@@ -23,6 +23,7 @@
     "copy-webpack-plugin": "^4.0.1",
     "draft-js": "^0.10.0",
     "draft-js-code": "^0.2.0",
+    "fuse.js": "git+https://github.com/krisk/fuse.git",
     "hammerjs": "^2.0.8",
     "immutable": "^3.8.1",
     "material-ui": "^0.17.1",

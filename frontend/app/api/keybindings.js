@@ -26,10 +26,15 @@ const downloadListener = (e) => {
     }
 };
 
+const catchSave = (e) => {
+    if (e.ctrlKey && e.keyCode === 83) e.preventDefault();
+};
+
 export function registerKeybindings(target, history) {
     target.addEventListener('keydown', (e) => {
         printListener(e);
         openListener(e, history);
         downloadListener(e);
+        catchSave(e);
     });
 }

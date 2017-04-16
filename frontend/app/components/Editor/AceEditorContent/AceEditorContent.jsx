@@ -6,17 +6,34 @@ import brace from 'brace';
 import 'brace/mode/latex';
 import 'brace/theme/tomorrow';
 import 'brace/ext/language_tools';
-import 'brace/snippets/latex';
 import 'brace/snippets/snippets';
-import {DOC_CONTENT_ID} from "../../../const"; // So we could use it as the "theme" prop
+import {DOC_CONTENT_ID} from "../../../const";
 
 import './AceEditorContent.css';
 import {Cursor} from "../../../api/Cursor";
+import {getCommand} from "./regex";
+import {genericCompleter} from "./completers/generic";
+import {commandCompleter} from "./completers/commands";
+import {environmentCompleter} from "./completers/environment";
 
 const ace = require('brace');
+ace.define("ace/snippets/latex", ["require","exports","module"], function(e,t,n) {
+    "use strict";
+    t.snippetText=require("raw-loader!../../../static/latex.snippets");
+    t.scope="latex";
+});
 const Range = ace.acequire('ace/range').Range;
 const langTools = ace.acequire('ace/ext/language_tools');
 const snippetManager = ace.acequire('ace/snippets').snippetManager;
+
+// Remove local variable names aka all words in the document
+langTools.setCompleters([
+    genericCompleter,
+    commandCompleter,
+    environmentCompleter,
+    langTools.snippetCompleter,
+    langTools.keyWordCompleter
+]); //, langTools.textCompleter
 
 const AceProps = {
     height: '100%',
@@ -24,8 +41,8 @@ const AceProps = {
     mode: 'latex',
     theme: 'tomorrow',
     enableBasicAutocompletion: true,
-    enableLiveAutocompletion: true,
-    enableSnippets: true,
+    enableLiveAutocompletion: false,
+    enableSnippets: false,
     wrapEnabled: true,
     highlightActiveLine: true,
     fontSize: '15'
@@ -122,19 +139,27 @@ export default class AceEditorContent extends React.Component {
         const selection = editor.session.getSelection();
         const aceEditor = this;
 
-        // const rhymeCompleter = {
-        //     getCompletions: function(editor, session, pos, prefix, callback) {
-        //         if (prefix.length === 0) { callback(null, []); return }
-        //         $.getJSON(
-        //             "http://rhymebrain.com/talk?function=getRhymes&word=" + prefix,
-        //             function(wordList) {
-        //                 // wordList like [{"word":"flow","freq":24,"score":300,"flags":"bc","syllables":"1"}]
-        //                 callback(null, wordList.map(function(ea) {
-        //                     return {name: ea.word, value: ea.word, score: ea.score, meta: "rhyme"}
-        //                 }));
-        //             })
-        //     }
-        // };
+        editor.getSelectedTextRange = () => {
+            const selectionRange = editor.getSelectionRange();
+
+            const startLine = selectionRange.start.row;
+            const endLine = selectionRange.end.row;
+
+            const content = editor.session.getTextRange(selectionRange);
+            return content;
+        };
+
+        editor.commands.on("afterExec", function(e) {
+            if (e.command.name === "insertstring") {
+                if (/^\\$/.test(e.args)) editor.execCommand("startAutocomplete");
+
+                const cmd = getCommand(editor);
+                if (cmd && !editor.getSession().selectionMarkerCount) {
+                    editor.execCommand("startAutocomplete");
+                }
+            }
+        });
+
         // langTools.addCompleter(rhymeCompleter);
 
         selection.selectionAnchor.addEventListener('change', (e) => {
