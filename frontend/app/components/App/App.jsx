@@ -17,13 +17,6 @@ export default class App extends React.Component {
             <Router history={history}>
                 <MuiThemeProvider>
                     <div>
-                        {/*<ul>*/}
-                            {/*<li><Link to="/">Home</Link></li>*/}
-                            {/*<li><Link to="/d/someThing">Document</Link></li>*/}
-                        {/*</ul>*/}
-
-                        {/*<hr/>*/}
-
                         <Route exact path="/" component={Home}/>
                         <Route path="/d/:id" component={Editor}/>
                     </div>

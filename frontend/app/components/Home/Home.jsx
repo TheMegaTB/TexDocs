@@ -1,7 +1,7 @@
 import React from "react";
 import NoDocumentPopup from "../NoDocumentPopup/NoDocumentPopup";
 
-export default class App extends React.Component {
+export default class Home extends React.Component {
     constructor(props) {
         super(props);
     }

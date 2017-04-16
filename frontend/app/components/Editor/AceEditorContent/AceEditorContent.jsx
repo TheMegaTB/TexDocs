@@ -17,14 +17,8 @@ import {commandCompleter} from "./completers/commands";
 import {environmentCompleter} from "./completers/environment";
 
 const ace = require('brace');
-ace.define("ace/snippets/latex", ["require","exports","module"], function(e,t,n) {
-    "use strict";
-    t.snippetText=require("raw-loader!../../../static/latex.snippets");
-    t.scope="latex";
-});
 const Range = ace.acequire('ace/range').Range;
 const langTools = ace.acequire('ace/ext/language_tools');
-const snippetManager = ace.acequire('ace/snippets').snippetManager;
 
 // Remove local variable names aka all words in the document
 langTools.setCompleters([
@@ -139,16 +133,6 @@ export default class AceEditorContent extends React.Component {
         const selection = editor.session.getSelection();
         const aceEditor = this;
 
-        editor.getSelectedTextRange = () => {
-            const selectionRange = editor.getSelectionRange();
-
-            const startLine = selectionRange.start.row;
-            const endLine = selectionRange.end.row;
-
-            const content = editor.session.getTextRange(selectionRange);
-            return content;
-        };
-
         editor.commands.on("afterExec", function(e) {
             if (e.command.name === "insertstring") {
                 if (/^\\$/.test(e.args)) editor.execCommand("startAutocomplete");
@@ -159,8 +143,6 @@ export default class AceEditorContent extends React.Component {
                 }
             }
         });
-
-        // langTools.addCompleter(rhymeCompleter);
 
         selection.selectionAnchor.addEventListener('change', (e) => {
             aceEditor.onSelectionChange('anchor', e.value);
