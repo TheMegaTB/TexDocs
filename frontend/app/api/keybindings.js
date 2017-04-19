@@ -4,7 +4,7 @@ import {openDocument} from "./google";
 
 const printListener = (e) => {
     // CTRL + P
-    if (e.ctrlKey && e.keyCode === 80) {
+    if (e.ctrlKey && e.which === 80) {
         e.preventDefault();
         printPdf(store.getState());
     }
@@ -12,7 +12,7 @@ const printListener = (e) => {
 
 const openListener = (e, history) => {
     // CTRL + O
-    if (e.ctrlKey && e.keyCode === 79) {
+    if (e.ctrlKey && e.which === 79) {
         e.preventDefault();
         openDocument(history);
     }
@@ -20,14 +20,14 @@ const openListener = (e, history) => {
 
 const downloadListener = (e) => {
     // CTRL + ALT + D
-    if (e.ctrlKey && e.altKey && e.keyCode === 68) {
+    if (e.ctrlKey && e.altKey && e.which === 68) {
         e.preventDefault();
         downloadPdf(store.getState());
     }
 };
 
 const catchSave = (e) => {
-    if (e.ctrlKey && e.keyCode === 83) e.preventDefault();
+    if (e.ctrlKey && e.which === 83) e.preventDefault();
 };
 
 export function registerKeybindings(target, history) {

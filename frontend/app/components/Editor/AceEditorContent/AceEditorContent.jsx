@@ -15,6 +15,7 @@ import {getCommand} from "./regex";
 import {genericCompleter} from "./completers/generic";
 import {commandCompleter} from "./completers/commands";
 import {environmentCompleter} from "./completers/environment";
+import {registerKeybindings} from "../../../api/keybindings";
 
 const ace = require('brace');
 const Range = ace.acequire('ace/range').Range;
@@ -38,8 +39,7 @@ const AceProps = {
     enableLiveAutocompletion: false,
     enableSnippets: false,
     wrapEnabled: true,
-    highlightActiveLine: true,
-    fontSize: '15'
+    highlightActiveLine: true
 };
 
 class SelectionStyle extends React.Component {
@@ -61,14 +61,15 @@ class SelectionStyle extends React.Component {
     }
 }
 
-export default class AceEditorContent extends React.Component {
+class AceEditorContent extends React.Component {
     constructor(args) {
         super(args);
 
         this.state = {
             collabString: undefined,
             content: "",
-            cursors: {}
+            cursors: {},
+            fontSize: 15
         };
 
         this.onSelectionChange = this.onSelectionChange.bind(this);
@@ -181,6 +182,18 @@ export default class AceEditorContent extends React.Component {
             content: collabString.toString(),
             cursor: cursor
         });
+
+        registerKeybindings(this.aceEditor.editor.container, this.context.router.history);
+
+        this.aceEditor.editor.container.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.which === 189) {
+                e.preventDefault();
+                this.setState({ fontSize: this.state.fontSize - 1 });
+            } else if (e.ctrlKey && e.which === 187) {
+                e.preventDefault();
+                this.setState({ fontSize: this.state.fontSize + 1 });
+            }
+        });
     }
 
     render() {
@@ -197,7 +210,7 @@ export default class AceEditorContent extends React.Component {
                     value={this.state.content}
                     onChange={this.onChange}
                     onLoad={this.onEditorLoad}
-                    markers={[{row: 10, column: 2}]}
+                    fontSize={this.state.fontSize}
                     ref={(aceEditor) => this.aceEditor = aceEditor}
                 />
                 {styles}
@@ -205,3 +218,9 @@ export default class AceEditorContent extends React.Component {
         );
     }
 }
+
+AceEditorContent.contextTypes = {
+    router: React.PropTypes.object
+};
+
+export default AceEditorContent;
