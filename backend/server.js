@@ -2,6 +2,7 @@ const WebSocketServer = require('websocket').server;
 const http = require('http');
 const express = require('express');
 const path = require('path');
+const nodeFS = require('fs');
 const fs = require('mz/fs');
 const exec = require('mz/child_process').exec;
 const execFile = require('mz/child_process').execFile;
@@ -44,7 +45,7 @@ function generatePDF(dir, jobID) {
 
         latex.on('exit', (code) => {
             delete jobs[dir][jobID];
-            if (code !== 0) {
+            if (!nodeFS.existsSync(path.join(dir, jobID + '.pdf'))) {
                 reject(code);
             } else {
                 resolve(log);

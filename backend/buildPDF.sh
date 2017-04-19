@@ -12,4 +12,4 @@ chktex -q -o "${LINTOUT}" "${PREFIX}.tex" --format "${LINTFMT}"
 
 # Generate PDF file
 #pdflatex --shell-escape -interaction=batchmode "${PREFIX}.tex"
-latexmk -f -pdf "${PREFIX}.tex"
+latexmk -f -pdf -xelatex -interaction=nonstopmode "${PREFIX}.tex"
