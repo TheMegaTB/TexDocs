@@ -3,15 +3,20 @@ import { browserHistory } from 'react-router';
 
 import { Map } from 'immutable';
 
+let pickerOpen = false;
+
 function openDocumentCallback(history, cb, data) {
     if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
         const doc = data[google.picker.Response.DOCUMENTS][0];
         if (typeof cb === 'function') cb();
         history.push('/d/' + doc.id);
+        pickerOpen = false;
     }
 }
 
 export function openDocument(history, callback) {
+    if (pickerOpen) return;
+    pickerOpen = true;
     // Create and render a Picker object for picking user Photos.
     const view = new google.picker.View(google.picker.ViewId.DOCS);
     view.setMimeTypes(MIME_TYPE);
