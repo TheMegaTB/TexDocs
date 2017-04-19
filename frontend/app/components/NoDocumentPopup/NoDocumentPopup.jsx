@@ -2,7 +2,7 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {createDocument, openDocument} from "../../api/google";
-import {MIME_TYPE, NEW_DOC_NAME} from "../../const";
+import {NEW_DOC_NAME} from "../../const";
 
 import './NoDocumentPopup.css';
 
@@ -28,20 +28,6 @@ class NoDocumentPopup extends React.Component {
 
     createDocument() {
         createDocument(NEW_DOC_NAME, this.props.history);
-    }
-
-    openDocument() {
-        // Create and render a Picker object for picking user Photos.
-        const view = new google.picker.View(google.picker.ViewId.DOCS);
-        view.setMimeTypes(MIME_TYPE);
-
-        const picker = new google.picker.PickerBuilder()
-            .addView(view)
-            .setOAuthToken(window.access_token)
-            .setCallback(this.pickerCallback)
-            .setSelectableMimeTypes(MIME_TYPE)
-            .build(); //setDeveloperKey(developerKey).
-        picker.setVisible(true);
     }
 
     pickerCallback() {

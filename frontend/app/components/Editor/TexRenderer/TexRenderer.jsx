@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {DOC_CONTENT_ID, RENDER_DELAY, WS} from "../../../const";
 import PDFView from "./PDFView/PDFView";
 import Loader from "../../Loader/Loader";
-import {render} from "react-dom";
+import {updateFile} from "../../../api/google";
 
 class TexRenderer extends Component {
     constructor(args) {
@@ -22,12 +22,20 @@ class TexRenderer extends Component {
                 blob: pdfBlob
             });
 
+            const metadata = this.context.store.getState().get('metadata');
+            if (metadata && !this.state.initial) {
+                updateFile(metadata.toJS(), pdfBlob);
+            } else if (this.state.initial) {
+                this.setState({ initial: false });
+            }
+
             this.context.store.dispatch({type: 'PDF_LOADED', url: window.URL.createObjectURL(pdfBlob)});
         };
 
         this.state = {
             wsOpen: WS.readyState === 1,
-            blob: undefined
+            blob: undefined,
+            initial: true
         };
 
         this.requestBlob = this.requestBlob.bind(this);

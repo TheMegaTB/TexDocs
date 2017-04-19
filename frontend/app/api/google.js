@@ -1,4 +1,7 @@
-import {CLIENT_ID, DOC_CONTENT_ID, DOC_CURSORS_ID, MIME_TYPE, SCOPES, TOKEN_REFRESH_INT} from "../const";
+import {
+    CLIENT_ID, DOC_CONTENT_ID, DOC_CURSORS_ID, DRIVE_MIME_TYPE, MIME_TYPE, SCOPES,
+    TOKEN_REFRESH_INT
+} from "../const";
 import { browserHistory } from 'react-router';
 
 import { Map } from 'immutable';
@@ -14,13 +17,13 @@ function openDocumentCallback(history, cb, data) {
 export function openDocument(history, callback) {
     // Create and render a Picker object for picking user Photos.
     const view = new google.picker.View(google.picker.ViewId.DOCS);
-    view.setMimeTypes(MIME_TYPE);
+    view.setMimeTypes(DRIVE_MIME_TYPE);
 
     const picker = new google.picker.PickerBuilder()
         .addView(view)
         .setOAuthToken(window.access_token)
         .setCallback(openDocumentCallback.bind(null, history, callback))
-        .setSelectableMimeTypes(MIME_TYPE)
+        .setSelectableMimeTypes(DRIVE_MIME_TYPE)
         .build(); //setDeveloperKey(developerKey).
     picker.setVisible(true);
 }
@@ -29,11 +32,16 @@ export function createDocument(name, history) {
     window.gapi.client.load('drive', 'v2', function () {
         const insertHash = {
             'resource': {
-                mimeType: MIME_TYPE,
-                title: name
+                mimeType: DRIVE_MIME_TYPE,
+                title: name,
+                fileExtension: 'pdf',
+                appProperties: {
+                    latex: true
+                }
             }
         };
         window.gapi.client.drive.files.insert(insertHash).execute((doc) => {
+            console.log(doc);
             history.push('/d/' + doc.id);
         });
     });
@@ -49,15 +57,18 @@ function onFileInitialize(model) {
 
 export function loadDocumentMetadata(store, documentID) {
     const request = window.gapi.client.request({
-        'path': '/drive/v2/files/' + documentID,
+        'path': '/drive/v3/files/' + documentID,
         'method': 'GET',
+        'params': {
+            'fields': 'name,modifiedTime,mimeType,id,explicitlyTrashed,lastModifyingUser,appProperties'
+        }
     });
     request.execute(function(resp) {
         if (resp.explicitlyTrashed) {
             // TODO Improve this
             alert("Document is in the trash!");
         }
-        store.dispatch({type: 'DOC_METADATA_LOADED', title: resp.title, time: resp.modifiedDate, user: resp.lastModifyingUserName});
+        store.dispatch({ type: 'DOC_METADATA_LOADED', metadata: resp });
     });
 }
 
@@ -78,6 +89,67 @@ function refreshToken(cb) {
         window.access_token = res.access_token;
         if (typeof cb === 'function') cb();
     });
+}
+
+/**
+ * Update an existing file's metadata and content.
+ *
+ * @param {Object} fileMetadata existing Drive file's metadata.
+ * @param {File} fileData File object to read data from.
+ * @param {Function} callback Callback function to call when the request is complete.
+ */
+export function updateFile(fileMetadata, fileData, callback) {
+    const fileId = fileMetadata.id;
+    const boundary = '-------314159265358979323846';
+    const delimiter = "\r\n--" + boundary + "\r\n";
+    const close_delim = "\r\n--" + boundary + "--";
+
+    const metadata = {
+        mimeType: fileMetadata.mimeType,
+        name: fileMetadata.name,
+        trashed: fileMetadata.trashed,
+        modifiedTime: new Date().toISOString(),
+        appProperties: {
+            latex: true
+        }
+    };
+
+    const reader = new FileReader();
+    reader.readAsBinaryString(fileData);
+    reader.onload = function(e) {
+        const contentType = fileData.type || 'application/octet-stream';
+        // Updating the metadata is optional and you can instead use the value from drive.files.get.
+        const base64Data = btoa(reader.result);
+        const multipartRequestBody =
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(metadata) +
+            delimiter +
+            'Content-Type: ' + contentType + '\r\n' +
+            'Content-Transfer-Encoding: base64\r\n' +
+            '\r\n' +
+            base64Data +
+            close_delim;
+
+        const request = gapi.client.request({
+            'path': '/upload/drive/v3/files/' + fileId,
+            'method': 'PATCH',
+            'params': {
+                'uploadType': 'multipart',
+                'alt': 'json',
+                'ocr': true
+            },
+            'headers': {
+                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+            },
+            'body': multipartRequestBody});
+        if (!callback) {
+            callback = function(file) {
+                // console.log(file)
+            };
+        }
+        request.execute(callback);
+    }
 }
 
 function onError(error) {
