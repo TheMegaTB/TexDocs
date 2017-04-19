@@ -14,6 +14,7 @@ export const CURSOR_WATCHDOG_INTERVAL = 15000;
 export const CURSOR_TIMEOUT = 10000 + CURSOR_WATCHDOG_INTERVAL;
 
 export const MIME_TYPE = 'application/x-latex';
+export const DRIVE_MIME_TYPE = 'application/pdf';
 export const TOKEN_REFRESH_INT = 1800000; // 30 minutes
 export const CLIENT_ID = '367816881553-mnu299ct2iokf5vhbg9t07dvchg342g4.apps.googleusercontent.com';
 export const SCOPES = [

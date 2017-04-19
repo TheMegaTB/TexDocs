@@ -28,11 +28,11 @@ export function downloadFile(url, filename) {
 
 export function downloadPdf(state) {
     const url = state.get('pdfURL');
-    downloadFile(url, state.get('attributes').get('title') + '.pdf');
+    downloadFile(url, state.get('metadata').get('name') + '.pdf');
 }
 
 export function downloadTex(content, state) {
-    const fileName = state.get('attributes').get('title') + '.tex';
+    const fileName = state.get('metadata').get('name') + '.tex';
     const text = `data:${MIME_TYPE};charset=utf-8,${encodeURIComponent(content)}`;
     downloadFile(text, fileName);
 }

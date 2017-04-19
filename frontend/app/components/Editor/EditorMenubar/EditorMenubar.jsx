@@ -35,7 +35,7 @@ class EditorMenubar extends Component {
 
     render() {
         const docState = this.props.docState;
-        const attributes = docState.get('attributes');
+        const metadata = docState.get('metadata');
         const ids = [];
         const collaborators = this.props.collaborators.filter((collaborator) => {
             for (let id in ids)
@@ -49,7 +49,7 @@ class EditorMenubar extends Component {
                 <div className="container">
                     <div>
                         <div>
-                            <span className="menubar-title">{attributes.get('title')}</span>
+                            <span className="menubar-title">{metadata.get('name')}</span>
                         </div>
                         <div className="puush"/>
                     </div>

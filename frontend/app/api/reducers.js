@@ -11,8 +11,10 @@ const defaultState = Map({
     attributes: Map({
         readOnly: true,
         bytesUsed: 0,
-        title: 'Untitled',
         lastEdit: 'Last edit is unknown.'
+    }),
+    metadata: Map({
+        name: ""
     }),
     user: Map({
         id: "",
@@ -39,13 +41,14 @@ function onSaveStateChange(event) {
 function reducer(state = defaultState, action) {
     switch (action.type) {
         case 'DOC_METADATA_LOADED':
-            const timeDelta = secondsToString((new Date() - new Date(action.time))/1000);
-            const lastEdit = action.user === state.get('user').get('name')
+            const timeDelta = secondsToString((new Date() - new Date(action.metadata.modifiedTime))/1000);
+            const lastEdit = action.metadata.lastModifyingUser.displayName === state.get('user').get('name')
                                 ? "Last edit was " + timeDelta + " ago"
-                                : "Last edit was made " + timeDelta + " ago by " + action.user;
+                                : "Last edit was made " + timeDelta + " ago by " + action.metadata.lastModifyingUserName;
             return state.mergeDeep({
+                metadata: action.metadata,
                 attributes: {
-                    title: action.title,
+                    name: action.metadata.name,
                     lastEdit: lastEdit
                 }
             });
