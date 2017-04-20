@@ -11,6 +11,10 @@ const uuidV4 = require('uuid/v4');
 const spawn = require('child_process').spawn;
 
 const root = path.join('..', 'frontend', 'build');
+const PROGRESS_INJECTION = `
+\\usepackage{everyshi}
+\\EveryShipout{\\message{^^JHELLO \\thepage^^J}}
+`;
 
 // Websocket serving
 const server = http.createServer(function(request, response) {
@@ -36,10 +40,12 @@ function generatePDF(dir, jobID) {
         jobs[dir][jobID] = latex;
         const log = [];
         latex.stdout.on('data', (data) => {
+            console.log('consoleOut', data.toString());
             log.push(data);
         });
 
         latex.stderr.on('data', (data) => {
+            // console.log('consoleErr', data);
             log.push(data);
         });
 
@@ -63,7 +69,9 @@ function parseTex(texString, dir) {
 
     return new Promise(function(resolve, reject) {
         const jobID = uuidV4();
-        fs.writeFile(path.join(dir, `${jobID}.tex`), texString).then(
+        const indexOfDocument = texString.indexOf("\\begin{document}");
+        const tex = texString.substr(0, indexOfDocument) + PROGRESS_INJECTION + texString.substr(indexOfDocument);
+        fs.writeFile(path.join(dir, `${jobID}.tex`), tex).then(
             generatePDF(dir, jobID).then((log) => {
                 // TODO Send log and linting data to client
                 fs.readFile(path.join(dir, `${jobID}.pdf`)).then((pdf) => {
