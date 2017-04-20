@@ -65,7 +65,7 @@ class Editor extends Component {
                                     : <Loader text="Loading document"/>}
                             </div>
                             <div>
-                                <TexRenderer document={this.state.document}/>
+                                <TexRenderer document={this.state.document} docID={documentID}/>
                             </div>
                         </SplitPane>
                     </div>

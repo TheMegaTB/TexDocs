@@ -40,7 +40,7 @@ function generatePDF(dir, jobID) {
         jobs[dir][jobID] = latex;
         const log = [];
         latex.stdout.on('data', (data) => {
-            console.log('consoleOut', data.toString());
+            // console.log('consoleOut', data.toString());
             log.push(data);
         });
 
@@ -60,15 +60,17 @@ function generatePDF(dir, jobID) {
     });
 }
 
-function parseTex(texString, dir) {
+function parseTex(texString, dir, fileID) {
     if (jobs[dir] && Object.keys(jobs[dir]).length > 0) {
         for (let jobID in jobs[dir]) {
             if (jobs[dir].hasOwnProperty(jobID)) jobs[dir][jobID].kill();
         }
     }
 
+    const start = new Date();
+
     return new Promise(function(resolve, reject) {
-        const jobID = uuidV4();
+        const jobID = fileID;//uuidV4();
         const indexOfDocument = texString.indexOf("\\begin{document}");
         const tex = texString.substr(0, indexOfDocument) + PROGRESS_INJECTION + texString.substr(indexOfDocument);
         fs.writeFile(path.join(dir, `${jobID}.tex`), tex).then(
@@ -76,7 +78,7 @@ function parseTex(texString, dir) {
                 // TODO Send log and linting data to client
                 fs.readFile(path.join(dir, `${jobID}.pdf`)).then((pdf) => {
                     fs.readFile(path.join(dir, `${jobID}.lint`)).then((lint) => {
-                        console.log('processed request for', dir, jobID);
+                        console.log('processed request for', dir, jobID, new Date() - start);
                         resolve([log, lint, pdf]);
                     }).catch(reject);
                 }).catch(reject);
@@ -84,6 +86,8 @@ function parseTex(texString, dir) {
         ).catch(reject);
     });
 }
+
+// const serverDir = createTempDir();
 
 // WebSocket server
 wsServer.on('request', function(request) {
@@ -99,7 +103,7 @@ wsServer.on('request', function(request) {
             switch (data.type) {
                 case 'texSource':
                     userDir.then((dir) => {
-                        parseTex(data.tex, dir, connection).then(([log, lint, pdf]) => {
+                        parseTex(data.tex, dir, data.fileID).then(([log, lint, pdf]) => {
                             connection.send(pdf, {binary: true});
                         }).catch((err) => {
                             // Job got cancelled for some reason

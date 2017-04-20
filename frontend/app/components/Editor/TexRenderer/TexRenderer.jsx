@@ -45,7 +45,7 @@ class TexRenderer extends Component {
 
     requestBlob(data) {
         if (data !== '')
-            WS.send(JSON.stringify({ type: 'texSource', tex: data.toString() }));
+            WS.send(JSON.stringify({ type: 'texSource', fileID: this.props.docID, tex: data.toString() }));
     }
 
     requestBlobFromDocument() {
