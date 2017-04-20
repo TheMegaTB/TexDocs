@@ -1,5 +1,30 @@
 import ServerDate from './ServerDate';
 
+const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+];
+
+function formatAMPM(date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    return hours + ':' + minutes + ' ' + ampm;
+}
+
 export function getTime() {
     return ServerDate.now();
 }
@@ -21,5 +46,14 @@ export function secondsToString(seconds) {
         return numminutes + ' minute' + (numminutes > 1 ? 's' : '');
     } else if (numseconds > 0) {
         return numseconds + ' second' + (numseconds > 1 ? 's' : '');
+    }
+}
+
+export function dateToString(date) {
+    const isToday = (date.toDateString() === new Date().toDateString());
+    if (isToday) {
+        return formatAMPM(date);
+    } else {
+        return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
     }
 }

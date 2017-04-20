@@ -85,7 +85,7 @@ class AceEditorContent extends React.Component {
     }
 
     setCollaboratorSelection(caret) {
-        if (!caret) return;
+        if (!caret || !this.aceEditor) return;
         const cursor = this.state.cursors[caret.sessionID];
         if (cursor) {
             this.aceEditor.editor.getSession().removeMarker(cursor.caret);

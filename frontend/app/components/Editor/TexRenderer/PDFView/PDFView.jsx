@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import pdfjsLib from "pdfjs-dist";
-import {Scrollbars} from "react-custom-scrollbars";
 import Measure from "react-measure";
 import Hammer from "hammerjs";
 

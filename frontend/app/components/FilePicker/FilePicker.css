@@ -1,0 +1,22 @@
+.picker-document > img {
+    opacity: 0.9
+}
+
+.picker-document > div {
+    border-top: solid 1px lightgrey;
+}
+
+.picker-document > div > div {
+    color: #9E9E9E !important;
+}
+
+.picker-document {
+    background-color: lightgrey;
+    border: solid 1px lightgrey;
+    transition-property: border;
+    transition-duration: 0.5s;
+}
+
+.picker-document:hover {
+    border: solid 1px #FF5722;
+}

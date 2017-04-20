@@ -1,5 +1,5 @@
 import {
-    CLIENT_ID, DOC_CONTENT_ID, DOC_CURSORS_ID, DRIVE_MIME_TYPE, MIME_TYPE, SCOPES,
+    CLIENT_ID, DOC_CONTENT_ID, DOC_CURSORS_ID, DRIVE_MIME_TYPE, MIME_TYPE, SCOPES, SEARCH_QUERY,
     TOKEN_REFRESH_INT
 } from "../const";
 import { browserHistory } from 'react-router';
@@ -31,6 +31,37 @@ export function openDocument(history, callback) {
         .setSelectableMimeTypes(DRIVE_MIME_TYPE)
         .build(); //setDeveloperKey(developerKey).
     picker.setVisible(true);
+}
+
+export function listDocuments(options = {}, callback) {
+    let search = SEARCH_QUERY;
+    if (!options.trashed) search += ' and not trashed';
+    else search += ' and trashed';
+    const request = window.gapi.client.request({
+        'path': '/drive/v3/files',
+        'method': 'GET',
+        'params': {
+            'q': search,
+            'orderBy': options.order || 'viewedByMeTime',
+            'fields': '*' //'name,thumbnailLink,webViewLink,hasThumbnail'
+        }
+    });
+    request.execute(function(resp) {
+        // console.log(resp);
+        callback(resp);
+    });
+}
+
+export function getDocument(fileId, callback) {
+    const request = window.gapi.client.request({
+        'path': '/drive/v3/files/' + fileId,
+        'params': {
+            'alt': 'media'
+        }
+    });
+    request.execute(function(_, req) {
+        callback(JSON.parse(req).gapiRequest.data.body);
+    });
 }
 
 export function createDocument(name, history) {

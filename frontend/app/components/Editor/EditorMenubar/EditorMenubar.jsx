@@ -11,11 +11,12 @@ import {fullWhite} from 'material-ui/styles/colors';
 
 import "./EditorMenubar.css";
 import EditorMenubarControls from "./EditorMenubarControls/EditorMenubarControls";
+import {Link} from "react-router-dom";
 
 const TexDocsButton = () =>
-    <div className="tex-docs-button">
+    <Link to="/" className="tex-docs-button">
         <Icon color='white' style={{width: '60%', height: '100%'}}/>
-    </div>;
+    </Link>;
 
 class EditorMenubar extends Component {
     loadMetadata = () => {
