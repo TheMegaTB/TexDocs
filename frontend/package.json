@@ -38,6 +38,7 @@
     "react-router": "^4.0.0",
     "react-router-dom": "^4.0.0",
     "react-split-pane": "^0.1.61",
+    "react-sticky": "^5.0.8",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
     "saiku-react-pdfjs": "^1.0.1",

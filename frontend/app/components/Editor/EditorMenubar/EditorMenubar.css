@@ -3,6 +3,7 @@
     height: 68px;
     flex-direction: row;
     display: flex;
+    background-color: white;
 }
 
 .menubar-title {
@@ -12,7 +13,6 @@
 }
 
 .menubar > .container {
-    /*width: calc(100% - 52px - 15px - 10px);*/
     height: 100%;
     display: flex;
     flex-direction: column;
