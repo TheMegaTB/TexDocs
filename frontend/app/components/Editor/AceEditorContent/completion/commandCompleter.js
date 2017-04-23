@@ -15,10 +15,12 @@ export const commandCompleter = {
                 const currentCommand = commands[category][command];
 
                 // Suggest the command itself
+                let argument;
+                if (currentCommand.arguments === true) argument = {type: 'arg', value: '${1}'};
                 completions.push(cmd.getSuggestion([{
                     type: 'cmd',
                     value: currentCommand.command
-                }], 'cmd:' + category));
+                }, argument], 'cmd:' + category));
 
                 // If it has arguments iterate them
                 if (currentCommand.arguments instanceof Array)

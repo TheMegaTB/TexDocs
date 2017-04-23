@@ -60,8 +60,10 @@ const Command = function(cmd, modOpened, mod, modClosed, argOpened, arg, argClos
     this.getSuggestion = (suggestions, meta) => {
         const newCmd = this.clone();
 
+        let suggestable = true;
         suggestions.forEach((suggestion) => {
-            if (!this[suggestion.type].suggestable) return null;
+            if (!suggestion) return;
+            if (!this[suggestion.type].suggestable) suggestable = false;
             switch (suggestion.type) {
                 case 'cmd':
                     newCmd.cmd.value = suggestion.value;
@@ -76,9 +78,11 @@ const Command = function(cmd, modOpened, mod, modClosed, argOpened, arg, argClos
                     break;
                 default:
                     throw "[CMD] No suggestion type passed!";
-                    return null;
+                    suggestable = false;
             }
         });
+
+        if (!suggestable) return null;
 
         const postfix = this.buildCommand().substr(this.cursor);
         const command = newCmd.buildCommand();

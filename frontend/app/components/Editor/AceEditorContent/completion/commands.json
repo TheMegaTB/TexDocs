@@ -1,4 +1,9 @@
 {
+    "title": [
+        {"command": "title", "arguments": true},
+        {"command": "author", "arguments": true},
+        {"command": "date", "arguments": true}
+    ],
     "pkg": [
         {
             "command": "usepackage",
