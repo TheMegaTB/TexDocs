@@ -1,0 +1,40 @@
+{
+    "pkg": [
+        {
+            "command": "usepackage",
+            "arguments": [
+                "hyperref",
+                "ansmath",
+                "empheq",
+                "mathtools",
+                {
+                    "argument": "babel",
+                    "modifiers": [ "german", "english" ]
+                },
+                {
+                    "argument": "geometry",
+                    "modifiers": [ "margin=${1}" ]
+                }
+            ]
+        },
+        {
+            "command": "documentclass",
+            "arguments": [
+                "article",
+                "report"
+            ],
+            "modifiers": [
+                "a4paper",
+                "letter"
+            ]
+        },
+        {
+            "command": "begin",
+            "counterpart": "end",
+            "arguments": [
+                "equation",
+                "subequations"
+            ]
+        }
+    ]
+}

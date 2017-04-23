@@ -13,12 +13,13 @@ import {
     DropDownMenu, FontIcon, IconMenu, MenuItem, RaisedButton, Subheader, Toolbar, ToolbarGroup, ToolbarSeparator,
     ToolbarTitle
 } from "material-ui";
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
+import SortIcon from 'material-ui/svg-icons/av/sort-by-alpha';
 import {Sticky, StickyContainer} from "react-sticky";
 
 
 pdfjsLib.PDFJS.workerSrc = '/pdf.worker.js';
 
+const DSR_FACTOR = 2; // Multiplier for the rendered PDF previews resolution
 const PICKER_MAX_COLUMNS = 5;
 const PICKER_PADDING = 20;
 const PICKER_DOC_BORDER = 1;
@@ -64,8 +65,7 @@ export default class FilePicker extends Component {
         getDocument(file.id, (rawPDF) => {
             pdfjsLib.PDFJS.getDocument({ data: rawPDF }).then((pdf) => {
                 pdf.getPage(1).then((page) => {
-                    const scale = 1.5;
-                    const viewport = page.getViewport(scale);
+                    const viewport = page.getViewport((PICKER_DOC_WIDTH / page.getViewport(1.0).width) * DSR_FACTOR);
 
                     // Prepare canvas using PDF page dimensions
                     const canvas = document.createElement("canvas"); //document.getElementById('the-canvas');
@@ -118,20 +118,23 @@ export default class FilePicker extends Component {
                             <Subheader>Recent documents</Subheader>
                         </ToolbarGroup>
                         <ToolbarGroup>
-                            <ToolbarTitle text="Options" />
-                            <FontIcon className="muidocs-icon-custom-sort" />
-                            <ToolbarSeparator />
-                            <RaisedButton label="Create Broadcast" primary={true} />
-                            <IconMenu
-                                iconButtonElement={
-                                    <IconButton touch={true}>
-                                        <NavigationExpandMoreIcon />
-                                    </IconButton>
-                                }
-                            >
-                                <MenuItem primaryText="Download" />
-                                <MenuItem primaryText="More Info" />
-                            </IconMenu>
+                            {/*<ToolbarTitle text="Options" />*/}
+                            {/*<FontIcon className="muidocs-icon-custom-sort" />*/}
+                            {/*<ToolbarSeparator />*/}
+                            {/*<RaisedButton label="Create Broadcast" primary={true} />*/}
+                            {/*<IconMenu*/}
+                                {/*iconButtonElement={*/}
+                                    {/*<IconButton>*/}
+                                        {/*<SortIcon />*/}
+                                    {/*</IconButton>*/}
+                                {/*}*/}
+                                {/*targetOrigin={{horizontal: 'center', vertical: 'top'}}*/}
+                            {/*>*/}
+                                {/*<MenuItem primaryText="Last opened by me" />*/}
+                                {/*<MenuItem primaryText="Last modified by me" />*/}
+                                {/*<MenuItem primaryText="Last modified" />*/}
+                                {/*<MenuItem primaryText="Title" />*/}
+                            {/*</IconMenu>*/}
                         </ToolbarGroup>
                     </Toolbar>
                 </Sticky>

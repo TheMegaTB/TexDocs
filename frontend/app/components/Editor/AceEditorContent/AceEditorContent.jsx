@@ -11,10 +11,8 @@ import {DOC_CONTENT_ID} from "../../../const";
 
 import './AceEditorContent.css';
 import {Cursor} from "../../../api/Cursor";
-import {getCommand} from "./regex";
-import {genericCompleter} from "./completers/generic";
-import {commandCompleter} from "./completers/commands";
-import {environmentCompleter} from "./completers/environment";
+import {getCommand} from "./completion/command";
+import {commandCompleter} from "./completion/commandCompleter";
 import {registerKeybindings} from "../../../api/keybindings";
 
 const ace = require('brace');
@@ -23,9 +21,7 @@ const langTools = ace.acequire('ace/ext/language_tools');
 
 // Remove local variable names aka all words in the document
 langTools.setCompleters([
-    genericCompleter,
     commandCompleter,
-    environmentCompleter,
     langTools.snippetCompleter,
     langTools.keyWordCompleter
 ]); //, langTools.textCompleter
@@ -134,12 +130,11 @@ class AceEditorContent extends React.Component {
         const selection = editor.session.getSelection();
         const aceEditor = this;
 
+        const autoCompleteOn = ['insertstring', 'backspace', 'del'];
         editor.commands.on("afterExec", function(e) {
-            if (e.command.name === "insertstring") {
-                if (/^\\$/.test(e.args)) editor.execCommand("startAutocomplete");
-
+            if (autoCompleteOn.find((el) => el === e.command.name)) {
                 const cmd = getCommand(editor);
-                if (cmd && !editor.getSession().selectionMarkerCount) {
+                if (cmd && cmd.cmd.value && !editor.getSession().selectionMarkerCount) {
                     editor.execCommand("startAutocomplete");
                 }
             }
