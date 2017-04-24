@@ -1,6 +1,7 @@
-import React from "react";
+import React, {Component, PropTypes} from "react";
 import Editor from "../Editor/Editor";
 import {BrowserRouter as Router, Route} from "react-router-dom";
+import {Map} from "immutable";
 
 import "./App.css";
 import Home from "../Home/Home";
@@ -11,18 +12,18 @@ import {authorize, authorized, initGAPI, loadGAPI, registerTokenRefresher} from 
 import Loader from "../Loader/Loader";
 import Authorize from "./Authorize";
 
-class App extends React.Component {
+class App extends Component {
     dispatchActions = () => {
-        const state = this.props.appState;
+        const googleAPI = this.props.googleAPI;
         const store = this.context.store;
 
-        const apiLoaded = state.googleAPI.has('api');
-        const apiInitialized = state.googleAPI.has('gAuth');
-        const apiAuthorized = state.googleAPI.has('user');
+        const apiLoaded = googleAPI.has('api');
+        const apiInitialized = googleAPI.has('gAuth');
+        const apiAuthorized = googleAPI.has('user');
 
-        const auth2 = state.googleAPI.has('api') ? state.googleAPI.get('api').auth2 : undefined;
-        const auth = state.googleAPI.has('api') ? state.googleAPI.get('api').auth : undefined;
-        const gAuth = state.googleAPI.get('gAuth');
+        const auth2 = googleAPI.has('api') ? googleAPI.get('api').auth2 : undefined;
+        const auth = googleAPI.has('api') ? googleAPI.get('api').auth : undefined;
+        const gAuth = googleAPI.get('gAuth');
 
         if (!apiLoaded)
             store.dispatch(loadGAPI());
@@ -30,7 +31,7 @@ class App extends React.Component {
             store.dispatch(initGAPI(auth2));
         else if (!apiAuthorized && gAuth.isSignedIn.get())
             store.dispatch(authorized(gAuth));
-        else if (apiAuthorized && gAuth.isSignedIn.get() && !state.googleAPI.has('tokenRefresher'))
+        else if (apiAuthorized && gAuth.isSignedIn.get() && !googleAPI.has('tokenRefresher'))
             store.dispatch(registerTokenRefresher(auth, store));
     };
 
@@ -43,15 +44,15 @@ class App extends React.Component {
     }
 
     render() {
-        const state = this.props.appState;
+        const googleAPI = this.props.googleAPI;
 
-        const apiLoaded = state.googleAPI.has('api');
-        const apiInitialized = state.googleAPI.has('gAuth');
-        const apiAuthorized = state.googleAPI.has('user');
+        const apiLoaded = googleAPI.has('api');
+        const apiInitialized = googleAPI.has('gAuth');
+        const apiAuthorized = googleAPI.has('user');
 
-        const auth2 = state.googleAPI.has('api') ? state.googleAPI.get('api').auth2 : undefined;
-        const gAuth = state.googleAPI.get('gAuth');
-        const accessToken = state.googleAPI.get('accessToken');
+        const auth2 = googleAPI.has('api') ? googleAPI.get('api').auth2 : undefined;
+        const gAuth = googleAPI.get('gAuth');
+        const accessToken = googleAPI.get('accessToken');
 
         if (!apiLoaded)
             return <Loader text="Loading Google API"/>;
@@ -80,12 +81,12 @@ App.contextTypes = {
 };
 
 App.propTypes = {
-    appState: React.PropTypes.object.isRequired
+    googleAPI: PropTypes.instanceOf(Map).isRequired
 };
 
 function mapStateToProps(state) {
     return {
-        appState: state
+        googleAPI: state.googleAPI
     };
 }
 
