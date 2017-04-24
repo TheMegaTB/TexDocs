@@ -13,7 +13,7 @@ export default class Home extends React.Component {
 
     render() {
         return <StickyContainer style={{backgroundColor: '#eee'}}>
-            <Sticky onStickyStateChange={(e) => {console.log(e)}}>
+            <Sticky>
                 <AppBar
                     title="TexDocs"
                     style={{backgroundColor: '#FF5722'}}

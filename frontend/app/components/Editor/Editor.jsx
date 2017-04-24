@@ -50,8 +50,10 @@ class Editor extends Component {
     render() {
         const documentID = this.props.match.params.id;
         const docState = this.props.docState;
-        const attributes = docState.get('attributes');
-        const collaborators = this.state.document ? this.state.document.getCollaborators() : [];
+        // const attributes = docState.get('attributes');
+        // const collaborators = this.state.document ? this.state.document.getCollaborators() : [];
+        const collaborators = [];
+        const sessionID = '';
         return (
             <div>
                 <EditorMenubar docID={documentID} collaborators={collaborators}/>
@@ -61,7 +63,7 @@ class Editor extends Component {
                         <SplitPane defaultSize="50%">
                             <div>
                                 {this.state.document
-                                    ? <AceEditorContent document={this.state.document} sID={docState.get('sessionID')}/>
+                                    ? <AceEditorContent document={this.state.document} sID={sessionID}/>
                                     : <Loader text="Loading document"/>}
                             </div>
                             <div>
@@ -85,7 +87,7 @@ Editor.contextTypes = {
 };
 
 Editor.propTypes = {
-    docState: PropTypes.instanceOf(Map).isRequired
+    docState: React.PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) {

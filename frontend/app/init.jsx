@@ -14,7 +14,7 @@ import {render} from "react-dom";
 import {target} from './const';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import Loader from "./components/Loader/Loader";
-import {store} from "./api/reducers";
+import {store} from "./redux/document/reducers";
 import {registerKeybindings} from "./api/keybindings";
 
 function registerTapListener() {
@@ -36,5 +36,5 @@ export default function init() {
     registerTapListener();
 
     // Run the google drive authentication and respond to it.
-    authorize(store, onAuthorized, onAuthFail);
+    // authorize(store, onAuthorized, onAuthFail);
 }

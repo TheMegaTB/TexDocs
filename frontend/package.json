@@ -41,6 +41,7 @@
     "react-sticky": "^5.0.8",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
+    "redux-promise": "^0.5.3",
     "saiku-react-pdfjs": "^1.0.1",
     "serverdate": "git+https://github.com/NodeGuy/ServerDate.git"
   },

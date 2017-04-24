@@ -1,6 +1,6 @@
 import { createStore } from 'redux';
 import { Map } from 'immutable';
-import {secondsToString} from "./time";
+import {secondsToString} from "../../api/time";
 
 const defaultState = Map({
     loaded: false,
@@ -97,7 +97,6 @@ function reducer(state = defaultState, action) {
             return state.set('saved', !action.isSaving);
         case 'AUTHORIZED':
             return state.set('user', action.user);
-
         case 'PDF_LOADED':
             if (state.get('pdfURL')) window.URL.revokeObjectURL(state.get('pdfURL'));
             return state.set('pdfURL', action.url);
