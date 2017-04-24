@@ -1,6 +1,6 @@
 import { createStore } from 'redux';
 import { Map } from 'immutable';
-import {secondsToString} from "../../api/time";
+import {secondsToString} from "./time";
 
 const defaultState = Map({
     loaded: false,

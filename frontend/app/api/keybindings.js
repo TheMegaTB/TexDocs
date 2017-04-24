@@ -1,4 +1,4 @@
-import {store} from '../redux/document/reducers';
+import {store} from './reducers';
 import {downloadPdf, printPdf} from "./pdf";
 import {openDocument} from "./google";
 

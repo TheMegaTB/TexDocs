@@ -9,7 +9,7 @@ const initialEditorState = Map({
 export const EDITOR_LOADED = 'editor-loaded';
 export const EDITOR_INIT = 'initialize-editor';
 
-export function editor(state = initialEditorState, action) {
+export function texEditor(state = initialEditorState, action) {
     switch (action.type) {
         case EDITOR_LOADED:
             return state.set('editor', action.editor);

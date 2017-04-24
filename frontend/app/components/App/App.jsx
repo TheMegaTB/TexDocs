@@ -8,7 +8,7 @@ import Home from "../Home/Home";
 import {history} from '../../init';
 
 import {connect} from "react-redux";
-import {authorize, authorized, initGAPI, loadGAPI, registerTokenRefresher} from "../../redux/editor/actions/gapi";
+import {authorize, authorized, initGAPI, loadGAPI, registerTokenRefresher} from "../../redux/actions/gapi";
 import Loader from "../Loader/Loader";
 import Authorize from "./Authorize";
 

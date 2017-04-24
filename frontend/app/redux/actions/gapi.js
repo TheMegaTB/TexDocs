@@ -1,7 +1,7 @@
 import { Map } from 'immutable';
 
 import {API_LOADED, AUTH_INITIALIZED, AUTHORIZED, TOKEN_REFRESH, TOKEN_REFRESHER_REGISTERED} from "../reducers/gapi";
-import {CLIENT_ID, SCOPES, TOKEN_REFRESH_INT} from "../../../const";
+import {CLIENT_ID, SCOPES, TOKEN_REFRESH_INT} from "../../const";
 
 export function loadGAPI() {
     return new Promise(resolve => {

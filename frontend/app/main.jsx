@@ -9,7 +9,7 @@ import './main.css';
 import Loader from "./components/Loader/Loader";
 import {applyMiddleware, createStore} from "redux";
 import promiseMiddleware from 'redux-promise';
-import texDocsApp from './redux/editor/reducers';
+import texDocsApp from './redux/reducers';
 import {Provider} from "react-redux";
 import App from "./components/App/App";
 import {MuiThemeProvider} from "material-ui";

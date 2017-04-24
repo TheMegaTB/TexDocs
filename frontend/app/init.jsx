@@ -14,7 +14,7 @@ import {render} from "react-dom";
 import {target} from './const';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import Loader from "./components/Loader/Loader";
-import {store} from "./redux/document/reducers";
+import {store} from "./api/reducers";
 import {registerKeybindings} from "./api/keybindings";
 
 function registerTapListener() {

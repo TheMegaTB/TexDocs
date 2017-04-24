@@ -56,9 +56,9 @@ class Editor extends Component {
         const sessionID = '';
         return (
             <div>
-                <EditorMenubar docID={documentID} collaborators={collaborators}/>
+                {/*<EditorMenubar docID={documentID} collaborators={collaborators}/>*/}
                 <div style={{height: 'calc(100% - 68px)'}}>
-                    <EditorToolbar/>
+                    {/*<EditorToolbar/>*/}
                     <div style={{height: 'calc(100% - 48px - 68px)'}}>
                         <SplitPane defaultSize="50%">
                             <div>
