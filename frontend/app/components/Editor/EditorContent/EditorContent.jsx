@@ -1,22 +1,16 @@
-import React, {Component, PropTypes} from 'react';
-import {Map} from "immutable";
+import React, {Component} from 'react';
 
 import AceEditor from 'react-ace';
-import brace from 'brace';
 
 import 'brace/mode/latex';
 import 'brace/theme/tomorrow';
 import 'brace/ext/language_tools';
 import 'brace/snippets/snippets';
-import {DOC_CONTENT_ID} from "../../../const";
 
-import './AceEditorContent.css';
-import {Cursor} from "../../../api/Cursor";
-import {getCommand} from "./completion/command";
+import './EditorContent.css';
 import {commandCompleter} from "./completion/commandCompleter";
-import {registerKeybindings} from "../../../api/keybindings";
 import {connect} from "react-redux";
-import {createCursor, editorLoaded, initializeEditor, setCaret} from "../../../redux/actions/editor/texEditor";
+import {createCursor, editorLoaded} from "../../../redux/actions/editor/texEditor";
 import Loader from "../../Loader/Loader";
 import {EDITOR_UNLOADED} from "../../../redux/reducers/editor/texEditor";
 import {texChanged} from "../../../redux/actions/editor/files";
@@ -63,7 +57,7 @@ class SelectionStyle extends Component {
     }
 }
 
-class AceEditorContent extends React.Component {
+class EditorContent extends React.Component {
     constructor(args) {
         super(args);
 
@@ -117,26 +111,12 @@ class AceEditorContent extends React.Component {
         const document = this.props.editor.files.get('document');
         const sessionID = this.props.editor.files.get('sessionID');
 
-        this.context.store.dispatch(editorLoaded(editor, this.context.store));
-        this.context.store.dispatch(createCursor(document, sessionID, this.setCollaboratorSelection));
+        this.props.dispatch(editorLoaded(editor, this.props.dispatch));
+        this.props.dispatch(createCursor(document, sessionID, this.setCollaboratorSelection));
     };
 
-    componentDidMount() {
-        // registerKeybindings(this.aceEditor.editor.container, this.context.router.history);
-        //
-        // this.aceEditor.editor.container.addEventListener('keydown', (e) => {
-        //     if (e.ctrlKey && e.which === 189) {
-        //         e.preventDefault();
-        //         this.setState({ fontSize: this.state.fontSize - 1 });
-        //     } else if (e.ctrlKey && e.which === 187) {
-        //         e.preventDefault();
-        //         this.setState({ fontSize: this.state.fontSize + 1 });
-        //     }
-        // });
-    }
-
     componentWillUnmount() {
-        this.context.store.dispatch({ type: EDITOR_UNLOADED });
+        this.props.dispatch({ type: EDITOR_UNLOADED });
     }
 
     render() {
@@ -153,7 +133,7 @@ class AceEditorContent extends React.Component {
                 {this.props.editor.files.has('document') ? <AceEditor
                     {...AceProps}
                     value={this.props.editor.files.get('tex')}
-                    onChange={(e) => this.context.store.dispatch(texChanged(e))}
+                    onChange={(e) => this.props.dispatch(texChanged(e))}
                     fontSize={this.props.editor.texEditor.get('fontSize')}
                     ref={(aceEditor) => this.aceEditor = aceEditor}
                     onLoad={this.onLoad}
@@ -165,21 +145,10 @@ class AceEditorContent extends React.Component {
     }
 }
 
-AceEditorContent.contextTypes = {
-    router: React.PropTypes.object,
-    store: React.PropTypes.object
-};
-
-AceEditorContent.propTypes = {
+EditorContent.propTypes = {
     editor: React.PropTypes.object
 };
 
-function mapStateToProps(state) {
-    return {
-        editor: state.editor
-    };
-}
-
 export default connect(
-    mapStateToProps
-)(AceEditorContent);
+    (state) => { return { editor: state.editor } }
+)(EditorContent);

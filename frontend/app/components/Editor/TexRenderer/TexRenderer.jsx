@@ -28,7 +28,7 @@ class TexRenderer extends Component {
                 this.setState({ initial: false });
             }
 
-            this.context.store.dispatch(pdfChanged(pdfBlob));
+            this.props.dispatch(pdfChanged(pdfBlob));
         };
 
         this.state = {
@@ -85,20 +85,10 @@ class TexRenderer extends Component {
     }
 }
 
-TexRenderer.contextTypes = {
-    store: React.PropTypes.object
-};
-
 TexRenderer.propTypes = {
     files: PropTypes.instanceOf(Map).isRequired
 };
 
-function mapStateToProps(state) {
-    return {
-        files: state.editor.files
-    };
-}
-
 export default connect(
-    mapStateToProps
+    (state) => { return {files: state.editor.files} }
 )(TexRenderer);

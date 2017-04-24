@@ -1,39 +1,22 @@
-import React, {Component, PropTypes} from "react";
-import {loadDocument} from "../../api/google";
-import {Map} from "immutable";
+import React, {Component} from "react";
 import {connect} from "react-redux";
-import Loader from "../Loader/Loader";
 import EditorToolbar from "./EditorToolbar/EditorToolbar";
 import EditorMenubar from "./EditorMenubar/EditorMenubar";
 import SplitPane from "react-split-pane";
 
 import "./Editor.css";
 import TexRenderer from "./TexRenderer/TexRenderer";
-import AceEditorContent from "./AceEditorContent/AceEditorContent";
-import {registerKeybindings} from "../../api/keybindings";
+import EditorContent from "./EditorContent/EditorContent";
 import {loadDocumentMetadata, loadRealtimeDocument} from "../../redux/actions/editor/files";
 
 class Editor extends Component {
-    constructor(args) {
-        super(args);
-
-        this.state = {
-            loaded: false,
-            document: undefined
-        }
-    }
-
-    getChildContext() {
-        return { document: this.state.document };
-    }
-
     updateDocument = () => {
         const documentID = this.props.match.params.id;
         if (documentID) {
             const api = this.props.googleAPI.get('api');
-            const store = this.context.store;
-            store.dispatch(loadRealtimeDocument(api.realtime, documentID, store));
-            store.dispatch(loadDocumentMetadata(api.client, documentID));
+            const dispatch = this.props.dispatch;
+            dispatch(loadRealtimeDocument(api.realtime, documentID, dispatch));
+            dispatch(loadDocumentMetadata(api.client, documentID));
         }
     };
 
@@ -45,14 +28,9 @@ class Editor extends Component {
 
     componentDidMount() {
         this.updateDocument();
-        // registerKeybindings(document, this.context.router.history);
     }
 
     render() {
-        const documentID = this.props.match.params.id;
-        const docState = this.props.docState;
-
-        const sessionID = '';
         return (
             <div>
                 <EditorMenubar/>
@@ -61,10 +39,7 @@ class Editor extends Component {
                     <div style={{height: 'calc(100% - 48px - 68px)'}}>
                         <SplitPane defaultSize="50%">
                             <div>
-                                <AceEditorContent/>
-                                {/*{this.state.document*/}
-                                    {/*? <AceEditorContent/>*/}
-                                    {/*: <Loader text="Loading document"/>}*/}
+                                <EditorContent/>
                             </div>
                             <div>
                                 <TexRenderer/>
@@ -77,25 +52,10 @@ class Editor extends Component {
     }
 }
 
-Editor.childContextTypes = {
-    document: React.PropTypes.any
-};
-
-Editor.contextTypes = {
-    store: React.PropTypes.object,
-    router: React.PropTypes.object
-};
-
 Editor.propTypes = {
     googleAPI: React.PropTypes.object.isRequired
 };
 
-function mapStateToProps(state) {
-    return {
-        googleAPI: state.googleAPI
-    };
-}
-
 export default connect(
-    mapStateToProps
+    (state) => { return { googleAPI: state.googleAPI } }
 )(Editor);

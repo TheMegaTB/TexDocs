@@ -1,26 +1,25 @@
+// Load react stuff
 import React from "react";
 import {render} from "react-dom";
 import {target} from "./const";
-import init from "./init";
 
 import './main.css';
 
-// Load components
+// Load redux bits and bobs
 import {applyMiddleware, createStore} from "redux";
 import promiseMiddleware from 'redux-promise';
+import {logger} from "./redux/middleware";
 import texDocsApp from './redux/reducers';
-import {Provider} from "react-redux";
+
+// Load components
 import App from "./components/App/App";
+import {Provider} from "react-redux";
 import {MuiThemeProvider} from "material-ui";
 
-init();
-
-const logger = store => next => action => {
-    console.log('dispatching', action);
-    let result = next(action);
-    // console.log('next state', store.getState());
-    return result
-};
+// Load and execute material-ui dependency (needed for onTouchTap)
+// http://stackoverflow.com/a/34015469/988941
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 const store = createStore(texDocsApp, applyMiddleware(promiseMiddleware, logger));
 

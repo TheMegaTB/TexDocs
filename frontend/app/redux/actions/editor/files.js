@@ -24,10 +24,10 @@ export function pdfChanged(newPDFBlob) {
     }
 }
 
-export function loadRealtimeDocument(realtime, id, store) {
+export function loadRealtimeDocument(realtime, id, dispatch) {
     const onContentUpdate = (e) => {
         if (!e.isLocal) {
-            store.dispatch(texChanged(e.target.text, false));
+            dispatch(texChanged(e.target.text, false));
         }
     };
 

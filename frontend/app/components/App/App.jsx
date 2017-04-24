@@ -5,7 +5,6 @@ import {Map} from "immutable";
 
 import "./App.css";
 import Home from "../Home/Home";
-import {history} from '../../init';
 
 import {connect} from "react-redux";
 import {authorize, authorized, initGAPI, loadGAPI, registerTokenRefresher} from "../../redux/actions/gapi";
@@ -15,7 +14,7 @@ import Authorize from "./Authorize";
 class App extends Component {
     dispatchActions = () => {
         const googleAPI = this.props.googleAPI;
-        const store = this.context.store;
+        const dispatch = this.props.dispatch;
 
         const apiLoaded = googleAPI.has('api');
         const apiInitialized = googleAPI.has('gAuth');
@@ -26,13 +25,13 @@ class App extends Component {
         const gAuth = googleAPI.get('gAuth');
 
         if (!apiLoaded)
-            store.dispatch(loadGAPI());
+            dispatch(loadGAPI());
         else if (!apiInitialized)
-            store.dispatch(initGAPI(auth2));
+            dispatch(initGAPI(auth2));
         else if (!apiAuthorized && gAuth.isSignedIn.get())
-            store.dispatch(authorized(gAuth));
+            dispatch(authorized(gAuth));
         else if (apiAuthorized && gAuth.isSignedIn.get() && !googleAPI.has('tokenRefresher'))
-            store.dispatch(registerTokenRefresher(auth, store));
+            dispatch(registerTokenRefresher(auth, dispatch));
     };
 
     componentDidUpdate() {
@@ -61,12 +60,12 @@ class App extends Component {
         else if (!apiAuthorized && gAuth.isSignedIn.get())
             return <Loader text="Authorizing TexDocs"/>;
         else if (!apiAuthorized)
-            return <Authorize onAuthClick={() => this.context.store.dispatch(authorize(auth2, gAuth))}/>;
+            return <Authorize onAuthClick={() => this.props.dispatch(authorize(auth2, gAuth))}/>;
         else if (!accessToken)
             return <Loader text="Authenticating TexDocs"/>;
 
         return (
-            <Router history={history}>
+            <Router>
                 <div>
                     <Route exact path="/" component={Home}/>
                     <Route path="/d/:id" component={Editor}/>
@@ -76,20 +75,10 @@ class App extends Component {
     }
 }
 
-App.contextTypes = {
-    store: React.PropTypes.object
-};
-
 App.propTypes = {
     googleAPI: PropTypes.instanceOf(Map).isRequired
 };
 
-function mapStateToProps(state) {
-    return {
-        googleAPI: state.googleAPI
-    };
-}
-
 export default connect(
-    mapStateToProps
+    (state) => { return { googleAPI: state.googleAPI } }
 )(App);

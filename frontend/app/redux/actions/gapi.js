@@ -69,12 +69,12 @@ export function refreshToken(auth) {
     });
 }
 
-export function registerTokenRefresher(auth, store) {
-    store.dispatch(refreshToken(auth));
+export function registerTokenRefresher(auth, dispatch) {
+    dispatch(refreshToken(auth));
     return {
         type: TOKEN_REFRESHER_REGISTERED,
         intervalID: setInterval(() => {
-            store.dispatch(refreshToken(auth));
+            dispatch(refreshToken(auth));
         }, TOKEN_REFRESH_INT)
     }
 }

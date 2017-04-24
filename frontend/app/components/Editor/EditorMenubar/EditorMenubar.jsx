@@ -89,22 +89,16 @@ class EditorMenubar extends Component {
     }
 }
 
-EditorMenubar.contextTypes = {
-    store: React.PropTypes.object
-};
-
 EditorMenubar.propTypes = {
     files: PropTypes.instanceOf(Map).isRequired,
     googleAPI: PropTypes.instanceOf(Map).isRequired
 };
 
-function mapStateToProps(state) {
-    return {
-        files: state.editor.files,
-        googleAPI: state.googleAPI
-    };
-}
-
 export default connect(
-    mapStateToProps
+    (state) => {
+        return {
+            files: state.editor.files,
+            googleAPI: state.googleAPI
+        }
+    }
 )(EditorMenubar);

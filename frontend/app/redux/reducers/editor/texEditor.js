@@ -32,7 +32,13 @@ export function texEditor(state = initialEditorState, action) {
             return state.set('cursor', newCursor);
 
         case SET_FONT_SIZE:
-            return state.set('fontSize', action.fontSize);
+            const fontSize = typeof action.fontSize === 'number'
+                ? action.fontSize
+                : (action.fontSize === '+'
+                    ? state.get('fontSize') + 1
+                    : state.get('fontSize') - 1
+                  );
+            return state.set('fontSize', fontSize);
 
         default:
             return state;

@@ -1,8 +1,8 @@
-import {getCommand} from "../../../components/Editor/AceEditorContent/completion/command";
+import {getCommand} from "../../../components/Editor/EditorContent/completion/command";
 import {CREATE_CURSOR, EDITOR_LOADED, SET_CURSOR, SET_FONT_SIZE} from "../../reducers/editor/texEditor";
 import {Cursor} from "../../../api/Cursor";
 
-function initializeEditor(editor, store) {
+function initializeEditor(editor, dispatch) {
     editor.renderer.setScrollMargin(20, 20);
 
     const autoCompleteOn = ['insertstring', 'backspace', 'del'];
@@ -18,25 +18,25 @@ function initializeEditor(editor, store) {
     const selection = editor.session.getSelection();
 
     selection.selectionAnchor.addEventListener('change', (e) => {
-        store.dispatch(setCaret('anchor', e.value));
+        dispatch(setCaret('anchor', e.value));
     });
     selection.selectionLead.addEventListener('change', (e) => {
-        store.dispatch(setCaret('lead', e.value));
+        dispatch(setCaret('lead', e.value));
     });
 
     editor.container.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.which === 189) {
             e.preventDefault();
-            store.dispatch(setFontSize(store.getState().editor.texEditor.get('fontSize') - 1));
+            dispatch(setFontSize('-'));
         } else if (e.ctrlKey && e.which === 187) {
             e.preventDefault();
-            store.dispatch(setFontSize(store.getState().editor.texEditor.get('fontSize') + 1));
+            dispatch(setFontSize('+'));
         }
     });
 }
 
-export function editorLoaded(editor, store) {
-    initializeEditor(editor, store);
+export function editorLoaded(editor, dispatch) {
+    initializeEditor(editor, dispatch);
     return {
         type: EDITOR_LOADED,
         editor: editor
