@@ -19,38 +19,27 @@ const TexDocsButton = () =>
     </Link>;
 
 class EditorMenubar extends Component {
-    loadMetadata = () => {
-        // TODO Check
-        loadDocumentMetadata(this.context.store, this.props.docID);
-    };
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.docID !== this.props.docID && this.props.docID) {
-            this.loadMetadata();
-        }
-    }
-
-    componentWillMount() {
-        this.loadMetadata();
-    }
-
     render() {
-        const docState = this.props.docState;
-        const metadata = docState.get('metadata');
+        const document = this.props.files.get('document');
+        const metadata = this.props.files.get('metadata');
+
+        const user = this.props.googleAPI.get('user');
+
         const ids = [];
-        const collaborators = this.props.collaborators.filter((collaborator) => {
+        const collaborators = document ? document.getCollaborators().filter((collaborator) => {
             for (let id in ids)
                 if (ids.hasOwnProperty(id) && ids[id] === collaborator.userId) return false;
             ids.push(collaborator.userId);
             return true;
-        });
+        }) : [];
+
         return (
             <div className="menubar">
                 <TexDocsButton/>
                 <div className="container">
                     <div>
                         <div>
-                            <span className="menubar-title">{metadata.get('name')}</span>
+                            <span className="menubar-title">{metadata ? metadata.name : ""}</span>
                         </div>
                         <div className="puush"/>
                     </div>
@@ -63,13 +52,13 @@ class EditorMenubar extends Component {
                 </div>
                 <div className="container" style={{marginLeft: 'auto'}}>
                     <div>
-                        <FlatButton
-                            label={docState.get('user').get('email')}
-                            labelPosition="before"
-                            labelStyle={{textTransform: 'lowercase', fontSize: 10}}
-                            style={{height: '20px', lineHeight: '20px'}}
-                            icon={<ExpandMore />}
-                        />
+                        {user ? <FlatButton
+                                label={user.get('email')}
+                                labelPosition="before"
+                                labelStyle={{textTransform: 'lowercase', fontSize: 10}}
+                                style={{height: '20px', lineHeight: '20px'}}
+                                icon={<ExpandMore />}
+                            /> : undefined}
                         <div className="puush" />
                     </div>
                     <div style={{justifyContent: 'flex-end', flexDirection: 'row', marginBottom: 5, marginRight: 24}}>
@@ -105,12 +94,14 @@ EditorMenubar.contextTypes = {
 };
 
 EditorMenubar.propTypes = {
-    docState: PropTypes.instanceOf(Map).isRequired
+    files: PropTypes.instanceOf(Map).isRequired,
+    googleAPI: PropTypes.instanceOf(Map).isRequired
 };
 
 function mapStateToProps(state) {
     return {
-        docState: state
+        files: state.editor.files,
+        googleAPI: state.googleAPI
     };
 }
 

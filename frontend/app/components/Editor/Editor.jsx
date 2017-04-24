@@ -11,6 +11,7 @@ import "./Editor.css";
 import TexRenderer from "./TexRenderer/TexRenderer";
 import AceEditorContent from "./AceEditorContent/AceEditorContent";
 import {registerKeybindings} from "../../api/keybindings";
+import {loadDocumentMetadata, loadRealtimeDocument} from "../../redux/actions/editor/files";
 
 class Editor extends Component {
     constructor(args) {
@@ -23,17 +24,17 @@ class Editor extends Component {
     }
 
     getChildContext() {
-        return {document: this.state.document};
+        return { document: this.state.document };
     }
 
     updateDocument = () => {
-        this.setState({ loaded: false, document: undefined });
-        const editor = this;
-        const store = this.context.store;
         const documentID = this.props.match.params.id;
-        loadDocument(store, documentID, (doc) => {
-            editor.setState({ loaded: true, document: doc });
-        });
+        if (documentID) {
+            const api = this.props.googleAPI.get('api');
+            const store = this.context.store;
+            store.dispatch(loadRealtimeDocument(api.realtime, documentID, store));
+            store.dispatch(loadDocumentMetadata(api.client, documentID));
+        }
     };
 
     componentDidUpdate(prevProps) {
@@ -44,30 +45,29 @@ class Editor extends Component {
 
     componentDidMount() {
         this.updateDocument();
-        registerKeybindings(document, this.context.router.history);
+        // registerKeybindings(document, this.context.router.history);
     }
 
     render() {
         const documentID = this.props.match.params.id;
         const docState = this.props.docState;
-        // const attributes = docState.get('attributes');
-        // const collaborators = this.state.document ? this.state.document.getCollaborators() : [];
-        const collaborators = [];
+
         const sessionID = '';
         return (
             <div>
-                {/*<EditorMenubar docID={documentID} collaborators={collaborators}/>*/}
+                <EditorMenubar/>
                 <div style={{height: 'calc(100% - 68px)'}}>
-                    {/*<EditorToolbar/>*/}
+                    <EditorToolbar/>
                     <div style={{height: 'calc(100% - 48px - 68px)'}}>
                         <SplitPane defaultSize="50%">
                             <div>
-                                {this.state.document
-                                    ? <AceEditorContent document={this.state.document} sID={sessionID}/>
-                                    : <Loader text="Loading document"/>}
+                                <AceEditorContent/>
+                                {/*{this.state.document*/}
+                                    {/*? <AceEditorContent/>*/}
+                                    {/*: <Loader text="Loading document"/>}*/}
                             </div>
                             <div>
-                                <TexRenderer document={this.state.document} docID={documentID}/>
+                                <TexRenderer/>
                             </div>
                         </SplitPane>
                     </div>
@@ -87,12 +87,12 @@ Editor.contextTypes = {
 };
 
 Editor.propTypes = {
-    docState: React.PropTypes.object.isRequired
+    googleAPI: React.PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) {
     return {
-        docState: state
+        googleAPI: state.googleAPI
     };
 }
 

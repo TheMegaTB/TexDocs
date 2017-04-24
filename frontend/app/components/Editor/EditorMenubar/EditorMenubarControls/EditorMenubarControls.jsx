@@ -49,33 +49,33 @@ class EditorMenubarControls extends Component {
 
     onFileOpen = () => {
         this.handleRequestClose();
-        openDocument(this.context.router.history);
+        // openDocument(this.context.router.history);
     };
 
     onFileCreate = () => {
         this.handleRequestClose();
-        createDocument(NEW_DOC_NAME, this.context.router.history);
+        // createDocument(NEW_DOC_NAME, this.context.router.history);
     };
 
     onFilePrint = () => {
         this.handleRequestClose();
-        printPdf(this.props.docState);
+        // printPdf(this.props.docState);
     };
 
     onFileDownload = () => {
         this.handleRequestClose();
-        downloadPdf(this.props.docState);
+        // downloadPdf(this.props.docState);
     };
 
     onTexFileDownload = () => {
         this.handleRequestClose();
-        if (this.context.document)
-            downloadTex(this.context.document.getModel().getRoot().get(DOC_CONTENT_ID).toString(), this.props.docState);
+        // if (this.context.document)
+        //     downloadTex(this.context.document.getModel().getRoot().get(DOC_CONTENT_ID).toString(), this.props.docState);
     };
 
     render() {
-        const docState = this.props.docState;
-        const attributes = docState.get('attributes');
+        const lastEdit = "TODO Last edit date"; // TODO Last edit
+
         return (
             <div className="menubar-buttons">
                 <EditorButton label="File" onTouchTap={this.handleTouchTap}/>
@@ -124,28 +124,15 @@ class EditorMenubarControls extends Component {
                 <EditorButton label="Table"/>
                 <EditorButton label="Add-ons"/>
                 <EditorButton label="Help"/>
-                <span className="last-edit" style={menuBarFontStyle}>{attributes.get('lastEdit')}</span>
+                <span className="last-edit" style={menuBarFontStyle}>{lastEdit}</span>
             </div>
         );
     }
 }
 
 EditorMenubarControls.contextTypes = {
-    store: React.PropTypes.object,
-    router: React.PropTypes.object,
-    document: React.PropTypes.any
+    // store: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
-EditorMenubarControls.propTypes = {
-    docState: PropTypes.any
-};
-
-function mapStateToProps(state) {
-    return {
-        docState: state
-    };
-}
-
-export default connect(
-    mapStateToProps
-)(EditorMenubarControls);
+export default EditorMenubarControls;

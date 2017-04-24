@@ -6,7 +6,6 @@ import init from "./init";
 import './main.css';
 
 // Load components
-import Loader from "./components/Loader/Loader";
 import {applyMiddleware, createStore} from "redux";
 import promiseMiddleware from 'redux-promise';
 import texDocsApp from './redux/reducers';
@@ -19,13 +18,12 @@ init();
 const logger = store => next => action => {
     console.log('dispatching', action);
     let result = next(action);
-    console.log('next state', store.getState());
+    // console.log('next state', store.getState());
     return result
 };
 
 const store = createStore(texDocsApp, applyMiddleware(promiseMiddleware, logger));
 
-// render(<Loader text="Initializing TexDocs"/>, target);
 render(
     <Provider store={store}>
         <MuiThemeProvider>

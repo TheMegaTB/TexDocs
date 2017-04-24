@@ -1,8 +1,11 @@
-import React, {Component} from 'react';
-import {DOC_CONTENT_ID, RENDER_DELAY, WS} from "../../../const";
+import React, {Component, PropTypes} from 'react';
+import { Map } from 'immutable';
+import {RENDER_DELAY, WS} from "../../../const";
 import PDFView from "./PDFView/PDFView";
 import Loader from "../../Loader/Loader";
 import {updateFile} from "../../../api/google";
+import {connect} from "react-redux";
+import {pdfChanged} from "../../../redux/actions/editor/files";
 
 class TexRenderer extends Component {
     constructor(args) {
@@ -18,73 +21,65 @@ class TexRenderer extends Component {
         WS.onmessage = (e) => {
             const pdfBlob = new Blob([e.data], { type: "application/pdf" });
 
-            renderer.setState({
-                blob: pdfBlob
-            });
-
-            const metadata = this.context.store.getState().get('metadata');
+            const metadata = this.props.files.get('metadata');
             if (metadata && !this.state.initial) {
-                updateFile(metadata.toJS(), pdfBlob);
+                updateFile(metadata, pdfBlob);
             } else if (this.state.initial) {
                 this.setState({ initial: false });
             }
 
-            this.context.store.dispatch({type: 'PDF_LOADED', url: window.URL.createObjectURL(pdfBlob)});
+            this.context.store.dispatch(pdfChanged(pdfBlob));
         };
 
         this.state = {
             wsOpen: WS.readyState === 1,
-            blob: undefined,
             initial: true
         };
 
-        this.requestBlob = this.requestBlob.bind(this);
         this.requestBlobFromDocument = this.requestBlobFromDocument.bind(this);
-        this.getContent = this.getContent.bind(this);
-    }
-
-    requestBlob(data) {
-        if (data !== '')
-            WS.send(JSON.stringify({ type: 'texSource', fileID: this.props.docID, tex: data.toString() }));
     }
 
     requestBlobFromDocument() {
         const renderer = this;
         if (this.renderTimeout) clearTimeout(this.renderTimeout);
+
         this.renderTimeout = setTimeout(() => {
-            const content = renderer.props.document ? renderer.getContent() : '';
-            renderer.requestBlob(content);
+            const data = renderer.props.files.get('tex');
+            if (data)
+                WS.send(JSON.stringify({
+                    type: 'texSource',
+                    fileID: this.props.files.get('metadata').id,
+                    tex: data.toString()
+                }));
         }, RENDER_DELAY);
     }
 
-    getContent() {
-        return this.props.document.getModel().getRoot().get(DOC_CONTENT_ID);
-    }
-
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.document !== this.props.document && this.props.document) {
-            this.getContent().addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, this.requestBlobFromDocument);
-            this.getContent().addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, this.requestBlobFromDocument);
-            this.requestBlobFromDocument();
-        }
+        const websocketGotOpened = !prevState.wsOpen && this.state.wsOpen;
+        const contentChanged = prevProps.files.get('tex') !== this.props.files.get('tex');
+        const metadataChanged = prevProps.files.get('metadata') !== this.props.files.get('metadata');
+        const requirementsMet = this.state.wsOpen && this.props.files.get('metadata');
 
-        if (!prevState.wsOpen && this.state.wsOpen)
+        if (requirementsMet && (contentChanged || websocketGotOpened || metadataChanged))
             this.requestBlobFromDocument();
     }
 
     render() {
-        const pdfView = <PDFView pdf={this.state.blob} />;
+        const tex = this.props.files.get('tex');
+        const blob = this.props.files.get('pdf');
+
+        const pdfView = <PDFView pdf={blob} />;
         const connecting = <Loader text="Connecting to server"/>;
         const processing = <Loader text="Processing document"/>;
         const waitingForDoc = <Loader text="Waiting for document"/>;
 
         if (!this.state.wsOpen) {
             return connecting;
-        } else if (!this.props.document) {
+        } else if (!tex) {
             return waitingForDoc;
-        } else if (!this.state.blob) {
+        } else if (!blob) {
             return processing;
-        } else if (this.state.wsOpen && this.state.blob) {
+        } else if (this.state.wsOpen && blob) {
             return pdfView;
         }
     }
@@ -94,4 +89,16 @@ TexRenderer.contextTypes = {
     store: React.PropTypes.object
 };
 
-export default TexRenderer;
+TexRenderer.propTypes = {
+    files: PropTypes.instanceOf(Map).isRequired
+};
+
+function mapStateToProps(state) {
+    return {
+        files: state.editor.files
+    };
+}
+
+export default connect(
+    mapStateToProps
+)(TexRenderer);

@@ -134,7 +134,7 @@ function refreshToken(cb) {
  * @param {File} fileData File object to read data from.
  * @param {Function} callback Callback function to call when the request is complete.
  */
-export function updateFile(fileMetadata, fileData, callback) {
+export function updateFile(fileMetadata, fileData, callback = undefined) {
     const fileId = fileMetadata.id;
     const boundary = '-------314159265358979323846';
     const delimiter = "\r\n--" + boundary + "\r\n";

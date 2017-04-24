@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
+import {Map} from "immutable";
 
 import AceEditor from 'react-ace';
 import brace from 'brace';
@@ -14,6 +15,11 @@ import {Cursor} from "../../../api/Cursor";
 import {getCommand} from "./completion/command";
 import {commandCompleter} from "./completion/commandCompleter";
 import {registerKeybindings} from "../../../api/keybindings";
+import {connect} from "react-redux";
+import {createCursor, editorLoaded, initializeEditor, setCaret} from "../../../redux/actions/editor/texEditor";
+import Loader from "../../Loader/Loader";
+import {EDITOR_UNLOADED} from "../../../redux/reducers/editor/texEditor";
+import {texChanged} from "../../../redux/actions/editor/files";
 
 const ace = require('brace');
 const Range = ace.acequire('ace/range').Range;
@@ -38,7 +44,7 @@ const AceProps = {
     highlightActiveLine: true
 };
 
-class SelectionStyle extends React.Component {
+class SelectionStyle extends Component {
     render() {
         return (
             <style key={'caret-style-' + this.props.id} dangerouslySetInnerHTML={{__html: `
@@ -61,23 +67,9 @@ class AceEditorContent extends React.Component {
     constructor(args) {
         super(args);
 
-        this.state = {
-            collabString: undefined,
-            content: "",
-            cursors: {},
-            fontSize: 15
-        };
+        this.state = { cursors: {} };
 
-        this.onSelectionChange = this.onSelectionChange.bind(this);
         this.setCollaboratorSelection = this.setCollaboratorSelection.bind(this);
-        this.onEditorLoad = this.onEditorLoad.bind(this);
-        this.onChange = this.onChange.bind(this);
-        this.onExternalChange = this.onExternalChange.bind(this);
-    }
-
-    onSelectionChange(type, value) {
-        if (this.state.cursor && !this.externalUpdate)
-            this.state.cursor.setCaret(type, value);
     }
 
     setCollaboratorSelection(caret) {
@@ -117,97 +109,56 @@ class AceEditorContent extends React.Component {
                 name: caret.name,
                 color: caret.color
             };
-            this.setState({
-                cursors: cursors
-            });
+            this.setState({ cursors: cursors });
         }
     }
 
-    onEditorLoad(editor) {
-        editor.$blockScrolling = Infinity;
-        editor.renderer.setScrollMargin(20, 20);
+    onLoad = (editor) => {
+        const document = this.props.editor.files.get('document');
+        const sessionID = this.props.editor.files.get('sessionID');
 
-        const selection = editor.session.getSelection();
-        const aceEditor = this;
-
-        const autoCompleteOn = ['insertstring', 'backspace', 'del'];
-        editor.commands.on("afterExec", function(e) {
-            if (autoCompleteOn.find((el) => el === e.command.name)) {
-                const cmd = getCommand(editor);
-                if (cmd && cmd.cmd.value && !editor.getSession().selectionMarkerCount) {
-                    editor.execCommand("startAutocomplete");
-                }
-            }
-        });
-
-        selection.selectionAnchor.addEventListener('change', (e) => {
-            aceEditor.onSelectionChange('anchor', e.value);
-        });
-        selection.selectionLead.addEventListener('change', (e) => {
-            aceEditor.onSelectionChange('lead', e.value);
-        });
-    }
-
-    onChange(e) {
-        this.setState({ content: e });
-        this.state.collabString.setText(e);
-    }
-
-    onExternalChange(e) {
-        if (!e.isLocal) {
-            this.externalUpdate = true;
-            const scrollPosition = this.aceEditor.editor.session.getScrollTop();
-            this.setState({ content: e.target.text });
-            this.aceEditor.editor.session.setScrollTop(scrollPosition);
-            this.externalUpdate = false;
-        }
-    }
+        this.context.store.dispatch(editorLoaded(editor, this.context.store));
+        this.context.store.dispatch(createCursor(document, sessionID, this.setCollaboratorSelection));
+    };
 
     componentDidMount() {
-        const document = this.props.document;
-        const collabString = document.getModel().getRoot().get(DOC_CONTENT_ID);
+        // registerKeybindings(this.aceEditor.editor.container, this.context.router.history);
+        //
+        // this.aceEditor.editor.container.addEventListener('keydown', (e) => {
+        //     if (e.ctrlKey && e.which === 189) {
+        //         e.preventDefault();
+        //         this.setState({ fontSize: this.state.fontSize - 1 });
+        //     } else if (e.ctrlKey && e.which === 187) {
+        //         e.preventDefault();
+        //         this.setState({ fontSize: this.state.fontSize + 1 });
+        //     }
+        // });
+    }
 
-        collabString.addEventListener(window.gapi.drive.realtime.EventType.TEXT_INSERTED, this.onExternalChange);
-        collabString.addEventListener(window.gapi.drive.realtime.EventType.TEXT_DELETED, this.onExternalChange);
-
-        const cursor = new Cursor(this.props.document, this.props.sID, this.setCollaboratorSelection);
-
-        this.setState({
-            collabString: collabString,
-            content: collabString.toString(),
-            cursor: cursor
-        });
-
-        registerKeybindings(this.aceEditor.editor.container, this.context.router.history);
-
-        this.aceEditor.editor.container.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.which === 189) {
-                e.preventDefault();
-                this.setState({ fontSize: this.state.fontSize - 1 });
-            } else if (e.ctrlKey && e.which === 187) {
-                e.preventDefault();
-                this.setState({ fontSize: this.state.fontSize + 1 });
-            }
-        });
+    componentWillUnmount() {
+        this.context.store.dispatch({ type: EDITOR_UNLOADED });
     }
 
     render() {
         const styles = [];
+
         for (let sID in this.state.cursors) {
             if (!this.state.cursors.hasOwnProperty(sID)) continue;
             const cursor = this.state.cursors[sID];
             styles.push(<SelectionStyle key={sID} id={sID} name={cursor.name} color={cursor.color} />)
         }
+
         return (
             <div>
-                <AceEditor
+                {this.props.editor.files.has('document') ? <AceEditor
                     {...AceProps}
-                    value={this.state.content}
-                    onChange={this.onChange}
-                    onLoad={this.onEditorLoad}
-                    fontSize={this.state.fontSize}
+                    value={this.props.editor.files.get('tex')}
+                    onChange={(e) => this.context.store.dispatch(texChanged(e))}
+                    fontSize={this.props.editor.texEditor.get('fontSize')}
                     ref={(aceEditor) => this.aceEditor = aceEditor}
-                />
+                    onLoad={this.onLoad}
+                    editorProps={{$blockScrolling: Infinity}}
+                /> : <Loader text="Loading document"/>}
                 {styles}
             </div>
         );
@@ -215,7 +166,20 @@ class AceEditorContent extends React.Component {
 }
 
 AceEditorContent.contextTypes = {
-    router: React.PropTypes.object
+    router: React.PropTypes.object,
+    store: React.PropTypes.object
 };
 
-export default AceEditorContent;
+AceEditorContent.propTypes = {
+    editor: React.PropTypes.object
+};
+
+function mapStateToProps(state) {
+    return {
+        editor: state.editor
+    };
+}
+
+export default connect(
+    mapStateToProps
+)(AceEditorContent);
