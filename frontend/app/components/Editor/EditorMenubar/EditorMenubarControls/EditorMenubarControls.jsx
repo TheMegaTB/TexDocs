@@ -7,11 +7,12 @@ import Popover, {PopoverAnimationVertical} from "material-ui/Popover";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import {DOC_CONTENT_ID, NEW_DOC_NAME} from "../../../../const";
-import {downloadPdf, downloadTex, printPdf} from "../../../../api/pdf";
+// import {downloadPdf, downloadTex, printPdf} from "../../../../api/io";
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import Printer from 'material-ui/svg-icons/maps/local-printshop';
 import Download from 'material-ui/svg-icons/editor/publish';
 import NewFile from 'material-ui/svg-icons/editor/insert-drive-file';
+import {downloadPDF, downloadTex, printPDF} from "../../../../redux/actions/editor/files";
 
 const menuBarFontStyle = {
     fontSize: 13,
@@ -59,18 +60,17 @@ class EditorMenubarControls extends Component {
 
     onFilePrint = () => {
         this.handleRequestClose();
-        // printPdf(this.props.docState);
+        this.props.dispatch(printPDF());
     };
 
     onFileDownload = () => {
         this.handleRequestClose();
-        // downloadPdf(this.props.docState);
+        this.props.dispatch(downloadPDF());
     };
 
     onTexFileDownload = () => {
         this.handleRequestClose();
-        // if (this.context.document)
-        //     downloadTex(this.context.document.getModel().getRoot().get(DOC_CONTENT_ID).toString(), this.props.docState);
+        this.props.dispatch(downloadTex());
     };
 
     render() {
@@ -131,8 +131,9 @@ class EditorMenubarControls extends Component {
 }
 
 EditorMenubarControls.contextTypes = {
-    // store: React.PropTypes.object,
     router: React.PropTypes.object
 };
 
-export default EditorMenubarControls;
+export default connect(
+    () => { return {} }
+)(EditorMenubarControls);

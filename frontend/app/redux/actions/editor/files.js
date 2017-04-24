@@ -1,4 +1,7 @@
-import {DOC_METADATA_LOADED, PDF_UPDATED, REALTIME_DOC_LOADED, TEX_UPDATED} from "../../reducers/editor/files";
+import {
+    DOC_METADATA_LOADED, DOWNLOAD_PDF, DOWNLOAD_TEX, PDF_UPDATED, PRINT_PDF, REALTIME_DOC_LOADED,
+    TEX_UPDATED
+} from "../../reducers/editor/files";
 import {DOC_CONTENT_ID} from "../../../const";
 
 function onFileInitialize(model) {
@@ -66,3 +69,7 @@ export function loadDocumentMetadata(client, id) {
         }));
     });
 }
+
+export function printPDF() { return { type: PRINT_PDF } }
+export function downloadPDF() { return { type: DOWNLOAD_PDF } }
+export function downloadTex() { return { type: DOWNLOAD_TEX } }
