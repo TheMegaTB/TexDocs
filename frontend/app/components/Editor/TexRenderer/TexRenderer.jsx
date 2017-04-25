@@ -14,9 +14,12 @@ class TexRenderer extends Component {
         const renderer = this;
 
         WS.onopen = () => {
-            renderer.setState({
-                wsOpen: true
-            });
+            renderer.setState({ wsOpen: true });
+            if (this.props.accessToken) // Send the accessToken to the server again since it might've restarted
+                WS.send(JSON.stringify({
+                    type: 'auth',
+                    token: this.props.accessToken
+                }));
         };
         WS.onmessage = (e) => {
             const pdfBlob = new Blob([e.data], { type: "application/pdf" });
@@ -86,9 +89,13 @@ class TexRenderer extends Component {
 }
 
 TexRenderer.propTypes = {
-    files: PropTypes.instanceOf(Map).isRequired
+    files: PropTypes.instanceOf(Map).isRequired,
+    accessToken: PropTypes.string
 };
 
 export default connect(
-    (state) => { return {files: state.editor.files} }
+    (state) => { return {
+        files: state.editor.files,
+        accessToken: state.googleAPI.get('accessToken')
+    }}
 )(TexRenderer);
