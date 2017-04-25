@@ -32,11 +32,12 @@ class EditorMenubarControls extends Component {
         };
     }
 
-    handleTouchTap = (event) => {
+    handleTouchTap = (target, event) => {
         // This prevents ghost click.
         event.preventDefault();
 
         this.setState({
+            target: target,
             open: true,
             anchorEl: event.currentTarget,
         });
@@ -76,9 +77,60 @@ class EditorMenubarControls extends Component {
     render() {
         const lastEdit = "TODO Last edit date"; // TODO Last edit
 
+        const menus = {};
+
+        menus.file = (
+            <Menu desktop={true} width={256}>
+                <MenuItem primaryText="New"
+                          onTouchTap={this.onFileCreate}
+                          leftIcon={<NewFile/>}
+                />
+                <MenuItem primaryText="Open" secondaryText="&#8984;O" onTouchTap={this.onFileOpen} insetChildren={true}/>
+                <Divider />
+                <MenuItem primaryText="Download"
+                          secondaryText="&#8997;&#8984;D"
+                          onTouchTap={this.onFileDownload}
+                          leftIcon={<Download style={{transform: 'rotate(180deg)'}}/>}
+                />
+                <MenuItem primaryText="Download as"
+                          insetChildren={true}
+                          rightIcon={<ArrowDropRight/>}
+                          menuItems={[
+                              <MenuItem primaryText="Latex text (.tex)" onTouchTap={this.onTexFileDownload}/>,
+                              <MenuItem primaryText="PDF Document (.pdf)" onTouchTap={this.onFileDownload}/>
+                          ]}
+                />
+                <Divider />
+                <MenuItem primaryText="Print"
+                          secondaryText="&#8984;P"
+                          leftIcon={<Printer/>}
+                          onTouchTap={this.onFilePrint}
+                />
+            </Menu>
+        );
+
+        menus.insert = (
+            <Menu desktop={true} width={256}>
+                <MenuItem primaryText="New"
+                          onTouchTap={this.onFileCreate}
+                          leftIcon={<NewFile/>}
+                />
+                <MenuItem primaryText="Open" secondaryText="&#8984;O" onTouchTap={this.onFileOpen} insetChildren={true}/>
+                <Divider />
+            </Menu>
+        );
+
         return (
             <div className="menubar-buttons">
-                <EditorButton label="File" onTouchTap={this.handleTouchTap}/>
+                <EditorButton label="File" onTouchTap={this.handleTouchTap.bind(null, 'file')}/>
+                <EditorButton label="Edit"/>
+                <EditorButton label="View"/>
+                <EditorButton label="Insert" onTouchTap={this.handleTouchTap.bind(null, 'insert')}/>
+                <EditorButton label="Format"/>
+                <EditorButton label="Tools"/>
+                <EditorButton label="Table"/>
+                <EditorButton label="Add-ons"/>
+                <EditorButton label="Help"/>
                 <Popover
                     open={this.state.open}
                     anchorEl={this.state.anchorEl}
@@ -86,44 +138,9 @@ class EditorMenubarControls extends Component {
                     targetOrigin={{horizontal: 'left', vertical: 'top'}}
                     onRequestClose={this.handleRequestClose}
                     animation={PopoverAnimationVertical}
-                    useLayerForClickAway={false}
                 >
-                    <Menu desktop={true} width={256}>
-                        <MenuItem primaryText="New"
-                                  onTouchTap={this.onFileCreate}
-                                  leftIcon={<NewFile/>}
-                        />
-                        <MenuItem primaryText="Open" secondaryText="&#8984;O" onTouchTap={this.onFileOpen} insetChildren={true}/>
-                        <Divider />
-                        <MenuItem primaryText="Download"
-                                  secondaryText="&#8997;&#8984;D"
-                                  onTouchTap={this.onFileDownload}
-                                  leftIcon={<Download style={{transform: 'rotate(180deg)'}}/>}
-                        />
-                        <MenuItem primaryText="Download as"
-                                  insetChildren={true}
-                                  rightIcon={<ArrowDropRight/>}
-                                  menuItems={[
-                                      <MenuItem primaryText="Latex text (.tex)" onTouchTap={this.onTexFileDownload}/>,
-                                      <MenuItem primaryText="PDF Document (.pdf)" onTouchTap={this.onFileDownload}/>
-                                  ]}
-                        />
-                        <Divider />
-                        <MenuItem primaryText="Print"
-                                  secondaryText="&#8984;P"
-                                  leftIcon={<Printer/>}
-                                  onTouchTap={this.onFilePrint}
-                        />
-                    </Menu>
+                    {menus[this.state.target]}
                 </Popover>
-                <EditorButton label="Edit"/>
-                <EditorButton label="View"/>
-                <EditorButton label="Insert"/>
-                <EditorButton label="Format"/>
-                <EditorButton label="Tools"/>
-                <EditorButton label="Table"/>
-                <EditorButton label="Add-ons"/>
-                <EditorButton label="Help"/>
                 <span className="last-edit" style={menuBarFontStyle}>{lastEdit}</span>
             </div>
         );
