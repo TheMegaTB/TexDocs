@@ -29,7 +29,9 @@ export function initGAPI(auth2) {
 }
 
 export function authorized(gAuth) {
-    // TODO Refresh token
+    // gAuth.grantOfflineAccess().then((e) => {
+    //     console.log("OFFLINE ACCESS GRANTED", e);
+    // });
     const profile = gAuth.currentUser.get().getBasicProfile();
     return {
         type: AUTHORIZED,

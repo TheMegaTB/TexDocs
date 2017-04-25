@@ -1,9 +1,26 @@
 import {getCommand} from "../../../components/Editor/EditorContent/completion/command";
-import {CREATE_CURSOR, EDITOR_LOADED, SET_CURSOR, SET_FONT_SIZE} from "../../reducers/editor/texEditor";
+import {BOLD, CREATE_CURSOR, EDITOR_LOADED, SET_CURSOR, SET_FONT_SIZE} from "../../reducers/editor/texEditor";
 import {Cursor} from "../../../api/Cursor";
 
 function initializeEditor(editor, dispatch) {
+    console.log(editor.commands);
     editor.renderer.setScrollMargin(20, 20);
+
+    editor.registerKeybinding = (keyCombo, action) => {
+        const onKeyDown = (e) => {
+            if (keyCombo.ctrl && !e.ctrlKey) return;
+            if (keyCombo.alt && !e.altKey) return;
+            if (keyCombo.key !== e.which) return;
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            if (typeof action === 'function') dispatch(action());
+            else if (typeof action === 'string') dispatch({ type: action });
+        };
+
+        editor.container.addEventListener('keydown', onKeyDown);
+        document.addEventListener('keydown', onKeyDown);
+    };
 
     const autoCompleteOn = ['insertstring', 'backspace', 'del'];
     editor.commands.on("afterExec", function(e) {
@@ -24,15 +41,9 @@ function initializeEditor(editor, dispatch) {
         dispatch(setCaret('lead', e.value));
     });
 
-    editor.container.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.which === 189) {
-            e.preventDefault();
-            dispatch(setFontSize('-'));
-        } else if (e.ctrlKey && e.which === 187) {
-            e.preventDefault();
-            dispatch(setFontSize('+'));
-        }
-    });
+    editor.registerKeybinding({ ctrlKey: true, key: 189 }, setFontSize.bind(null, '-'));
+    editor.registerKeybinding({ ctrlKey: true, key: 187 }, setFontSize.bind(null, '+'));
+    editor.registerKeybinding({ ctrlKey: true, key: 66 }, BOLD);
 }
 
 export function editorLoaded(editor, dispatch) {

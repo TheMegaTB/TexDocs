@@ -15,6 +15,8 @@ export const CREATE_CURSOR = 'cursor_create';
 export const SET_CURSOR = 'cursor_set';
 export const SET_FONT_SIZE = 'font_size';
 
+export const BOLD = 'insert_bold';
+
 export function texEditor(state = initialEditorState, action) {
     switch (action.type) {
         case EDITOR_LOADED:

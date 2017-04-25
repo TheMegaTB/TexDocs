@@ -8,7 +8,7 @@ import './main.css';
 // Load redux bits and bobs
 import {applyMiddleware, createStore} from "redux";
 import promiseMiddleware from 'redux-promise';
-import {logger} from "./redux/middleware";
+import {editor, logger} from "./redux/middleware";
 import texDocsApp from './redux/reducers';
 
 // Load components
@@ -21,7 +21,7 @@ import {MuiThemeProvider} from "material-ui";
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
-const store = createStore(texDocsApp, applyMiddleware(promiseMiddleware, logger));
+const store = createStore(texDocsApp, applyMiddleware(promiseMiddleware, logger, editor));
 
 render(
     <Provider store={store}>
