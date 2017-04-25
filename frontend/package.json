@@ -40,6 +40,7 @@
     "react-split-pane": "^0.1.61",
     "react-sticky": "^5.0.8",
     "react-tap-event-plugin": "^2.0.1",
+    "reconnecting-websocket": "^3.0.3",
     "redux": "^3.6.0",
     "redux-promise": "^0.5.3",
     "saiku-react-pdfjs": "^1.0.1",

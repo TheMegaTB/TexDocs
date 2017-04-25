@@ -44,7 +44,7 @@ export function googleAPI(state = initialGAPIState, action) {
         case TOKEN_REFRESH:
             WS.send(JSON.stringify({
                 type: 'auth',
-                token: action.fullToken
+                token: action.token
             }));
             return state.set('accessToken', action.token);
         case TOKEN_REFRESHER_REGISTERED:

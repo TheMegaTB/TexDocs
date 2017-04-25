@@ -29,9 +29,6 @@ export function initGAPI(auth2) {
 }
 
 export function authorized(gAuth) {
-    // gAuth.grantOfflineAccess().then((e) => {
-    //     console.log("OFFLINE ACCESS GRANTED", e);
-    // });
     const profile = gAuth.currentUser.get().getBasicProfile();
     return {
         type: AUTHORIZED,
@@ -44,7 +41,7 @@ export function authorized(gAuth) {
     };
 }
 
-export function authorize(auth2, gAuth) {
+export function authorize(gAuth) {
     return new Promise((resolve, reject) => {
         gAuth.signIn().then(() => {
             resolve(authorized(gAuth));
@@ -63,11 +60,9 @@ export function refreshToken(auth) {
             scope: SCOPES,
             immediate: true
         }, (res) => {
-            console.log(res);
             resolve({
                 type: TOKEN_REFRESH,
-                token: res.access_token,
-                fullToken: res
+                token: res.access_token
             });
         });
     });

@@ -17,4 +17,4 @@ coverage/
 dist
 assets.json
 
-backend/client_secret.json
+backend/src/credentials.json

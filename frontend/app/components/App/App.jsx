@@ -49,7 +49,6 @@ class App extends Component {
         const apiInitialized = googleAPI.has('gAuth');
         const apiAuthorized = googleAPI.has('user');
 
-        const auth2 = googleAPI.has('api') ? googleAPI.get('api').auth2 : undefined;
         const gAuth = googleAPI.get('gAuth');
         const accessToken = googleAPI.get('accessToken');
 
@@ -60,7 +59,7 @@ class App extends Component {
         else if (!apiAuthorized && gAuth.isSignedIn.get())
             return <Loader text="Authorizing TexDocs"/>;
         else if (!apiAuthorized)
-            return <Authorize onAuthClick={() => this.props.dispatch(authorize(auth2, gAuth))}/>;
+            return <Authorize onAuthClick={() => this.props.dispatch(authorize(gAuth))}/>;
         else if (!accessToken)
             return <Loader text="Authenticating TexDocs"/>;
 

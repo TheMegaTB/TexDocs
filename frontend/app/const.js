@@ -1,3 +1,5 @@
+const WebSocket = require('reconnecting-websocket');
+
 export const target = document.getElementById('render-target');
 
 export const gapi = {
