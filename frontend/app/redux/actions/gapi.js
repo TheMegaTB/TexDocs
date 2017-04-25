@@ -63,9 +63,11 @@ export function refreshToken(auth) {
             scope: SCOPES,
             immediate: true
         }, (res) => {
+            console.log(res);
             resolve({
                 type: TOKEN_REFRESH,
-                token: res.access_token
+                token: res.access_token,
+                fullToken: res
             });
         });
     });

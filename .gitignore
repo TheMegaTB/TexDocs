@@ -16,3 +16,5 @@ npm-debug.log
 coverage/
 dist
 assets.json
+
+backend/client_secret.json

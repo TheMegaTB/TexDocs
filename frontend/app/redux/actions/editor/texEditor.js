@@ -8,8 +8,9 @@ function initializeEditor(editor, dispatch) {
 
     editor.registerKeybinding = (keyCombo, action) => {
         const onKeyDown = (e) => {
-            if (keyCombo.ctrl && !e.ctrlKey) return;
-            if (keyCombo.alt && !e.altKey) return;
+            if ((keyCombo.ctrl && !e.ctrlKey) || (!keyCombo.ctrl && e.ctrlKey)) return;
+            if ((keyCombo.alt && !e.altKey) || (!keyCombo.alt && e.altKey)) return;
+            if ((keyCombo.meta && !e.metaKey) || (!keyCombo.meta && e.metaKey)) return;
             if (keyCombo.key !== e.which) return;
 
             e.preventDefault();
@@ -41,9 +42,9 @@ function initializeEditor(editor, dispatch) {
         dispatch(setCaret('lead', e.value));
     });
 
-    editor.registerKeybinding({ ctrlKey: true, key: 189 }, setFontSize.bind(null, '-'));
-    editor.registerKeybinding({ ctrlKey: true, key: 187 }, setFontSize.bind(null, '+'));
-    editor.registerKeybinding({ ctrlKey: true, key: 66 }, BOLD);
+    editor.registerKeybinding({ ctrl: true, key: 189 }, setFontSize.bind(null, '-'));
+    editor.registerKeybinding({ ctrl: true, key: 187 }, setFontSize.bind(null, '+'));
+    editor.registerKeybinding({ ctrl: true, key: 66 }, BOLD);
 }
 
 export function editorLoaded(editor, dispatch) {

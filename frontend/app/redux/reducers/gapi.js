@@ -24,6 +24,8 @@ export const AUTHORIZED = 'authorized';
 export const TOKEN_REFRESH = 'token_refresh';
 export const TOKEN_REFRESHER_REGISTERED = 'token_refresher_register';
 
+import {WS} from '../../const';
+
 export function googleAPI(state = initialGAPIState, action) {
     switch (action.type) {
         case API_LOADED:
@@ -40,6 +42,10 @@ export function googleAPI(state = initialGAPIState, action) {
         case AUTHORIZED:
             return state.set('user', action.user);
         case TOKEN_REFRESH:
+            WS.send(JSON.stringify({
+                type: 'auth',
+                token: action.fullToken
+            }));
             return state.set('accessToken', action.token);
         case TOKEN_REFRESHER_REGISTERED:
             return state.set('tokenRefresher', action.intervalID);

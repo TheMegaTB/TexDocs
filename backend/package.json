@@ -7,6 +7,9 @@
   "dependencies": {
     "express": "^4.15.2",
     "express-error-handler": "^1.1.0",
+    "google-auth-library": "^0.10.0",
+    "googleapis": "^19.0.0",
+    "md5": "^2.2.1",
     "mz": "^2.6.0",
     "rimraf": "^2.6.1",
     "uuid": "^3.0.1",
