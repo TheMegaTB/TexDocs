@@ -21,6 +21,11 @@ import {MuiThemeProvider} from "material-ui";
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
+// Load a global PDFJS worker so that the file does not get fetched EVERY time a PDF is rendered
+import pdfjsLib from "pdfjs-dist";
+pdfjsLib.PDFJS.workerSrc = `/pdf.worker.js`;
+window.pdfWorker = new pdfjsLib.PDFWorker();
+
 const store = createStore(texDocsApp, applyMiddleware(promiseMiddleware, logger, editor));
 
 render(

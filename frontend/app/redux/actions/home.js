@@ -12,7 +12,7 @@ export async function updateFileList(driveAPI) {
 
 export async function generateThumbnail(driveAPI, id, width, dsrFactor) {
     const pdf = await fetchFile(driveAPI, id);
-    const pdfDocument = await pdfjsLib.PDFJS.getDocument({ data: pdf });
+    const pdfDocument = await pdfjsLib.PDFJS.getDocument({ worker: window.pdfWorker, data: pdf });
     const page = await pdfDocument.getPage(1);
 
     const viewport = page.getViewport((width / page.getViewport(1.0).width) * dsrFactor);

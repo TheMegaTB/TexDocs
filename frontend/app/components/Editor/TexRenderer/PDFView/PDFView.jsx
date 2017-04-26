@@ -7,8 +7,6 @@ import "./PDFView.css";
 import Loader from "../../../Loader/Loader";
 import Page from "./Page";
 
-pdfjsLib.PDFJS.workerSrc = `/pdf.worker.js`;
-
 function hammerIt(elm, cb) {
     const hammertime = new Hammer(elm, {});
     hammertime.get('pinch').set({
@@ -108,7 +106,7 @@ export default class PDFView extends Component {
     }
 
     renderDocument(doc) {
-        pdfjsLib.PDFJS.getDocument(doc).then((pdf) => {
+        pdfjsLib.PDFJS.getDocument({worker: window.pdfWorker, data: doc}).then((pdf) => {
             this.setState({
                 pdf: pdf
             });
@@ -124,7 +122,7 @@ export default class PDFView extends Component {
         const viewer = this;
         if (this.props.pdf instanceof Blob) {
             const fileReader = new FileReader();
-            fileReader.onload = () => viewer.renderDocument({ data: fileReader.result });
+            fileReader.onload = () => viewer.renderDocument(fileReader.result);
             fileReader.readAsArrayBuffer(this.props.pdf);
         } else {
             viewer.renderDocument(this.props.pdf);
