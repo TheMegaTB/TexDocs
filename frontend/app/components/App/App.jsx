@@ -37,8 +37,8 @@ class App extends Component {
             dispatch(registerTokenRefresher(auth, dispatch));
     };
 
-    componentDidUpdate() {
-        this.dispatchActions();
+    componentDidUpdate(prevProps) {
+        if (prevProps.history === this.props.history) this.dispatchActions();
     }
 
     componentDidMount() {
