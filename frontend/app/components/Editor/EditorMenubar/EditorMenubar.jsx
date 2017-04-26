@@ -11,6 +11,7 @@ import {fullWhite} from 'material-ui/styles/colors';
 import "./EditorMenubar.css";
 import EditorMenubarControls from "./EditorMenubarControls/EditorMenubarControls";
 import {Link} from "react-router-dom";
+import {shareFile} from "../../../api/google";
 
 const TexDocsButton = () =>
     <Link to="/" className="tex-docs-button">
@@ -18,6 +19,14 @@ const TexDocsButton = () =>
     </Link>;
 
 class EditorMenubar extends Component {
+    share = () => {
+        shareFile(
+            this.props.googleAPI.get('api').share,
+            this.props.googleAPI.get('accessToken'),
+            this.props.files.get('metadata').id
+        );
+    };
+
     render() {
         const document = this.props.files.get('document');
         const metadata = this.props.files.get('metadata');
@@ -80,6 +89,7 @@ class EditorMenubar extends Component {
                             labelStyle={{fontSize: 13}}
                             style={{height: '29px', lineHeight: '29px', minWidth: '78px', color: fullWhite, whiteSpace: 'nowrap', display: 'inline-block'}}
                             label="Share"
+                            onTouchTap={this.share}
                         />
                     </div>
                 </div>

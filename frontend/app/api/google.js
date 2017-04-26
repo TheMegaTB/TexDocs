@@ -81,3 +81,12 @@ export async function uploadPDF(client, fileId, pdfBlob) {
         'body': multipartRequestBody});
     request.execute();
 }
+
+let shareClient = undefined;
+
+export function shareFile(shareAPI, accessToken, id) {
+    if (!shareClient) shareClient = new shareAPI.ShareClient();
+    shareClient.setItemIds([id]);
+    shareClient.setOAuthToken(accessToken);
+    shareClient.showSettingsDialog();
+}

@@ -38,7 +38,8 @@ export function googleAPI(state = initialGAPIState, action) {
                     realtime: window.gapi.drive.realtime,
                     client: window.gapi.client,
                     drive: window.gapi.client.drive,
-                    picker: window.google.picker
+                    picker: window.google.picker,
+                    share: window.gapi.drive.share
                 }
             );
         case AUTH_INITIALIZED:
