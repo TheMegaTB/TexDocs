@@ -1,5 +1,4 @@
 import React from "react";
-import NoDocumentPopup from "../NoDocumentPopup/NoDocumentPopup";
 import FilePicker from "../FilePicker/FilePicker";
 import {AppBar} from "material-ui";
 
@@ -27,7 +26,6 @@ export default class Home extends React.Component {
                     <FilePicker/>
                 </div>
             </div>
-            {/*<NoDocumentPopup history={this.props.history} title="No document opened." text="Choose one of the following options to get started."/>*/}
         </StickyContainer>;
     }
 }
