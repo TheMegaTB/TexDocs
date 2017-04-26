@@ -66,6 +66,46 @@ export function createCursor(document, sessionID, cb) {
     }
 }
 
+export function insertImage(accessToken, picker) {
+
+
+    // window.gapi.client.drive.files.list({
+    //     key: API_KEY,
+    //     q: "mimeType='application/vnd.google-apps.folder' and name='Photos'"
+    // }, (err, res) => {
+    //     console.log("REQUEST DONE", err, res);
+    // }).execute((a) => {console.log(a)});
+
+    return new Promise((resolve, reject) => {
+        const callback = (data) => {
+            console.log(data);
+            if (data[picker.Response.ACTION] === picker.Action.PICKED) {
+                var doc = data[picker.Response.DOCUMENTS][0];
+                // url = doc[picker.Document.URL];
+                resolve(doc);
+            } // TODO Reject
+        };
+        const view = new picker.View(picker.ViewId.IMAGE_SEARCH);
+        const driveView = new picker.View(picker.ViewId.DOCS_IMAGES);
+        const driveUploadView = new picker.DocsUploadView().setParent('1FeLIjh1iHCdE3SKHDcpvDeVAjVy9fRDy6K5D62Af660');
+
+        const yourPhotos = new picker.ViewGroup(picker.ViewId.PHOTOS);
+        yourPhotos.addView(new picker.PhotosView().setType(picker.PhotosView.Type.UPLOADED));
+
+        const p = new picker.PickerBuilder()
+            .addView(driveUploadView)
+            .addView(driveView)
+            .addView(picker.ViewId.PHOTO_UPLOAD)
+            .addView(view)
+            .addViewGroup(yourPhotos)
+            .setOAuthToken(accessToken)
+            .setCallback(callback)
+            .build();
+        //  .setDeveloperKey(developerKey)
+        p.setVisible(true);
+    });
+}
+
 export function setCaret(type, value) {
     return {
         type: SET_CURSOR,

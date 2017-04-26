@@ -3,9 +3,9 @@ import { Map } from 'immutable';
 import {RENDER_DELAY, WS} from "../../../const";
 import PDFView from "./PDFView/PDFView";
 import Loader from "../../Loader/Loader";
-import {updateFile} from "../../../api/google";
 import {connect} from "react-redux";
 import {pdfChanged} from "../../../redux/actions/editor/files";
+import {uploadPDF} from "../../../api/google";
 
 class TexRenderer extends Component {
     constructor(args) {
@@ -26,7 +26,7 @@ class TexRenderer extends Component {
 
             const metadata = this.props.files.get('metadata');
             if (metadata && !this.state.initial) {
-                updateFile(metadata, pdfBlob);
+                uploadPDF(this.props.client, metadata.id, pdfBlob).then(null, console.error);
             } else if (this.state.initial) {
                 this.setState({ initial: false });
             }
@@ -90,12 +90,14 @@ class TexRenderer extends Component {
 
 TexRenderer.propTypes = {
     files: PropTypes.instanceOf(Map).isRequired,
-    accessToken: PropTypes.string
+    accessToken: PropTypes.string,
+    client: PropTypes.object
 };
 
 export default connect(
     (state) => { return {
         files: state.editor.files,
-        accessToken: state.googleAPI.get('accessToken')
+        accessToken: state.googleAPI.get('accessToken'),
+        client: state.googleAPI.get('api').client
     }}
 )(TexRenderer);

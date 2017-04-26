@@ -1,18 +1,19 @@
 import React, {Component, PropTypes} from "react";
 import {connect} from "react-redux";
-import {createDocument, openDocument} from '../../../../api/google';
 
 import {Divider, FlatButton} from "material-ui";
 import Popover, {PopoverAnimationVertical} from "material-ui/Popover";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
-import {DOC_CONTENT_ID, NEW_DOC_NAME} from "../../../../const";
-// import {downloadPdf, downloadTex, printPdf} from "../../../../api/io";
+import {NEW_DOC_NAME} from "../../../../const";
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import Printer from 'material-ui/svg-icons/maps/local-printshop';
 import Download from 'material-ui/svg-icons/editor/publish';
 import NewFile from 'material-ui/svg-icons/editor/insert-drive-file';
 import {downloadPDF, downloadTex, printPDF} from "../../../../redux/actions/editor/files";
+import {insertImage} from "../../../../redux/actions/editor/texEditor";
+import {Map} from 'immutable';
+import {createFile, openDashboard} from "../../../../redux/actions/navigation";
 
 const menuBarFontStyle = {
     fontSize: 13,
@@ -51,12 +52,13 @@ class EditorMenubarControls extends Component {
 
     onFileOpen = () => {
         this.handleRequestClose();
-        // openDocument(this.context.router.history);
+        console.log(this.context);
+        this.props.dispatch(openDashboard(this.context.router.history));
     };
 
     onFileCreate = () => {
         this.handleRequestClose();
-        // createDocument(NEW_DOC_NAME, this.context.router.history);
+        this.props.dispatch(createFile(this.props.googleAPI.get('api').drive, NEW_DOC_NAME));
     };
 
     onFilePrint = () => {
@@ -72,6 +74,14 @@ class EditorMenubarControls extends Component {
     onTexFileDownload = () => {
         this.handleRequestClose();
         this.props.dispatch(downloadTex());
+    };
+
+    onImageInsert = () => {
+        this.handleRequestClose();
+        const accessToken = this.props.googleAPI.get('accessToken');
+        const pickerAPI = this.props.googleAPI.get('api').picker;
+        console.log(accessToken, pickerAPI);
+        this.props.dispatch(insertImage(accessToken, pickerAPI));
     };
 
     render() {
@@ -111,8 +121,8 @@ class EditorMenubarControls extends Component {
 
         menus.insert = (
             <Menu desktop={true} width={256}>
-                <MenuItem primaryText="New"
-                          onTouchTap={this.onFileCreate}
+                <MenuItem primaryText="Image"
+                          onTouchTap={this.onImageInsert}
                           leftIcon={<NewFile/>}
                 />
                 <MenuItem primaryText="Open" secondaryText="&#8984;O" onTouchTap={this.onFileOpen} insetChildren={true}/>
@@ -151,6 +161,14 @@ EditorMenubarControls.contextTypes = {
     router: React.PropTypes.object
 };
 
+EditorMenubarControls.propTypes = {
+    googleAPI: PropTypes.instanceOf(Map).isRequired
+};
+
 export default connect(
-    () => { return {} }
+    (state) => {
+        return {
+            googleAPI: state.googleAPI
+        }
+    }
 )(EditorMenubarControls);

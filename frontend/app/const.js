@@ -20,10 +20,12 @@ export const MIME_TYPE = 'application/x-latex';
 export const DRIVE_MIME_TYPE = 'application/pdf';
 export const TOKEN_REFRESH_INT = 1800000; // 30 minutes
 export const CLIENT_ID = '367816881553-mnu299ct2iokf5vhbg9t07dvchg342g4.apps.googleusercontent.com';
+export const API_KEY = 'AIzaSyAh-8jFkW3eoXMp_qT6obuUOX-WnGFS43U';
 export const SCOPES = [
     'https://www.googleapis.com/auth/drive.install',
     'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/drive.readonly'
+    'https://www.googleapis.com/auth/drive.readonly',
+    'https://www.googleapis.com/auth/photos'
 ];
 
 export const RENDER_DELAY = 250;

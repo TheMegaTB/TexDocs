@@ -22,6 +22,7 @@ if (PRODUCTION) {
 
 const config = {
     entry: [
+        'babel-polyfill',
         path.resolve(__dirname, 'app/main.jsx')
     ],
     output: {

@@ -1,6 +1,7 @@
 import { Map } from 'immutable';
 import {DOC_CONTENT_ID, MIME_TYPE} from "../../../const";
 import {EDITOR_UNLOADED} from "./texEditor";
+import {FILE_CREATED} from "../navigation";
 
 const initialFileState = Map({
     // tex: "",
@@ -38,6 +39,7 @@ function downloadFile(url, filename) {
 export function files(state = initialFileState, action) {
     switch (action.type) {
         case EDITOR_UNLOADED:
+        case FILE_CREATED:
             return state.delete('tex').delete('pdf').delete('document').delete('metadata').delete('sessionID');
 
         case REALTIME_DOC_LOADED:

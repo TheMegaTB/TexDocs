@@ -1,6 +1,6 @@
 import {store} from './reducers';
 import {downloadPdf, printPdf} from "./io";
-import {openDocument} from "./google";
+import {openDocument} from "./googleOld";
 
 const printListener = (e) => {
     // CTRL + P

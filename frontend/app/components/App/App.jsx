@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from "react";
 import Editor from "../Editor/Editor";
-import {BrowserRouter as Router, Route} from "react-router-dom";
+// import {BrowserRouter as Router, Route} from "react-router-dom";
+import { Router } from 'react-router';
+import { Route } from 'react-router-dom';
 import {Map} from "immutable";
 
 import "./App.css";
@@ -10,6 +12,7 @@ import {connect} from "react-redux";
 import {authorize, authorized, initGAPI, loadGAPI, registerTokenRefresher} from "../../redux/actions/gapi";
 import Loader from "../Loader/Loader";
 import Authorize from "./Authorize";
+import {createHistory} from "../../redux/actions/navigation";
 
 class App extends Component {
     dispatchActions = () => {
@@ -40,6 +43,8 @@ class App extends Component {
 
     componentDidMount() {
         this.dispatchActions();
+
+        this.props.dispatch(createHistory());
     }
 
     render() {
@@ -64,7 +69,7 @@ class App extends Component {
             return <Loader text="Authenticating TexDocs"/>;
 
         return (
-            <Router>
+            <Router history={this.props.history}>
                 <div>
                     <Route exact path="/" component={Home}/>
                     <Route path="/d/:id" component={Editor}/>
@@ -75,9 +80,13 @@ class App extends Component {
 }
 
 App.propTypes = {
-    googleAPI: PropTypes.instanceOf(Map).isRequired
+    googleAPI: PropTypes.instanceOf(Map).isRequired,
+    history: PropTypes.object
 };
 
 export default connect(
-    (state) => { return { googleAPI: state.googleAPI } }
+    (state) => { return {
+        googleAPI: state.googleAPI,
+        history: state.navigation.get('history')
+    } }
 )(App);

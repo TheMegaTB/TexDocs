@@ -2,7 +2,7 @@ import {
     DOC_METADATA_LOADED, DOWNLOAD_PDF, DOWNLOAD_TEX, PDF_UPDATED, PRINT_PDF, REALTIME_DOC_LOADED,
     TEX_UPDATED
 } from "../../reducers/editor/files";
-import {DOC_CONTENT_ID} from "../../../const";
+import {DOC_CONTENT_ID, DOC_CURSORS_ID} from "../../../const";
 
 function onFileInitialize(model) {
     const string = model.createString(require("raw-loader!../../../static/templates/Generic.tex"));

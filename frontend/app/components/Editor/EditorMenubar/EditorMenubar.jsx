@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from "react";
-import {loadDocumentMetadata} from "../../../api/google";
 import {Map} from "immutable";
 import {connect} from "react-redux";
 import {FlatButton} from "material-ui";

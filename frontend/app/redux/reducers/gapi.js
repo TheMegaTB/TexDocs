@@ -5,7 +5,9 @@ const initialGAPIState = Map({
     //     auth: ...,
     //     auth2: ...,
     //     realtime: ...,
-    //     client: ...
+    //     client: ...,
+    //     drive: ...,
+    //     picker: ...
     // },
     // gAuth: ...,
     // user: {
@@ -34,7 +36,9 @@ export function googleAPI(state = initialGAPIState, action) {
                     auth: window.gapi.auth,
                     auth2: window.gapi.auth2,
                     realtime: window.gapi.drive.realtime,
-                    client: window.gapi.client
+                    client: window.gapi.client,
+                    drive: window.gapi.client.drive,
+                    picker: window.google.picker
                 }
             );
         case AUTH_INITIALIZED:

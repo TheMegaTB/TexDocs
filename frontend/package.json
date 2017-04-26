@@ -18,6 +18,7 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1"
   },
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "babel-runtime": "6.x",
     "brace": "^0.10.0",
     "copy-webpack-plugin": "^4.0.1",

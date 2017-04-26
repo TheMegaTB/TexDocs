@@ -6,8 +6,10 @@ import {CLIENT_ID, SCOPES, TOKEN_REFRESH_INT} from "../../const";
 export function loadGAPI() {
     return new Promise(resolve => {
         window.gapi.load('auth2,auth:client,drive-realtime,drive-share,picker', () => {
-            resolve({
-                type: API_LOADED
+            window.gapi.client.load('drive', 'v3', () => {
+                resolve({
+                    type: API_LOADED
+                });
             });
         });
     });
