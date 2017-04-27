@@ -17,6 +17,7 @@ async function handleRequest(message, userID) {
                 const tmpDir = await user.dir;
                 await fetchTexDependencies(data.tex, user);
                 parseTex(data.tex, tmpDir, data.fileID).then(([log, lint, pdf]) => {
+                    if (data.upload) google.updateFile(data.fileID, user.auth, pdf);
                     user.connection.send(pdf, {binary: true});
                 }).catch((err) => {
                     // Job got cancelled for some reason

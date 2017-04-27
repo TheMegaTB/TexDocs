@@ -64,7 +64,27 @@ async function syncDriveFile(id, targetFile, oauth2Client) {
     return false;
 }
 
+function updateFile(id, oauth2Client, blob) {
+    const driveAPI = google.drive({ version: 'v3', auth: oauth2Client });
+
+    const media = {
+        mimeType: 'application/pdf',
+        body: blob
+    };
+    driveAPI.files.update({
+        fileId: id,
+        resource: {},
+        media: media,
+        fields: 'id',
+        auth: oauth2Client,
+        key: credentials.apiKey
+    }, function(err, file) {
+        if(err) console.log('The API returned an error: ' + err);
+    });
+}
+
 module.exports = {
     createOAuthInstance:createOAuthInstance,
-    syncDriveFile: syncDriveFile
+    syncDriveFile: syncDriveFile,
+    updateFile: updateFile
 };

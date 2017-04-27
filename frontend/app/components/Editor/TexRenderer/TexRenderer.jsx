@@ -15,6 +15,7 @@ class TexRenderer extends Component {
 
         WS.onopen = () => {
             renderer.setState({ wsOpen: true });
+
             if (this.props.accessToken) // Send the accessToken to the server again since it might've restarted
                 WS.send(JSON.stringify({
                     type: 'auth',
@@ -24,14 +25,9 @@ class TexRenderer extends Component {
         WS.onmessage = (e) => {
             const pdfBlob = new Blob([e.data], { type: "application/pdf" });
 
-            const metadata = this.props.files.get('metadata');
-            if (metadata && !this.state.initial) {
-                uploadPDF(this.props.client, metadata.id, pdfBlob).then(null, console.error);
-            } else if (this.state.initial) {
-                this.setState({ initial: false });
-            }
-
             this.props.dispatch(pdfChanged(pdfBlob));
+
+            if (this.state.initial) this.setState({ initial: false });
         };
 
         this.state = {
@@ -52,7 +48,8 @@ class TexRenderer extends Component {
                 WS.send(JSON.stringify({
                     type: 'texSource',
                     fileID: this.props.files.get('metadata').id,
-                    tex: data.toString()
+                    tex: data.toString(),
+                    upload: !this.state.initial
                 }));
         }, RENDER_DELAY);
     }
