@@ -1,6 +1,11 @@
 import {getCommand} from "../../../components/Editor/EditorContent/completion/command";
-import {BOLD, CREATE_CURSOR, EDITOR_LOADED, SET_CURSOR, SET_FONT_SIZE} from "../../reducers/editor/texEditor";
+import {
+    BOLD, CREATE_CURSOR, EDITOR_LOADED, INSERT_IMAGE, SET_CURSOR,
+    SET_FONT_SIZE
+} from "../../reducers/editor/texEditor";
 import {Cursor} from "../../../api/Cursor";
+import {getPhotosFolder} from "../../../api/google";
+import {SERVICE_MAPPING} from "../../../const";
 
 function initializeEditor(editor, dispatch) {
     console.log(editor.commands);
@@ -66,28 +71,25 @@ export function createCursor(document, sessionID, cb) {
     }
 }
 
-export function insertImage(accessToken, picker) {
+export async function insertImage(driveAPI, accessToken, picker) {
+    const photosFolderID = await getPhotosFolder(driveAPI);
 
-
-    // window.gapi.client.drive.files.list({
-    //     key: API_KEY,
-    //     q: "mimeType='application/vnd.google-apps.folder' and name='Photos'"
-    // }, (err, res) => {
-    //     console.log("REQUEST DONE", err, res);
-    // }).execute((a) => {console.log(a)});
-
-    return new Promise((resolve, reject) => {
+    const imageID = new Promise((resolve, reject) => {
         const callback = (data) => {
-            console.log(data);
             if (data[picker.Response.ACTION] === picker.Action.PICKED) {
-                var doc = data[picker.Response.DOCUMENTS][0];
-                // url = doc[picker.Document.URL];
-                resolve(doc);
-            } // TODO Reject
+                const doc = data[picker.Response.DOCUMENTS][0];
+                resolve({
+                    type: INSERT_IMAGE,
+                    service: SERVICE_MAPPING.hasOwnProperty(doc.serviceId) ? SERVICE_MAPPING[doc.serviceId] : doc.serviceId,
+                    id: doc.id
+                });
+            } else if (data[picker.Response.ACTION] === picker.Action.CANCEL) {
+                reject(data);
+            }
         };
         const view = new picker.View(picker.ViewId.IMAGE_SEARCH);
         const driveView = new picker.View(picker.ViewId.DOCS_IMAGES);
-        const driveUploadView = new picker.DocsUploadView().setParent('1FeLIjh1iHCdE3SKHDcpvDeVAjVy9fRDy6K5D62Af660');
+        const driveUploadView = new picker.DocsUploadView().setParent(photosFolderID);
 
         const yourPhotos = new picker.ViewGroup(picker.ViewId.PHOTOS);
         yourPhotos.addView(new picker.PhotosView().setType(picker.PhotosView.Type.UPLOADED));
@@ -101,9 +103,10 @@ export function insertImage(accessToken, picker) {
             .setOAuthToken(accessToken)
             .setCallback(callback)
             .build();
-        //  .setDeveloperKey(developerKey)
         p.setVisible(true);
     });
+
+    return await imageID;
 }
 
 export function setCaret(type, value) {

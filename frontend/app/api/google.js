@@ -13,6 +13,33 @@ export function searchDrive(driveAPI, searchString, fields) {
     });
 }
 
+export function getOrCreateFolder(driveAPI, folderName, parent = 'root') {
+    return new Promise((resolve, reject) => {
+        driveAPI.files.list({
+            key: API_KEY,
+            q: `mimeType='application/vnd.google-apps.folder' and name='${folderName}' and '${parent}' in parents`
+        }).execute((res) => {
+            if (res.files.length === 0 || res.files.length > 1)
+                driveAPI.files.create({
+                    fields: 'name,mimeType,id',
+                    name: folderName,
+                    parents: [parent],
+                    mimeType: 'application/vnd.google-apps.folder'
+                }).then((res) => {
+                    if (res.status === 200) resolve(res.result.id);
+                    else reject(res);
+                }, reject);
+            else
+                resolve(res.files[0].id);
+        });
+    });
+}
+
+export async function getPhotosFolder(driveAPI) {
+    const photosFolderID = await getOrCreateFolder(driveAPI, 'Photos');
+    return await getOrCreateFolder(driveAPI, 'Latex', photosFolderID);
+}
+
 export async function fetchFile(driveAPI, id) {
     const res = await driveAPI.files.get({
         key: API_KEY,

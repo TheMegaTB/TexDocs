@@ -12,6 +12,8 @@ export const EDITOR_UNLOADED = 'editor_unloaded';
 export const EDITOR_LOADED = 'editor_loaded';
 export const CREATE_CURSOR = 'cursor_create';
 
+export const INSERT_IMAGE = 'image_insert';
+
 export const SET_CURSOR = 'cursor_set';
 export const SET_FONT_SIZE = 'font_size';
 

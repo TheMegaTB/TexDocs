@@ -80,8 +80,8 @@ class EditorMenubarControls extends Component {
         this.handleRequestClose();
         const accessToken = this.props.googleAPI.get('accessToken');
         const pickerAPI = this.props.googleAPI.get('api').picker;
-        console.log(accessToken, pickerAPI);
-        this.props.dispatch(insertImage(accessToken, pickerAPI));
+        const driveAPI = this.props.googleAPI.get('api').drive;
+        this.props.dispatch(insertImage(driveAPI, accessToken, pickerAPI));
     };
 
     render() {

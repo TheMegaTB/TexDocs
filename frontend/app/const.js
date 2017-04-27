@@ -28,6 +28,10 @@ export const SCOPES = [
     'https://www.googleapis.com/auth/photos'
 ];
 
+export const SERVICE_MAPPING = {
+    docs: "GDrive"
+};
+
 export const RENDER_DELAY = 250;
 
 export const WS_URL = "ws://" + window.location.hostname + ":1337/";
