@@ -32,7 +32,7 @@ export const SERVICE_MAPPING = {
     docs: "GDrive"
 };
 
-export const RENDER_DELAY = 250;
+export const RENDER_DELAY = 750;
 
 export const WS_URL = "ws://" + window.location.hostname + ":1337/";
 export const WS = new WebSocket(WS_URL);

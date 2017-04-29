@@ -1,4 +1,5 @@
 import { Map } from 'immutable';
+import {TEX_UPDATED} from "./files";
 
 const initialEditorState = Map({
     // editor: ...,
@@ -19,6 +20,9 @@ export const SET_FONT_SIZE = 'font_size';
 
 export const BOLD = 'insert_bold';
 
+
+export let skipCursorUpdates = 0;
+
 export function texEditor(state = initialEditorState, action) {
     switch (action.type) {
         case EDITOR_LOADED:
@@ -30,7 +34,15 @@ export function texEditor(state = initialEditorState, action) {
         case CREATE_CURSOR:
             return state.set('cursor', action.cursor);
 
+        case TEX_UPDATED:
+            if (!action.local) skipCursorUpdates = 4; // two for the cursor @ 0:0 and two for 0:EOF
+            return state;
+
         case SET_CURSOR:
+            if (skipCursorUpdates > 0) {
+                skipCursorUpdates--;
+                return state;
+            }
             const newCursor = state.get('cursor');
             newCursor.setCaret(action.valueType, action.value);
             return state.set('cursor', newCursor);
