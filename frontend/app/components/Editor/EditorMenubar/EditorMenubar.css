@@ -13,9 +13,16 @@
 }
 
 .menubar-title {
+    width: 100%;
     font-size: 20px;
     padding-left: 15px;
     line-height: 42px;
+    border-color: transparent;
+    border-left: none;
+}
+
+.menubar-title:focus {
+    outline: none;
 }
 
 .menubar > .container {

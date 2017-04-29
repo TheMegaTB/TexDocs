@@ -11,7 +11,8 @@ import {fullWhite} from 'material-ui/styles/colors';
 import "./EditorMenubar.css";
 import EditorMenubarControls from "./EditorMenubarControls/EditorMenubarControls";
 import {Link} from "react-router-dom";
-import {shareFile} from "../../../api/google";
+import {changeFileName, shareFile} from "../../../api/google";
+import {NAME_SAVE_DELAY} from "../../../const";
 
 const TexDocsButton = () =>
     <Link to="/" className="tex-docs-button">
@@ -19,12 +20,39 @@ const TexDocsButton = () =>
     </Link>;
 
 class EditorMenubar extends Component {
+    constructor(args) {
+        super(args);
+
+        this.state = {
+            name: ""
+        };
+    }
+
+    componentDidUpdate(prevProps) {
+        const prevMeta = prevProps.files.get('metadata');
+        const meta = this.props.files.get('metadata');
+        if (prevMeta && meta && prevMeta.name !== meta.name || !prevMeta && meta && meta.name)
+            this.setState({ name: this.props.files.get('metadata').name });
+    }
+
     share = () => {
         shareFile(
             this.props.googleAPI.get('api').share,
             this.props.googleAPI.get('accessToken'),
             this.props.files.get('metadata').id
         );
+    };
+
+    documentNameChange = (e) => {
+        const newName = e.target.value;
+        this.setState({ name: newName });
+        if (this.nameTimeout) clearTimeout(this.nameTimeout);
+        this.nameTimeout = setTimeout(() => {
+            console.log('SAVING NAME', newName);
+            const driveAPI = this.props.googleAPI.get('api').drive;
+            console.log(driveAPI);
+            changeFileName(driveAPI, this.props.files.get('metadata').id, newName).then();
+        }, NAME_SAVE_DELAY);
     };
 
     render() {
@@ -47,7 +75,11 @@ class EditorMenubar extends Component {
                 <div className="container">
                     <div>
                         <div>
-                            <span className="menubar-title">{metadata ? metadata.name : ""}</span>
+                            <input
+                                className="menubar-title"
+                                value={this.state.name}
+                                onChange={this.documentNameChange}
+                            />
                         </div>
                         <div className="puush"/>
                     </div>
@@ -61,12 +93,12 @@ class EditorMenubar extends Component {
                 <div className="container" style={{marginLeft: 'auto'}}>
                     <div>
                         {user ? <FlatButton
-                                label={user.get('email')}
-                                labelPosition="before"
-                                labelStyle={{textTransform: 'lowercase', fontSize: 10}}
-                                style={{height: '20px', lineHeight: '20px'}}
-                                icon={<ExpandMore />}
-                            /> : undefined}
+                            label={user.get('email')}
+                            labelPosition="before"
+                            labelStyle={{textTransform: 'lowercase', fontSize: 10}}
+                            style={{height: '20px', lineHeight: '20px'}}
+                            icon={<ExpandMore />}
+                        /> : undefined}
                         <div className="puush" />
                     </div>
                     <div style={{justifyContent: 'flex-end', flexDirection: 'row', marginBottom: 5, marginRight: 24}}>

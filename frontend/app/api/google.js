@@ -64,50 +64,61 @@ export async function createFile(driveAPI, name) {
     return res.result.id;
 }
 
-function readBinaryBlob(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            resolve(reader.result);
-        };
-        reader.onerror = reject;
-        reader.readAsBinaryString(blob);
+export async function changeFileName(driveAPI, id, name) {
+    const res = await driveAPI.files.update({
+        fields: 'name,id',
+        fileId: id,
+        name: name
     });
+
+    if (!res.result.name === name) throw "Error renaming file";
+    return res.result.name;
 }
 
-export async function uploadPDF(client, fileId, pdfBlob) {
-    const base64Data = btoa(await readBinaryBlob(pdfBlob));
+// function readBinaryBlob(blob) {
+//     return new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+//         reader.onload = function(e) {
+//             resolve(reader.result);
+//         };
+//         reader.onerror = reject;
+//         reader.readAsBinaryString(blob);
+//     });
+// }
 
-    const boundary = '-------314159265358979323846';
-    const delimiter = "\r\n--" + boundary + "\r\n";
-    const close_delim = "\r\n--" + boundary + "--";
-
-    // Updating the metadata is optional and you can instead use the value from drive.files.get.
-    const multipartRequestBody =
-        delimiter +
-        'Content-Type: application/json\r\n\r\n' +
-        JSON.stringify({}) +
-        delimiter +
-        'Content-Type: ' + DRIVE_MIME_TYPE + '\r\n' +
-        'Content-Transfer-Encoding: base64\r\n' +
-        '\r\n' +
-        base64Data +
-        close_delim;
-
-    const request = client.request({
-        'path': '/upload/drive/v3/files/' + fileId,
-        'method': 'PATCH',
-        'params': {
-            'uploadType': 'multipart',
-            'alt': 'json',
-            'ocr': true
-        },
-        'headers': {
-            'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-        },
-        'body': multipartRequestBody});
-    request.execute();
-}
+// export async function uploadPDF(client, fileId, pdfBlob) {
+//     const base64Data = btoa(await readBinaryBlob(pdfBlob));
+//
+//     const boundary = '-------314159265358979323846';
+//     const delimiter = "\r\n--" + boundary + "\r\n";
+//     const close_delim = "\r\n--" + boundary + "--";
+//
+//     // Updating the metadata is optional and you can instead use the value from drive.files.get.
+//     const multipartRequestBody =
+//         delimiter +
+//         'Content-Type: application/json\r\n\r\n' +
+//         JSON.stringify({}) +
+//         delimiter +
+//         'Content-Type: ' + DRIVE_MIME_TYPE + '\r\n' +
+//         'Content-Transfer-Encoding: base64\r\n' +
+//         '\r\n' +
+//         base64Data +
+//         close_delim;
+//
+//     const request = client.request({
+//         'path': '/upload/drive/v3/files/' + fileId,
+//         'method': 'PATCH',
+//         'params': {
+//             'uploadType': 'multipart',
+//             'alt': 'json',
+//             'ocr': true
+//         },
+//         'headers': {
+//             'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+//         },
+//         'body': multipartRequestBody});
+//     request.execute();
+// }
 
 let shareClient = undefined;
 
