@@ -1,6 +1,7 @@
 import {getCommand} from "../../../components/Editor/EditorContent/completion/command";
 import {
-    BOLD, CREATE_CURSOR, EDITOR_LOADED, INSERT_IMAGE, REDO, SET_CURSOR,
+    BOLD, CREATE_CURSOR, EDITOR_FULL, EDITOR_LOADED, EDITOR_TOGGLE_COMPACT, EDITOR_TOGGLE_MINIMAL, INSERT_IMAGE, REDO,
+    SET_CURSOR,
     SET_FONT_SIZE, UNDO
 } from "../../reducers/editor/texEditor";
 import {Cursor} from "../../../api/Cursor";
@@ -8,7 +9,6 @@ import {getPhotosFolder} from "../../../api/google";
 import {SERVICE_MAPPING} from "../../../const";
 
 function initializeEditor(editor, dispatch) {
-    console.log(editor.commands);
     editor.renderer.setScrollMargin(20, 20);
 
     editor.registerKeybinding = (keyCombo, action) => {
@@ -130,4 +130,15 @@ export function undo() {
 
 export function redo() {
     return { type: REDO }
+}
+
+export function fullEditor() {
+    return { type: EDITOR_FULL }
+}
+
+export function toggleCompactEditor() {
+    return { type: EDITOR_TOGGLE_COMPACT }
+}
+export function toggleMinimalEditor() {
+    return { type: EDITOR_TOGGLE_MINIMAL }
 }

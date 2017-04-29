@@ -5,7 +5,11 @@ import {Map} from 'immutable';
 // API Functions / helpers / constants
 import {NEW_DOC_NAME} from "../../../../const";
 import {downloadPDF, downloadTex, printPDF} from "../../../../redux/actions/editor/files";
-import {insertImage, redo, undo} from "../../../../redux/actions/editor/texEditor";
+import {
+    fullEditor,
+    insertImage, redo, toggleCompactEditor, toggleMinimalEditor,
+    undo
+} from "../../../../redux/actions/editor/texEditor";
 import {createFile, openDashboard} from "../../../../redux/actions/navigation";
 
 // Material-UI
@@ -20,6 +24,7 @@ import Printer from 'material-ui/svg-icons/maps/local-printshop';
 import Download from 'material-ui/svg-icons/editor/publish';
 import NewFile from 'material-ui/svg-icons/editor/insert-drive-file';
 import Image from 'material-ui/svg-icons/image/image';
+
 
 const menuBarFontStyle = {
     fontSize: 13,
@@ -44,6 +49,20 @@ class EditorMenubarControls extends Component {
     edit = {
         undo: () => this.props.dispatch(undo()),
         redo: () => this.props.dispatch(redo())
+    };
+
+    view = {
+        compact: () => this.props.dispatch(toggleCompactEditor()),
+        fullscreen: () => {
+            const handler = (e) => {
+                if (e.which === 27) { // Exit fullscreen w/ ESC
+                    this.props.dispatch(fullEditor());
+                    document.removeEventListener('keydown', handler, false);
+                }
+            };
+            this.props.dispatch(toggleMinimalEditor());
+            document.addEventListener('keydown', handler, false);
+        }
     };
 
     insert = {
@@ -110,6 +129,11 @@ class EditorMenubarControls extends Component {
                 { title: "Paste" },
                 "div",
                 { title: "Select all" },
+            ]),
+
+            view: this.buildMenu([
+                { title: "Compact controls", click: this.view.compact },
+                { title: "Full screen", click: this.view.fullscreen }
             ]),
 
             insert: this.buildMenu([

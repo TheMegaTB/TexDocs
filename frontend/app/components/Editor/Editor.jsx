@@ -31,12 +31,16 @@ class Editor extends Component {
     }
 
     render() {
+        const menubar = this.props.mode === 'full';
+        const toolbar = this.props.mode !== 'minimal';
+
+        const contentHeight = `calc(100% ${menubar ?'- 68px':''} ${toolbar?'- 48px':''})`;
+
         return (
             <div>
-                <EditorMenubar/>
-                <div style={{height: 'calc(100% - 68px)'}}>
-                    <EditorToolbar/>
-                    <div style={{height: 'calc(100% - 48px - 68px)'}}>
+                <EditorMenubar collapsed={!menubar} />
+                <EditorToolbar collapsed={!toolbar} />
+                    <div style={{height: contentHeight}}>
                         <SplitPane defaultSize="50%">
                             <div>
                                 <EditorContent/>
@@ -46,16 +50,19 @@ class Editor extends Component {
                             </div>
                         </SplitPane>
                     </div>
-                </div>
             </div>
         );
     }
 }
 
 Editor.propTypes = {
-    googleAPI: React.PropTypes.object.isRequired
+    googleAPI: React.PropTypes.object.isRequired,
+    mode: React.PropTypes.string.isRequired
 };
 
 export default connect(
-    (state) => { return { googleAPI: state.googleAPI } }
+    (state) => { return {
+        googleAPI: state.googleAPI,
+        mode: state.editor.texEditor.get('mode')
+    } }
 )(Editor);

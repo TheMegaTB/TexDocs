@@ -5,9 +5,16 @@ const initialEditorState = Map({
     // editor: ...,
     // cursor: ...,
     fontSize: 15,
-    cursors: {}
+    cursors: {},
+    mode: 'full'
 });
 
+
+export const EDITOR_FULL = 'full_editor';
+export const EDITOR_COMPACT = 'compact_editor';
+export const EDITOR_TOGGLE_COMPACT = 'toggle_compact_editor';
+export const EDITOR_MINIMAL = 'minimal_editor';
+export const EDITOR_TOGGLE_MINIMAL = 'toggle_minimal_editor';
 
 export const EDITOR_UNLOADED = 'editor_unloaded';
 export const EDITOR_LOADED = 'editor_loaded';
@@ -24,6 +31,12 @@ export const UNDO = 'undo';
 export const REDO = 'redo';
 
 export let skipCursorUpdates = 0;
+
+function resizeEditor(editor) {
+    setTimeout(() => {
+        editor.resize();
+    }, 1000);
+}
 
 export function texEditor(state = initialEditorState, action) {
     switch (action.type) {
@@ -57,6 +70,22 @@ export function texEditor(state = initialEditorState, action) {
                     : state.get('fontSize') - 1
                   );
             return state.set('fontSize', fontSize);
+
+        case EDITOR_FULL:
+            resizeEditor(state.get('editor'));
+            return state.set('mode', 'full');
+        case EDITOR_COMPACT:
+            resizeEditor(state.get('editor'));
+            return state.set('mode', 'compact');
+        case EDITOR_TOGGLE_COMPACT:
+            resizeEditor(state.get('editor'));
+            return state.set('mode', state.get('mode') === 'compact' ? 'full' : 'compact');
+        case EDITOR_MINIMAL:
+            resizeEditor(state.get('editor'));
+            return state.set('mode', 'minimal');
+        case EDITOR_TOGGLE_MINIMAL:
+            resizeEditor(state.get('editor'));
+            return state.set('mode', state.get('mode') === 'minimal' ? 'full' : 'minimal');
 
         default:
             return state;

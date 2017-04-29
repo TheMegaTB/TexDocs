@@ -1,9 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 
+html,body {
+    height:100%;
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     background-color: #eee;
+    overflow-x: hidden;
 }
 
 ::-webkit-scrollbar {

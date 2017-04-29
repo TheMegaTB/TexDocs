@@ -1,0 +1,11 @@
+.toolbar {
+    background: #f1f1f1;
+    height: 48px !important;
+    transition: height 0.3s ease-out, opacity 0.3s ease 0.5s;
+}
+
+.toolbar.collapsed {
+    height: 0 !important;
+    opacity: 0;
+    transition: height 0.3s ease-out, opacity 0.3s ease;
+}

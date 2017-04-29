@@ -4,6 +4,12 @@
     flex-direction: row;
     display: flex;
     background-color: white;
+    transition: height 0.3s ease-out, opacity 0.3s ease;
+}
+
+.menubar.collapsed {
+    height: 0;
+    opacity: 0;
 }
 
 .menubar-title {

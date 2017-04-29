@@ -42,7 +42,7 @@ class EditorMenubar extends Component {
         }) : [];
 
         return (
-            <div className="menubar">
+            <div className={this.props.collapsed ? "menubar collapsed" : "menubar"}>
                 <TexDocsButton/>
                 <div className="container">
                     <div>

@@ -13,8 +13,8 @@
 }
 
 .SplitPane {
-    height: calc(100% - 48px - 68px) !important;
     background-color: #eee;
+    position: static !important;
 }
 
 .Pane.vertical {
