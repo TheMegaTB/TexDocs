@@ -1,7 +1,7 @@
 import {getCommand} from "../../../components/Editor/EditorContent/completion/command";
 import {
-    BOLD, CREATE_CURSOR, EDITOR_LOADED, INSERT_IMAGE, SET_CURSOR,
-    SET_FONT_SIZE
+    BOLD, CREATE_CURSOR, EDITOR_LOADED, INSERT_IMAGE, REDO, SET_CURSOR,
+    SET_FONT_SIZE, UNDO
 } from "../../reducers/editor/texEditor";
 import {Cursor} from "../../../api/Cursor";
 import {getPhotosFolder} from "../../../api/google";
@@ -122,4 +122,12 @@ export function setFontSize(fontSize) {
         type: SET_FONT_SIZE,
         fontSize: fontSize
     }
+}
+
+export function undo() {
+    return { type: UNDO }
+}
+
+export function redo() {
+    return { type: REDO }
 }

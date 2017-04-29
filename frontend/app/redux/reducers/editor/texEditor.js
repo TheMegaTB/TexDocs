@@ -20,6 +20,8 @@ export const SET_FONT_SIZE = 'font_size';
 
 export const BOLD = 'insert_bold';
 
+export const UNDO = 'undo';
+export const REDO = 'redo';
 
 export let skipCursorUpdates = 0;
 

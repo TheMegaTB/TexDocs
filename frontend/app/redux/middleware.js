@@ -4,7 +4,7 @@ import 'brace/snippets/snippets';
 const ace = require('brace');
 const snippetManager = ace.acequire('ace/snippets').snippetManager;
 
-import {BOLD, INSERT_IMAGE} from "./reducers/editor/texEditor";
+import {BOLD, INSERT_IMAGE, REDO, UNDO} from "./reducers/editor/texEditor";
 
 export const logger = store => next => action => {
     console.log('dispatching', action);
@@ -14,12 +14,19 @@ export const logger = store => next => action => {
 };
 
 export const editor = store => next => action => {
+    const editor = store.getState().editor.texEditor.get('editor');
     switch (action.type) {
         case BOLD:
-            snippetManager.insertSnippet(store.getState().editor.texEditor.get('editor'), "\\textbf{${0:${SELECTED_TEXT:/* code */}}}");
+            snippetManager.insertSnippet(editor, "\\textbf{${0:${SELECTED_TEXT:/* code */}}}");
             break;
         case INSERT_IMAGE:
-            snippetManager.insertSnippet(store.getState().editor.texEditor.get('editor'), `\\includegraphics[width=\\textwidth, keepaspectratio]{\${0:${action.service}:${action.id}}}`);
+            snippetManager.insertSnippet(editor, `\\includegraphics[width=\\textwidth, keepaspectratio]{\${0:${action.service}:${action.id}}}`);
+            break;
+        case UNDO:
+            editor.undo();
+            break;
+        case REDO:
+            editor.redo();
             break;
         default:
             break;

@@ -35,7 +35,7 @@ function getDriveFileHash(id, driveAPI, auth) {
             fileId: id,
             fields: 'md5Checksum'
         }, function (err, res) {
-            if (err) reject(err);
+            if (err || !res) reject(err);
             resolve(res.md5Checksum);
         });
     });
