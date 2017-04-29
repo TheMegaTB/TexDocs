@@ -5,16 +5,16 @@ import PDFView from "./PDFView/PDFView";
 import Loader from "../../Loader/Loader";
 import {connect} from "react-redux";
 import {pdfChanged} from "../../../redux/actions/editor/files";
-import {uploadPDF} from "../../../api/google";
+import * as diff from "diff";
+import md5 from 'md5';
 
 class TexRenderer extends Component {
     constructor(args) {
         super(args);
 
-        const renderer = this;
-
         WS.onopen = () => {
-            renderer.setState({ wsOpen: true });
+            this.lastData = "";
+            this.setState({ wsOpen: true });
 
             if (this.props.accessToken) // Send the accessToken to the server again since it might've restarted
                 WS.send(JSON.stringify({
@@ -23,13 +23,22 @@ class TexRenderer extends Component {
                 }));
         };
         WS.onmessage = (e) => {
-            const pdfBlob = new Blob([e.data], { type: "application/pdf" });
-
-            this.props.dispatch(pdfChanged(pdfBlob));
-
-            if (this.state.initial) this.setState({ initial: false });
+            if (e.data instanceof Blob) {
+                this.props.dispatch(pdfChanged(new Blob([e.data], {type: "application/pdf"})));
+                if (this.state.initial) this.setState({initial: false});
+            } else if (typeof e.data === 'string') {
+                const data = JSON.parse(e.data);
+                switch (data.type) {
+                    case "hash_mismatch":
+                        this.requestBlobFromDocument(false);
+                        break;
+                    default:
+                        break;
+                }
+            }
         };
 
+        this.lastData = "";
         this.state = {
             wsOpen: WS.readyState === 1,
             initial: true
@@ -38,19 +47,31 @@ class TexRenderer extends Component {
         this.requestBlobFromDocument = this.requestBlobFromDocument.bind(this);
     }
 
-    requestBlobFromDocument() {
-        const renderer = this;
+    requestBlobFromDocument(patch = true) {
         if (this.renderTimeout) clearTimeout(this.renderTimeout);
 
         this.renderTimeout = setTimeout(() => {
-            const data = renderer.props.files.get('tex');
-            if (data)
-                WS.send(JSON.stringify({
+            const data = this.props.files.get('tex');
+            const fileID = this.props.files.get('metadata').id;
+
+            if (data) {
+                const transmission = {
                     type: 'texSource',
-                    fileID: this.props.files.get('metadata').id,
-                    tex: data.toString(),
+                    fileID: fileID,
                     upload: !this.state.initial
-                }));
+                };
+
+                if (patch) {
+                    transmission.patch = diff.createPatch(`${fileID}.tex`, this.lastData, data);
+                    transmission.hash = md5(data);
+                    console.log("PATCH:", transmission.patch);
+                    console.log("HASH:", transmission.hash);
+                } else {
+                    transmission.tex = data.toString();
+                }
+                WS.send(JSON.stringify(transmission));
+                this.lastData = data;
+            }
         }, RENDER_DELAY);
     }
 

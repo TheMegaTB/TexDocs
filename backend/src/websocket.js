@@ -4,8 +4,17 @@ const fetchTexDependencies = require("./tex.js").fetchTexDependencies;
 const createTempDir = require("./helpers.js").createTempDir;
 const parseTex = require('./tex').parse;
 const rimraf = require('rimraf');
+const md5 = require('md5');
+const diff = require('diff');
 
 const users = {};
+
+function patchTex(oldTex, patch, hash) {
+    const tex = diff.applyPatch(oldTex || "", patch);
+    if (md5(tex) !== hash && oldTex)
+        return patchTex("", patch, hash);
+    return tex;
+}
 
 async function handleRequest(message, userID) {
     if (message.type === 'utf8') {
@@ -15,8 +24,26 @@ async function handleRequest(message, userID) {
         switch (data.type) {
             case 'texSource':
                 const tmpDir = await user.dir;
-                await fetchTexDependencies(data.tex, user);
-                parseTex(data.tex, tmpDir, data.fileID).then(([log, lint, pdf]) => {
+
+                let tex;
+                if (data.patch) {
+                    tex = patchTex(user.tex, data.patch, data.hash);
+                    if (!tex) {
+                        // TODO Request the full source
+                        console.error("HASH MISMATCH!!");
+                        user.connection.send(JSON.stringify({
+                            type: "hash_mismatch"
+                        }));
+                        return;
+                    }
+                } else {
+                    tex = data.tex;
+                }
+
+                user.tex = tex;
+
+                await fetchTexDependencies(tex, user);
+                parseTex(tex, tmpDir, data.fileID).then(([log, lint, pdf]) => {
                     if (data.upload) google.updateFile(data.fileID, user.auth, pdf);
                     user.connection.send(pdf, {binary: true});
                 }).catch((err) => {
