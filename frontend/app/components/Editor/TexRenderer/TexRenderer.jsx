@@ -64,11 +64,10 @@ class TexRenderer extends Component {
                 if (patch) {
                     transmission.patch = diff.createPatch(`${fileID}.tex`, this.lastData, data);
                     transmission.hash = md5(data);
-                    console.log("PATCH:", transmission.patch);
-                    console.log("HASH:", transmission.hash);
                 } else {
                     transmission.tex = data.toString();
                 }
+
                 WS.send(JSON.stringify(transmission));
                 this.lastData = data;
             }
