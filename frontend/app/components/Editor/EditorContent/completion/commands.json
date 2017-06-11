@@ -4,6 +4,26 @@
         {"command": "author", "arguments": true},
         {"command": "date", "arguments": true}
     ],
+    "struct": [
+        {"command": "chapter", "arguments": true},
+        {"command": "section", "arguments": true},
+        {"command": "subsection", "arguments": true},
+        {"command": "subsubsection", "arguments": true}
+    ],
+    "env": [
+        {
+            "command": "begin",
+            "counterpart": "end",
+            "arguments": [
+                "equation",
+                "subequations",
+                "itemize"
+            ]
+        }
+    ],
+    "list": [
+        {"command": "item"}
+    ],
     "pkg": [
         {
             "command": "usepackage",
@@ -31,14 +51,6 @@
             "modifiers": [
                 "a4paper",
                 "letter"
-            ]
-        },
-        {
-            "command": "begin",
-            "counterpart": "end",
-            "arguments": [
-                "equation",
-                "subequations"
             ]
         }
     ]
