@@ -107,5 +107,10 @@
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
+  },
+  "eslintConfig": {
+    "rules": {
+        "indent": 0
+    }
   }
 }

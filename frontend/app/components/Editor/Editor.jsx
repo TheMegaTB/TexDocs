@@ -1,15 +1,26 @@
-import React, {Component} from "react";
-import {connect} from "react-redux";
-import EditorToolbar from "./EditorToolbar/EditorToolbar";
-import EditorMenubar from "./EditorMenubar/EditorMenubar";
-import SplitPane from "react-split-pane";
+import React, { Component } from 'react';
+import SplitPane from 'react-split-pane';
+import { connect } from 'react-redux';
+import EditorToolbar from './EditorToolbar/EditorToolbar';
+import EditorMenubar from './EditorMenubar/EditorMenubar';
 
-import "./Editor.css";
-import TexRenderer from "./TexRenderer/TexRenderer";
-import EditorContent from "./EditorContent/EditorContent";
-import {loadDocumentMetadata, loadRealtimeDocument} from "../../redux/actions/editor/files";
+import './Editor.css';
+import TexRenderer from './TexRenderer/TexRenderer';
+import EditorContent from './EditorContent/EditorContent';
+import { loadDocumentMetadata, loadRealtimeDocument } from '../../redux/actions/editor/files';
 
 class Editor extends Component {
+
+    componentDidMount() {
+        this.updateDocument();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.match.params.id !== this.props.match.params.id) {
+            this.updateDocument();
+        }
+    }
+
     updateDocument = () => {
         const documentID = this.props.match.params.id;
         if (documentID) {
@@ -20,33 +31,23 @@ class Editor extends Component {
         }
     };
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.match.params.id !== this.props.match.params.id) {
-            this.updateDocument();
-        }
-    }
-
-    componentDidMount() {
-        this.updateDocument();
-    }
-
     render() {
         const menubar = this.props.mode === 'full';
         const toolbar = this.props.mode !== 'minimal';
 
-        const contentHeight = `calc(100% ${menubar ?'- 68px':''} ${toolbar?'- 48px':''})`;
+        const contentHeight = `calc(100% ${menubar ? '- 68px' : ''} ${toolbar ? '- 48px' : ''})`;
 
         return (
             <div>
                 <EditorMenubar collapsed={!menubar} />
                 <EditorToolbar collapsed={!toolbar} />
-                    <div style={{height: contentHeight}}>
+                    <div style={{ height: contentHeight }}>
                         <SplitPane defaultSize="50%">
                             <div>
-                                <EditorContent/>
+                                <EditorContent />
                             </div>
                             <div>
-                                <TexRenderer/>
+                                <TexRenderer />
                             </div>
                         </SplitPane>
                     </div>
@@ -61,8 +62,10 @@ Editor.propTypes = {
 };
 
 export default connect(
-    (state) => { return {
-        googleAPI: state.googleAPI,
-        mode: state.editor.texEditor.get('mode')
-    } }
+    (state) => {
+        return {
+            googleAPI: state.googleAPI,
+            mode: state.editor.texEditor.get('mode')
+        };
+    }
 )(Editor);
