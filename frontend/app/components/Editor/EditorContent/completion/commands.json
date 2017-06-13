@@ -4,6 +4,14 @@
         {"command": "author", "arguments": true},
         {"command": "date", "arguments": true}
     ],
+    "struct": [
+        {"command": "section", "arguments": true},
+        {"command": "subsection", "arguments": true},
+        {"command": "subsubsection", "arguments": true}
+    ],
+    "biblio": [
+        {"command": "bibitem", "arguments": true}
+    ],
     "pkg": [
         {
             "command": "usepackage",
