@@ -47,7 +47,7 @@ export function loadRealtimeDocument(realtime, id, dispatch) {
                 document: doc
             });
         }, onFileInitialize, (err) => {
-            alert(`Load failed (${err.error})!`);
+            console.error(`Load failed (${err.error})!`);
             reject(err);
             throw JSON.stringify(err);
         });
