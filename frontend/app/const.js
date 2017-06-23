@@ -32,7 +32,7 @@ export const SERVICE_MAPPING = {
     docs: "GDrive"
 };
 
-export const RENDER_DELAY = 750;
+export const RENDER_DELAY = 1250;
 export const NAME_SAVE_DELAY = 5000;
 
 export const WS_URL = "ws://" + window.location.hostname + ":1337/";
