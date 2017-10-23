@@ -46,6 +46,7 @@ export function authorized(gAuth) {
 export function authorize(gAuth) {
     return new Promise((resolve, reject) => {
         gAuth.signIn().then(() => {
+            alert("Authorization succeeded");
             resolve(authorized(gAuth));
         }, (err) => {
             alert(`Authorization failed (${err.error})!`);
