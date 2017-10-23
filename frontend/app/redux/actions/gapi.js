@@ -45,23 +45,13 @@ export function authorized(gAuth) {
 
 export function authorize(gAuth) {
     return new Promise((resolve, reject) => {
-        console.log("signing in");
         Promise.resolve(gAuth.signIn()).then(function() {
-            alert("Sign in succeeded");
             resolve(authorized(gAuth));
         }).catch(function(err) {
             alert(`Authorization failed (${err.error})!`);
             reject(err);
             throw JSON.stringify(err);
         });
-        // gAuth.signIn().then(() => {
-        //     alert("Sign in succeeded");
-        //     resolve(authorized(gAuth));
-        // }, (err) => {
-        //     alert(`Authorization failed (${err.error})!`);
-        //     reject(err);
-        //     throw JSON.stringify(err);
-        // });
     });
 }
 
@@ -72,7 +62,6 @@ export function refreshToken(auth) {
             scope: SCOPES,
             immediate: true
         }, (res) => {
-            console.log("Authorized/refreshed token");
             resolve({
                 type: TOKEN_REFRESH,
                 token: res.access_token

@@ -57,8 +57,6 @@ class App extends Component {
         const gAuth = googleAPI.get('gAuth');
         const accessToken = googleAPI.get('accessToken');
 
-        console.log("gAuth", apiAuthorized, apiInitialized, apiLoaded, gAuth ? gAuth.isSignedIn.get() : undefined, gAuth);
-
         if (!apiLoaded)
             return <Loader text="Loading Google API"/>;
         else if (!apiInitialized)
