@@ -45,8 +45,9 @@ export function authorized(gAuth) {
 
 export function authorize(gAuth) {
     return new Promise((resolve, reject) => {
+        console.log("signing in");
         gAuth.signIn().then(() => {
-            alert("Authorization succeeded");
+            alert("Sign in succeeded");
             resolve(authorized(gAuth));
         }, (err) => {
             alert(`Authorization failed (${err.error})!`);
@@ -63,6 +64,7 @@ export function refreshToken(auth) {
             scope: SCOPES,
             immediate: true
         }, (res) => {
+            console.log("Authorized/refreshed token");
             resolve({
                 type: TOKEN_REFRESH,
                 token: res.access_token
