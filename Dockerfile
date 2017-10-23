@@ -35,5 +35,6 @@ WORKDIR /usr/src/app/backend
 RUN ln -s /stor stor
 
 EXPOSE 8080
+ENV NODE_ENV production
 
 CMD [ "npm", "start" ]
