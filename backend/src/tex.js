@@ -3,7 +3,7 @@ const fs = require('mz/fs');
 const nodeFS = require('fs');
 const spawn = require('child_process').spawn;
 const google = require('./google');
-var getFileByPrefix = require("./helpers.js").getFileByPrefix;
+const getFileByPrefix = require("./helpers.js").getFileByPrefix;
 
 const PROGRESS_INJECTION = `
 \\usepackage{everyshi}
@@ -24,7 +24,7 @@ function generatePDF(dir, jobID) {
         });
 
         latex.stderr.on('data', (data) => {
-            // console.log('consoleErr', data);
+            // console.log('consoleErr');
             log.push(data);
         });
 

@@ -2,7 +2,7 @@ const fs = require('mz/fs');
 const md5 = require('md5');
 const google = require('googleapis');
 const googleAuth = require('google-auth-library');
-const credentials = require('./credentials.json');
+const credentials = require('../stor/credentials.json');
 
 function createOAuthInstance(token) {
     const auth = new googleAuth();
