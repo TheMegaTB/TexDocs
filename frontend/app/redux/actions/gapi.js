@@ -46,14 +46,23 @@ export function authorized(gAuth) {
 export function authorize(gAuth) {
     return new Promise((resolve, reject) => {
         console.log("signing in");
-        gAuth.signIn().then(() => {
-            alert("Sign in succeeded");
-            resolve(authorized(gAuth));
-        }, (err) => {
-            alert(`Authorization failed (${err.error})!`);
-            reject(err);
-            throw JSON.stringify(err);
-        });
+        Promise.resolve(gAuth.signIn())
+            .then(() => {
+                alert("Sign in succeeded");
+                resolve(authorized(gAuth));
+            }, (err) => {
+                alert(`Authorization failed (${err.error})!`);
+                reject(err);
+                throw JSON.stringify(err);
+            });
+        // gAuth.signIn().then(() => {
+        //     alert("Sign in succeeded");
+        //     resolve(authorized(gAuth));
+        // }, (err) => {
+        //     alert(`Authorization failed (${err.error})!`);
+        //     reject(err);
+        //     throw JSON.stringify(err);
+        // });
     });
 }
 
