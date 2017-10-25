@@ -32,6 +32,9 @@ class TexRenderer extends Component {
                     case "hash_mismatch":
                         this.requestBlobFromDocument(false);
                         break;
+                    case "compile_log":
+                        // console.log("Compilation log:", data.log, data.lint);
+                        break;
                     default:
                         break;
                 }

@@ -43,6 +43,10 @@ async function handleRequest(message, userID) {
             await fetchTexDependencies(tex, user);
             parseTex(tex, tmpDir, data.fileID).then(([log, lint, pdf]) => {
                 if (data.upload) google.updateFile(data.fileID, user.auth, pdf);
+                user.connection.send(JSON.stringify({
+                    type: "compile_log",
+                    log, lint
+                }));
                 user.connection.send(pdf, {binary: true});
             }).catch((err) => {
                 // Job got cancelled for some reason
@@ -70,7 +74,6 @@ function onConnection(connection) {
     };
 
     connection.on('message', async function(message) {
-        console.log("recv msg", message);
         handleRequest(message, userID).then(() => {}, (err) => {
             console.log(err);
         });

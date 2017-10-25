@@ -17,15 +17,17 @@ function generatePDF(dir, jobID) {
         const latex = spawn(path.join(__dirname, 'buildPDF.sh'), [dir, jobID]);
         if (!jobs[dir]) jobs[dir] = {};
         jobs[dir][jobID] = latex;
-        const log = [];
+        const log = {
+            "out": [],
+            "err": []
+        };
         latex.stdout.on('data', (data) => {
-            // console.log('consoleOut', data.toString());
-            log.push(data);
+            log.out.push(data.toString());
         });
 
         latex.stderr.on('data', (data) => {
             // console.log('consoleErr');
-            log.push(data);
+            log.err.push(data.toString());
         });
 
         latex.on('exit', (code) => {
@@ -58,7 +60,7 @@ async function parseTex(texString, dir, fileID) {
     const lint = await fs.readFile(path.join(dir, `${fileID}.lint`));
 
     console.log('processed request for', dir, fileID, new Date() - start);
-    return [log, lint, pdf];
+    return [log, lint.toString(), pdf];
 }
 
 async function fetchTexDependencies(tex, user) {
