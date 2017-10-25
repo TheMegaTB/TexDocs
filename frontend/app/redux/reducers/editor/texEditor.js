@@ -4,7 +4,7 @@ import {TEX_UPDATED} from "./files";
 const initialEditorState = Map({
     // editor: ...,
     // cursor: ...,
-    fontSize: 15,
+    fontSize: 13,
     cursors: {},
     mode: 'full'
 });
