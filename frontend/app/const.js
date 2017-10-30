@@ -36,7 +36,7 @@ export const RENDER_DELAY = 1250;
 export const NAME_SAVE_DELAY = 5000;
 
 export const WS_URL = process.env.NODE_ENV === 'production' ?
-    "ws://" + window.location.host : "ws://" + window.location.hostname + ":1337/";
+    "wss://" + window.location.host : "ws://" + window.location.hostname + ":1337/";
 export const WS = new WebSocket(WS_URL);
 
 export const TIME_DEBUG = false;
